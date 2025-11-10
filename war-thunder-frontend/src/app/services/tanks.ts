@@ -1,0 +1,168 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthService } from './auth';
+
+// ====================================================================
+// PASO 1: Definir las interfaces (tipos de datos)
+// ====================================================================
+// EXPLICACIÓN: Las interfaces en TypeScript son como los modelos de Pydantic
+// Definen la estructura de los datos que esperamos recibir
+
+export interface Municion {
+  nombre: string;
+  tipo: string;
+  penetracion_mm: number[];
+  masa_total?: number | null;
+  velocidad_bala?: number | null;
+  masa_explosivo?: number | null;
+}
+
+export interface Arma {
+  municiones: Municion[];
+}
+
+export interface Tanque {
+  _id?: string;  // El signo ? significa que es opcional
+  nombre: string;
+  rol: string;
+  nacion: string;
+  rating_arcade: string;
+  tripulacion: number;
+  visibilidad: number;
+  peso: number;
+  blindaje_chasis: number;
+  blindaje_torreta: number;
+  velocidad_adelante_arcade: number;
+  velocidad_atras_arcade: number;
+  relacion_potencia_peso: number;
+  angulo_depresion: number;
+  angulo_elevacion: number;
+  recarga: number;
+  cadencia: number;
+  cargador: number;
+  municion_total: number;
+  rotacion_torreta_horizontal_arcade: number;
+  rotacion_torreta_vertical_arcade: number;
+  armamento?: { [key: string]: Arma }
+  setup_1?: { [key: string]: Arma };
+  setup_2?: { [key: string]: Arma };
+}
+
+// ====================================================================
+// PASO 2: Crear el servicio
+// ====================================================================
+// EXPLICACIÓN: @Injectable significa que este servicio puede ser
+// inyectado en componentes y otros servicios
+
+@Injectable({
+  providedIn: 'root'  // Hace el servicio disponible en toda la aplicación
+})
+export class TanksService {
+  // URL base de tu API FastAPI
+  private apiUrl = 'http://localhost:8000';
+  
+  // Headers HTTP opcionales (por si necesitas añadir autenticación después)
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
+  // EXPLICACIÓN: HttpClient es el módulo de Angular para hacer peticiones HTTP
+  // Lo inyectamos en el constructor
+  constructor(private http: HttpClient) { }
+
+  // ====================================================================
+  // MÉTODO 1: Obtener todos los tanques (GET)
+  // ====================================================================
+  obtenerTodosLosTanques(): Observable<Tanque[]> {
+    // EXPLICACIÓN: 
+    // - Observable es como una "promesa mejorada" de Angular
+    // - Permite suscribirse a los datos cuando lleguen
+    // - El tipo <Tanque[]> indica que devolverá una lista de tanques
+    
+    return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/`);
+  }
+
+  // ====================================================================
+  // MÉTODO 2: Obtener un tanque por ID (GET)
+  // ====================================================================
+  obtenerTanquePorNombre(nombre: string): Observable<Tanque> {
+    return this.http.get<Tanque>(`${this.apiUrl}/tanques/${nombre}`);
+  }
+
+  // ====================================================================
+  // MÉTODO 3: Obtener tanques por nación (GET)
+  // ====================================================================
+  obtenerTanquesPorNacion(nacion: string): Observable<Tanque[]> {
+    // Codificar la nación para URLs (espacios se convierten en %20)
+    const nacionCodificada = encodeURIComponent(nacion);
+    return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/nacion/${nacionCodificada}`);
+  }
+
+  // ====================================================================
+  // MÉTODO 4: Crear un nuevo tanque (POST)
+  // ====================================================================
+  crearTanque(tanque: Tanque): Observable<any> {
+    // EXPLICACIÓN:
+    // - Omitimos el _id porque MongoDB lo genera automáticamente
+    // - Enviamos el tanque en el body de la petición
+    const { _id, ...tanqueSinId } = tanque;
+    
+    return this.http.post<any>(
+      `${this.apiUrl}/tanques/`,
+      tanqueSinId,
+      this.httpOptions
+    );
+  }
+
+  // ====================================================================
+  // MÉTODO 5: Actualizar un tanque (PUT)
+  // ====================================================================
+  actualizarTanque(nombre: string, tanque: Tanque): Observable<any> {
+    const { _id, ...tanqueSinId } = tanque;
+    
+    return this.http.put<any>(
+      `${this.apiUrl}/tanques/${nombre}`,
+      tanqueSinId,
+      this.httpOptions
+    );
+  }
+
+  // ====================================================================
+  // MÉTODO 6: Eliminar un tanque (DELETE)
+  // ====================================================================
+  eliminarTanque(nombre: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/tanques/${nombre}`);
+  }
+
+  // ====================================================================
+  // MÉTODO 7: Obtener naciones únicas (útil para filtros)
+  // ====================================================================
+  obtenerNacionesUnicas(): Observable<string[]> {
+    // EXPLICACIÓN: Este método procesa los tanques para obtener
+    // una lista única de naciones
+    
+    return new Observable(observer => {
+      this.obtenerTodosLosTanques().subscribe({
+        next: (tanques) => {
+          // Extraer todas las naciones
+          const naciones = tanques.map(t => t.nacion);
+          
+          // Obtener valores únicos usando Set
+          const nacionesUnicas = Array.from(new Set(naciones));
+          
+          // Ordenar alfabéticamente
+          nacionesUnicas.sort();
+          
+          observer.next(nacionesUnicas);
+          observer.complete();
+        },
+        error: (error) => {
+          observer.error(error);
+        }
+      });
+    });
+  }
+}

@@ -1,0 +1,41 @@
+# ======== PYTHON / FASTAPI ========
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+.env
+.venv/
+.env/
+.env.bak
+*.log
+
+# Archivos de datos o resultados del scraping
+*.json
+*.csv
+*.xlsx
+*.tmp
+*.bak
+
+# ======== ANGULAR / FRONTEND ========
+# Dependencias
+war-thunder-frontend/node_modules/
+# Builds
+war-thunder-frontend/dist/
+war-thunder-frontend/.angular/
+# Cachés de Angular
+war-thunder-frontend/.cache/
+# Archivos de entorno de Angular
+war-thunder-frontend/src/environments/*.ts
+
+# ======== SISTEMA ========
+.DS_Store
+Thumbs.db
+
+# ======== IDE / EDITOR ========
+.vscode/
+.idea/
+*.code-workspace
+tanques.json
+tanques_limpio.json
