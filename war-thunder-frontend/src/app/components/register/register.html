@@ -1,0 +1,209 @@
+<div class="register-container">
+  <div class="register-card">
+    
+    <!-- ================================================================ -->
+    <!-- ENCABEZADO -->
+    <!-- ================================================================ -->
+    <div class="register-header">
+      <h1>🎮 War Thunder</h1>
+      <h2>Crear Cuenta</h2>
+      <p>Regístrate para editar y gestionar tanques</p>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MENSAJE DE ÉXITO -->
+    <!-- ================================================================ -->
+    @if (exito) {
+      <div class="alert alert-success">
+        <span class="success-icon">✅</span>
+        <div>
+          <strong>¡Registro exitoso!</strong>
+          <p>Redirigiendo al login...</p>
+        </div>
+      </div>
+    }
+
+    <!-- ================================================================ -->
+    <!-- MENSAJE DE ERROR -->
+    <!-- ================================================================ -->
+    @if (error) {
+      <div class="alert alert-error">
+        <span class="error-icon">⚠️</span>
+        <span>{{ error }}</span>
+      </div>
+    }
+
+    <!-- ================================================================ -->
+    <!-- FORMULARIO DE REGISTRO -->
+    <!-- ================================================================ -->
+    <form (ngSubmit)="onSubmit()" class="register-form">
+      
+      <!-- Campo Username -->
+      <div class="form-group">
+        <label for="username">
+          <span class="label-icon">👤</span>
+          Nombre de Usuario *
+        </label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="usuario.username"
+          placeholder="Mínimo 3 caracteres"
+          [disabled]="cargando || exito"
+          required
+          minlength="3"
+          autocomplete="username"
+        >
+        <small class="hint">Este será tu nombre de usuario único</small>
+      </div>
+
+      <!-- Campo Email -->
+      <div class="form-group">
+        <label for="email">
+          <span class="label-icon">📧</span>
+          Email *
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="usuario.email"
+          placeholder="ejemplo@correo.com"
+          [disabled]="cargando || exito"
+          required
+          autocomplete="email"
+        >
+      </div>
+
+      <!-- Campo Nombre Completo (opcional) -->
+      <div class="form-group">
+        <label for="nombre_completo">
+          <span class="label-icon">✏️</span>
+          Nombre Completo (opcional)
+        </label>
+        <input
+          type="text"
+          id="nombre_completo"
+          name="nombre_completo"
+          [(ngModel)]="usuario.nombre_completo"
+          placeholder="Tu nombre completo"
+          [disabled]="cargando || exito"
+          autocomplete="name"
+        >
+      </div>
+
+      <!-- Campo Password -->
+      <div class="form-group">
+        <label for="password">
+          <span class="label-icon">🔒</span>
+          Contraseña *
+        </label>
+        <div class="password-input-container">
+          <input
+            [type]="mostrarPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="usuario.password"
+            placeholder="Mínimo 6 caracteres"
+            [disabled]="cargando || exito"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          >
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="toggleMostrarPassword()"
+            [disabled]="cargando || exito"
+          >
+            {{ mostrarPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        
+        <!-- Indicador de fortaleza de contraseña -->
+        @if (usuario.password) {
+          <div class="password-strength">
+            <div class="strength-bar">
+              <div 
+                class="strength-fill" 
+                [style.width]="obtenerFortalezaPassword() === 'débil' ? '33%' : obtenerFortalezaPassword() === 'media' ? '66%' : '100%'"
+                [style.background-color]="obtenerColorFortaleza()"
+              ></div>
+            </div>
+            <small [style.color]="obtenerColorFortaleza()">
+              Fortaleza: {{ obtenerFortalezaPassword() }}
+            </small>
+          </div>
+        }
+      </div>
+
+      <!-- Campo Confirmar Password -->
+      <div class="form-group">
+        <label for="confirmar_password">
+          <span class="label-icon">🔒</span>
+          Confirmar Contraseña *
+        </label>
+        <div class="password-input-container">
+          <input
+            [type]="mostrarConfirmarPassword ? 'text' : 'password'"
+            id="confirmar_password"
+            name="confirmar_password"
+            [(ngModel)]="confirmarPassword"
+            placeholder="Repite tu contraseña"
+            [disabled]="cargando || exito"
+            required
+            autocomplete="new-password"
+          >
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="toggleMostrarConfirmarPassword()"
+            [disabled]="cargando || exito"
+          >
+            {{ mostrarConfirmarPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        
+        <!-- Indicador de coincidencia -->
+        @if (confirmarPassword && usuario.password) {
+          @if (usuario.password === confirmarPassword) {
+            <small class="match-indicator success">✓ Las contraseñas coinciden</small>
+          } @else {
+            <small class="match-indicator error">✗ Las contraseñas no coinciden</small>
+          }
+        }
+      </div>
+
+      <!-- Botón Submit -->
+      <button
+        type="submit"
+        class="btn-register"
+        [disabled]="cargando || exito"
+      >
+        @if (cargando) {
+          <span class="spinner"></span>
+          <span>Creando cuenta...</span>
+        } @else {
+          <span>Crear Cuenta</span>
+        }
+      </button>
+    </form>
+
+    <!-- ================================================================ -->
+    <!-- ENLACE A LOGIN -->
+    <!-- ================================================================ -->
+    <div class="register-footer">
+      <p>¿Ya tienes una cuenta?</p>
+      <button
+        type="button"
+        class="btn-login-link"
+        (click)="volverAlLogin()"
+        [disabled]="cargando || exito"
+      >
+        Inicia sesión aquí
+      </button>
+    </div>
+
+  </div>
+</div>

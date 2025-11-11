@@ -1,10 +1,12 @@
 from pymongo import MongoClient
 from pymongo.database import Database
 import os
+from dotenv import load_dotenv
 
 # Paso 1: Definir la URI de conexión
 # Para desarrollo local, usa: "mongodb://localhost:27017/"
 # Para MongoDB Atlas (nube), usa la URI que te proporciona Atlas
+load_dotenv()
 MONGODB_URI = os.getenv("MONGO_URI")
 
 # Paso 2: Nombre de la base de datos

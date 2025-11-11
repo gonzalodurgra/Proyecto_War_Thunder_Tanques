@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -7,12 +7,14 @@ from fastapi.security import OAuth2PasswordBearer
 from database import get_users_collection
 from user_models import TokenData, UsuarioEnDB
 import os
+from dotenv import load_dotenv
 
 # ====================================================================
 # CONFIGURACIÓN
 # ====================================================================
 
 # IMPORTANTE: En producción, usa una clave secreta segura y guárdala en variables de entorno
+load_dotenv()
 SECRET_KEY =  os.getenv("SECRETKEY") # Cámbiala!
 ALGORITHM = os.getenv("JWT_ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # El token expira en 30 minutos
@@ -24,7 +26,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30  # El token expira en 30 minutos
 # bcrypt es un algoritmo muy seguro que hace que sea prácticamente
 # imposible descifrar las contraseñas
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 # ====================================================================
 # PASO 2: Configurar OAuth2
@@ -51,7 +53,7 @@ def verificar_password(password_plano: str, hashed_password: str) -> bool:
     """
     return pwd_context.verify(password_plano, hashed_password)
 
-def hash_password(password: str) -> str:
+#def hash_password(password: str) -> str:
     """
     Convierte una contraseña en texto plano a un hash seguro.
     
@@ -61,13 +63,15 @@ def hash_password(password: str) -> str:
     Returns:
         Hash de la contraseña (string largo y aleatorio)
     """
-    return pwd_context.hash(password)
+    #return pwd_context.hash(password)
 
 # ====================================================================
 # FUNCIONES DE JWT (TOKENS)
 # ====================================================================
 
 def crear_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    print("SECRET_KEY:", os.getenv("SECRET_KEY"))
+    print("JWT_ALGORITHM:", os.getenv("JWT_ALGORITHM"))
     """
     Crea un token JWT con los datos del usuario.
     
@@ -83,15 +87,15 @@ def crear_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     
     # Calcular la fecha de expiración
     if expires_delta:
-        expire = datetime.now(datetime.timezone.utc) + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(datetime.timezone.utc) + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     
     # Añadir la fecha de expiración al token
     to_encode.update({"exp": expire})
     
     # Crear el token JWT
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, os.getenv("SECRET_KEY"), algorithm=os.getenv("JWT_ALGORITHM"))
     return encoded_jwt
 
 # ====================================================================

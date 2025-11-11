@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import timedelta
 from database import get_users_collection
 from user_models import Usuario, UsuarioDB, UsuarioEnDB, Token, LoginRequest
+from passlib.hash import argon2
 from auth import (
-    hash_password,
     autenticar_usuario,
     crear_access_token,
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -65,7 +65,7 @@ async def registrar_usuario(usuario: Usuario):
         username=usuario.username,
         email=usuario.email,
         nombre_completo=usuario.nombre_completo,
-        hashed_password=hash_password(usuario.password),  # Hashear la contraseña
+        hashed_password=argon2.hash(usuario.password),  # Hashear la contraseña
         disabled=False
     )
     

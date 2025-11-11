@@ -1,0 +1,119 @@
+<div class="login-container">
+  <div class="login-card">
+    
+    <!-- ================================================================ -->
+    <!-- ENCABEZADO -->
+    <!-- ================================================================ -->
+    <div class="login-header">
+      <h1>🎮 War Thunder</h1>
+      <h2>Iniciar Sesión</h2>
+      <p>Accede a la base de datos de tanques</p>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MENSAJE DE ERROR -->
+    <!-- ================================================================ -->
+    @if (error) {
+      <div class="alert alert-error">
+        <span class="error-icon">⚠️</span>
+        <span>{{ error }}</span>
+      </div>
+    }
+
+    <!-- ================================================================ -->
+    <!-- FORMULARIO DE LOGIN -->
+    <!-- ================================================================ -->
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      
+      <!-- Campo Username -->
+      <div class="form-group">
+        <label for="username">
+          <span class="label-icon">👤</span>
+          Usuario
+        </label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="loginData.username"
+          placeholder="Ingresa tu usuario"
+          [disabled]="cargando"
+          required
+          autocomplete="username"
+        >
+      </div>
+
+      <!-- Campo Password -->
+      <div class="form-group">
+        <label for="password">
+          <span class="label-icon">🔒</span>
+          Contraseña
+        </label>
+        <div class="password-input-container">
+          <input
+            [type]="mostrarPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            [(ngModel)]="loginData.password"
+            placeholder="Ingresa tu contraseña"
+            [disabled]="cargando"
+            required
+            autocomplete="current-password"
+          >
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="toggleMostrarPassword()"
+            [disabled]="cargando"
+          >
+            {{ mostrarPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón Submit -->
+      <button
+        type="submit"
+        class="btn-login"
+        [disabled]="cargando"
+      >
+        @if (cargando) {
+          <span class="spinner"></span>
+          <span>Iniciando sesión...</span>
+        } @else {
+          <span>Iniciar Sesión</span>
+        }
+      </button>
+    </form>
+
+    <!-- ================================================================ -->
+    <!-- ENLACE A REGISTRO -->
+    <!-- ================================================================ -->
+    <div class="login-footer">
+      <p>¿No tienes una cuenta?</p>
+      <button
+        type="button"
+        class="btn-register-link"
+        (click)="irARegistro()"
+        [disabled]="cargando"
+      >
+        Regístrate aquí
+      </button>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- BOTÓN PARA VER SIN LOGIN (INVITADO) -->
+    <!-- ================================================================ -->
+    <div class="guest-access">
+      <button
+        type="button"
+        class="btn-guest"
+        (click)="continuarComoInvitado()"
+        [disabled]="cargando"
+      >
+        Continuar como invitado (solo lectura)
+      </button>
+    </div>
+
+  </div>
+</div>
