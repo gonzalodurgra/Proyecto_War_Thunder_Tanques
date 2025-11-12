@@ -34,8 +34,8 @@ Este proyecto ofrece una **solución completa** para extraer, almacenar y visual
 ## 🚀 Instalación y uso
 Requieres de Python, MongoDB y Angular para trabajar con este proyecto
 ### 1. Backend  
-1. Clona el repositorio, crea el entorno, actívalo e instala las dependencias:  
-   ```bash
+1. Clona el repositorio, crea el entorno, actívalo e instala las dependencias:
+  ```bash
    git clone https://github.com/usuario/Proyecto_War_Thunder_Tanques.git
    cd Proyecto_War_Thunder_Tanques
    python3 -m venv venv
@@ -43,11 +43,12 @@ Requieres de Python, MongoDB y Angular para trabajar con este proyecto
    # en Windows: venv\Scripts\activate
    pip install -r requirements.txt
    ```
-2. Crea un archivo .env, adaptando las variables de entorno de [.env.example](.env.example), en la raíz del proyecto
-3. Ejecuta FastAPI con uvicorn main:app --reload. Abre otra terminal y ejecuta también [el fichero de inserción de datos](insertar_datos.py)
-4. Sitúate en la terminal en la carpeta del [frontend](war-thunder-frontend/)
-5. Ejecuta npm install y acto seguido ng serve
-6. Listo, ya puedes probar mi proyecto
+2. Ejecuta el archivo [scrapper de todos los tanques](warthunder_todos_tanques.py) para obtener los datos. Una vez con ellos sigue con el proceso. Estos datos serán insertados en MongoDB, y vendrán en formato JSON.  
+3. Crea un archivo .env, adaptando las variables de entorno de [.env.example](.env.example), en la raíz del proyecto
+4. Ejecuta FastAPI con uvicorn main:app --reload. Abre otra terminal y ejecuta también [el fichero de inserción de datos](insertar_datos.py)
+5. Sitúate en la terminal en la carpeta del [frontend](war-thunder-frontend/)
+6. Ejecuta npm install y acto seguido ng serve
+7. Listo, ya puedes probar mi proyecto
 
 ## 📄 Licencia
 
