@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login';
 import { RegisterComponent } from './components/register/register';
 import { TankListComponent } from './components/tank-list/tank-list';
+import { TankEditComponent } from './components/tank-edit/tank-edit';
 
 // ====================================================================
 // DEFINIR LAS RUTAS DE LA APLICACIÓN
@@ -37,6 +38,19 @@ export const routes: Routes = [
   {
     path: 'tanques',
     component: TankListComponent
+  },
+
+  // Ruta para crear un nuevo tanque
+  {
+    path: 'tanques/nuevo',
+    component: TankEditComponent
+  },
+  
+  // Ruta para editar un tanque existente
+  // :id es un parámetro dinámico (el id del tanque)
+  {
+    path: 'tanques/editar/:id',
+    component: TankEditComponent
   },
   
   // Ruta 404 - cualquier ruta no definida redirige al login

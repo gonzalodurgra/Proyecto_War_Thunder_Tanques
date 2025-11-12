@@ -106,30 +106,34 @@ async def obtener_tanques():
     return tanques
 
 # Paso 7: Obtener un tanque específico por ID (GET)
-@app.get("/tanques/{tanque_nombre}", response_model=dict)
-async def obtener_tanque_por_nombre(tanque_nombre: str):
+@app.get("/tanques/{id}", response_model=dict)
+async def obtener_tanque_por_id(id: str):
     """
     Obtiene un tanque específico por su nombre.
     
     Args:
-        tanque_nombre: Nombre del tanque en MongoDB
+        tanque_id: Id del tanque en MongoDB
         
     Returns:
         Información del tanque
     """
     try:
-        # Buscar el tanque por ID
-        tanque = tanks_collection.find_one({"nombre": tanque_nombre})
-        
+        # Validar formato
+        if not ObjectId.is_valid(id):
+            raise HTTPException(status_code=400, detail="ID de MongoDB inválido")
+
+        # Buscar el tanque por _id (ObjectId, no string)
+        tanque = tanks_collection.find_one({"_id": ObjectId(id)})
+
         if tanque is None:
             raise HTTPException(status_code=404, detail="Tanque no encontrado")
-        
-        # Convertir ObjectId a string
+
+        # Convertir ObjectId a string para devolverlo
         tanque["_id"] = str(tanque["_id"])
         return tanque
-        
+
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Nombre inválido: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error al obtener tanque: {str(e)}")
 
 # Paso 8: Obtener tanques por nación (GET)
 @app.get("/tanques/nacion/{nacion}", response_model=List[dict])
@@ -139,7 +143,7 @@ async def obtener_tanques_por_nacion(nacion: str):
     Ejemplo: http://localhost:8000/tanques/nacion/Great Britain
     
     Args:
-        nacion: Nombre de la nación
+        nacion: Id de la nación
         
     Returns:
         Lista de tanques de esa nación
@@ -160,57 +164,60 @@ async def obtener_tanques_por_nacion(nacion: str):
     return tanques
 
 # Paso 9: Actualizar un tanque (PUT)
-@app.put("/tanques/{tanque_nombre}", response_model=dict)
-async def actualizar_tanque(tanque_nombre: str, tanque: Tanque):
+@app.put("/tanques/{id}", response_model=dict)
+async def actualizar_tanque(id: str, tanque: Tanque):
     """
     Actualiza la información de un tanque existente.
     
     Args:
-        tanque_nombre: Nombre del tanque a actualizar
+        tanque_id: Id del tanque a actualizar
         tanque: Nueva información del tanque
         
     Returns:
         Mensaje de confirmación
     """
     try:
-        # Convertir el modelo a diccionario
+        if not ObjectId.is_valid(id):
+            raise HTTPException(status_code=400, detail="ID de MongoDB inválido")
+
         tanque_dict = tanque.model_dump()
-        
-        # Actualizar el documento
+
         resultado = tanks_collection.update_one(
-            {"nombre": tanque_nombre},
+            {"_id": ObjectId(id)},
             {"$set": tanque_dict}
         )
-        
+
         if resultado.matched_count == 0:
             raise HTTPException(status_code=404, detail="Tanque no encontrado")
-        
+
         return {"mensaje": "Tanque actualizado exitosamente"}
-        
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
 
 # Paso 10: Eliminar un tanque (DELETE)
-@app.delete("/tanques/{tanque_nombre}", response_model=dict)
-async def eliminar_tanque(tanque_nombre: str):
+@app.delete("/tanques/{id}", response_model=dict)
+async def eliminar_tanque(id: str):
     """
     Elimina un tanque de la base de datos.
     
     Args:
-        tanque_nombre: Nombre del tanque a eliminar
+        tanque_id: Id del tanque a eliminar
         
     Returns:
         Mensaje de confirmación
     """
     try:
-        # Eliminar el documento
-        resultado = tanks_collection.delete_one({"nombre": tanque_nombre})
-        
+        if not ObjectId.is_valid(id):
+            raise HTTPException(status_code=400, detail="ID de MongoDB inválido")
+
+        resultado = tanks_collection.delete_one({"_id": ObjectId(id)})
+
         if resultado.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Tanque no encontrado")
-        
+
         return {"mensaje": "Tanque eliminado exitosamente"}
-        
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
 

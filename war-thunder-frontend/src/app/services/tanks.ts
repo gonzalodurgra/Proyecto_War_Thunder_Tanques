@@ -88,8 +88,8 @@ export class TanksService {
   // ====================================================================
   // MÉTODO 2: Obtener un tanque por ID (GET)
   // ====================================================================
-  obtenerTanquePorNombre(nombre: string): Observable<Tanque> {
-    return this.http.get<Tanque>(`${this.apiUrl}/tanques/${nombre}`);
+  obtenerTanquePorId(id: string): Observable<Tanque> {
+    return this.http.get<Tanque>(`${this.apiUrl}/tanques/${id}`);
   }
 
   // ====================================================================
@@ -120,11 +120,11 @@ export class TanksService {
   // ====================================================================
   // MÉTODO 5: Actualizar un tanque (PUT)
   // ====================================================================
-  actualizarTanque(nombre: string, tanque: Tanque): Observable<any> {
+  actualizarTanque(id: string, tanque: Tanque): Observable<any> {
     const { _id, ...tanqueSinId } = tanque;
     
     return this.http.put<any>(
-      `${this.apiUrl}/tanques/${nombre}`,
+      `${this.apiUrl}/tanques/${id}`,
       tanqueSinId,
       this.httpOptions
     );
@@ -133,8 +133,8 @@ export class TanksService {
   // ====================================================================
   // MÉTODO 6: Eliminar un tanque (DELETE)
   // ====================================================================
-  eliminarTanque(nombre: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/tanques/${nombre}`);
+  eliminarTanque(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/tanques/${id}`);
   }
 
   // ====================================================================

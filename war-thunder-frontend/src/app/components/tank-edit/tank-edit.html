@@ -1,0 +1,370 @@
+<div class="edit-container">
+  
+  <!-- ================================================================ -->
+  <!-- HEADER -->
+  <!-- ================================================================ -->
+  <div class="edit-header">
+    <h1>{{ modoEdicion ? '✏️ Editar Tanque' : '➕ Crear Nuevo Tanque' }}</h1>
+    <button class="btn-back" (click)="cancelar()">
+      ← Volver a la lista
+    </button>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- MENSAJES -->
+  <!-- ================================================================ -->
+  @if (error) {
+    <div class="alert alert-error">
+      <span>⚠️</span>
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  @if (cargando) {
+    <div class="loading-message">
+      <div class="spinner"></div>
+      <p>Cargando datos del tanque...</p>
+    </div>
+  }
+
+  <!-- ================================================================ -->
+  <!-- FORMULARIO -->
+  <!-- ================================================================ -->
+  @if (!cargando) {
+    <form (ngSubmit)="guardarTanque()" class="edit-form">
+      
+      <!-- ============================================================ -->
+      <!-- SECCIÓN 1: INFORMACIÓN BÁSICA -->
+      <!-- ============================================================ -->
+      <div class="form-section">
+        <h2>📋 Información Básica</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nombre">Nombre del Tanque *</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              [(ngModel)]="tanque.nombre"
+              required
+              placeholder="Ej: Harry Hopkins I"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="nacion">Nación *</label>
+            <select 
+              id="nacion" 
+              name="nacion" 
+              [(ngModel)]="tanque.nacion" 
+              required
+              [disabled]="guardando"
+            >
+              <option value="">Selecciona una nación</option>
+              <option value="Great Britain">Great Britain</option>
+              <option value="Germany">Germany</option>
+              <option value="USSR">USSR</option>
+              <option value="USA">USA</option>
+              <option value="Japan">Japan</option>
+              <option value="France">France</option>
+              <option value="Italy">Italy</option>
+              <option value="China">China</option>
+              <option value="Sweden">Sweden</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rol">Rol *</label>
+            <select 
+              id="rol" 
+              name="rol" 
+              [(ngModel)]="tanque.rol" 
+              required
+              [disabled]="guardando"
+            >
+              <option value="">Selecciona un rol</option>
+              <option value="Light tank">Light tank</option>
+              <option value="Medium tank">Medium tank</option>
+              <option value="Heavy tank">Heavy tank</option>
+              <option value="Tank destroyer">Tank destroyer</option>
+              <option value="SPAA">SPAA (Anti-aéreo)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="rating_arcade">Rating Arcade</label>
+            <input
+              type="text"
+              id="rating_arcade"
+              name="rating_arcade"
+              [(ngModel)]="tanque.rating_arcade"
+              placeholder="Ej: 2.3"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tripulacion">Tripulación</label>
+            <input
+              type="number"
+              id="tripulacion"
+              name="tripulacion"
+              [(ngModel)]="tanque.tripulacion"
+              min="2"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="visibilidad">Visibilidad (%)</label>
+            <input
+              type="number"
+              id="visibilidad"
+              name="visibilidad"
+              [(ngModel)]="tanque.visibilidad"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="peso">Peso (toneladas)</label>
+            <input
+              type="number"
+              id="peso"
+              name="peso"
+              [(ngModel)]="tanque.peso"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- SECCIÓN 2: BLINDAJE -->
+      <!-- ============================================================ -->
+      <div class="form-section">
+        <h2>🛡️ Blindaje</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="blindaje_chasis">Blindaje Chasis (mm)</label>
+            <input
+              type="number"
+              id="blindaje_chasis"
+              name="blindaje_chasis"
+              [(ngModel)]="tanque.blindaje_chasis"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="blindaje_torreta">Blindaje Torreta (mm)</label>
+            <input
+              type="number"
+              id="blindaje_torreta"
+              name="blindaje_torreta"
+              [(ngModel)]="tanque.blindaje_torreta"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- SECCIÓN 3: MOVILIDAD -->
+      <!-- ============================================================ -->
+      <div class="form-section">
+        <h2>🏃 Movilidad</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="velocidad_adelante">Velocidad Adelante (km/h)</label>
+            <input
+              type="number"
+              id="velocidad_adelante"
+              name="velocidad_adelante"
+              [(ngModel)]="tanque.velocidad_adelante_arcade"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="velocidad_atras">Velocidad Atrás (km/h)</label>
+            <input
+              type="number"
+              id="velocidad_atras"
+              name="velocidad_atras"
+              [(ngModel)]="tanque.velocidad_atras_arcade"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="relacion_potencia">Relación Potencia/Peso</label>
+            <input
+              type="number"
+              id="relacion_potencia"
+              name="relacion_potencia"
+              [(ngModel)]="tanque.relacion_potencia_peso"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- SECCIÓN 4: ARMAMENTO -->
+      <!-- ============================================================ -->
+      <div class="form-section">
+        <h2>🎯 Armamento</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="recarga">Recarga (segundos)</label>
+            <input
+              type="number"
+              id="recarga"
+              name="recarga"
+              [(ngModel)]="tanque.recarga"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="cadencia">Cadencia (disparos/min)</label>
+            <input
+              type="number"
+              id="cadencia"
+              name="cadencia"
+              [(ngModel)]="tanque.cadencia"
+              step="0.01"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="municion_total">Munición Total</label>
+            <input
+              type="number"
+              id="municion_total"
+              name="municion_total"
+              [(ngModel)]="tanque.municion_total"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="angulo_depresion">Ángulo Depresión (°)</label>
+            <input
+              type="number"
+              id="angulo_depresion"
+              name="angulo_depresion"
+              [(ngModel)]="tanque.angulo_depresion"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="angulo_elevacion">Ángulo Elevación (°)</label>
+            <input
+              type="number"
+              id="angulo_elevacion"
+              name="angulo_elevacion"
+              [(ngModel)]="tanque.angulo_elevacion"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="cargador">Cargador</label>
+            <input
+              type="number"
+              id="cargador"
+              name="cargador"
+              [(ngModel)]="tanque.cargador"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rotacion_horizontal">Rotación Horizontal (°/s)</label>
+            <input
+              type="number"
+              id="rotacion_horizontal"
+              name="rotacion_horizontal"
+              [(ngModel)]="tanque.rotacion_torreta_horizontal_arcade"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="rotacion_vertical">Rotación Vertical (°/s)</label>
+            <input
+              type="number"
+              id="rotacion_vertical"
+              name="rotacion_vertical"
+              [(ngModel)]="tanque.rotacion_torreta_vertical_arcade"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- BOTONES DE ACCIÓN -->
+      <!-- ============================================================ -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="cancelar()"
+          [disabled]="guardando"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="btn-save"
+          [disabled]="guardando"
+        >
+          @if (guardando) {
+            <span class="spinner-small"></span>
+            <span>Guardando...</span>
+          } @else {
+            <span>{{ modoEdicion ? 'Guardar Cambios' : 'Crear Tanque' }}</span>
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+</div>

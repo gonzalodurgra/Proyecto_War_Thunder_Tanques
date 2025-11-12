@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { TanksService, Tanque } from '../../services/tanks';
+import { AuthService } from '../../services/auth';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 
 // ====================================================================
 // Configuración del componente
 // ====================================================================
 @Component({
-  standalone: true,
   selector: 'app-tank-list',  // Nombre para usar en HTML: <app-tank-list>
   templateUrl: './tank-list.html',
   styleUrls: ['./tank-list.css'],
@@ -40,10 +40,16 @@ export class TankListComponent implements OnInit {
   // Tanque seleccionado para ver detalles
   tanqueSeleccionado: Tanque | null = null;
 
+  //Comprueba si está autenticado
+  isAuthenticated: boolean = localStorage.getItem("username") !== null;
+  mostrarMenuUsuario: boolean = false;
+
+  currentUsername: string | null = localStorage.getItem("username");
+
   // ====================================================================
   // PASO 2: Inyectar el servicio en el constructor
   // ====================================================================
-  constructor(private tanksService: TanksService) {
+  constructor(private tanksService: TanksService, private authService: AuthService, private router: Router) {
     // EXPLICACIÓN: Angular automáticamente crea una instancia de TanksService
     // y la inyecta aquí. Esto se llama "Inyección de Dependencias"
   }
@@ -157,10 +163,15 @@ export class TankListComponent implements OnInit {
   }
 
   // ====================================================================
-  // MÉTODO: Eliminar un tanque
+  // MÉTODO: Eliminar un tanque - REQUIERE AUTENTICACIÓN
   // ====================================================================
   eliminarTanque(id: string): void {
-    // EXPLICACIÓN: Pedimos confirmación antes de eliminar
+    // Verificar autenticación
+    if (!this.isAuthenticated) {
+      alert('Debes iniciar sesión para eliminar tanques');
+      return;
+    }
+    
     if (!confirm('¿Estás seguro de que quieres eliminar este tanque?')) {
       return;
     }
@@ -168,20 +179,71 @@ export class TankListComponent implements OnInit {
     this.tanksService.eliminarTanque(id).subscribe({
       next: (response) => {
         console.log('Tanque eliminado:', response);
-        
-        // Recargar la lista de tanques
         this.cargarTanques();
         
-        // Cerrar detalles si estaba abierto
         if (this.tanqueSeleccionado && this.tanqueSeleccionado._id === id) {
           this.cerrarDetalles();
         }
       },
       error: (err) => {
         console.error('Error al eliminar tanque:', err);
-        alert('Error al eliminar el tanque');
+        
+        if (err.status === 401) {
+          alert('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
+          this.logout();
+        } else {
+          alert('Error al eliminar el tanque');
+        }
       }
     });
+  }
+
+  // ====================================================================
+  // MÉTODO NUEVO: Logout
+  // ====================================================================
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  // ====================================================================
+  // MÉTODO NUEVO: Toggle menú de usuario
+  // ====================================================================
+  toggleMenuUsuario(): void {
+    this.mostrarMenuUsuario = !this.mostrarMenuUsuario;
+  }
+
+  // ====================================================================
+  // MÉTODO NUEVO: Ir a login
+  // ====================================================================
+  irALogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  // ====================================================================
+  // MÉTODO NUEVO: Editar tanque
+  // ====================================================================
+  editarTanque(tanque: Tanque): void {
+    if (!this.isAuthenticated) {
+      alert('Debes iniciar sesión para editar tanques');
+      return;
+    }
+    
+    // Navegar a la ruta de edición con el ID del tanque
+    this.router.navigate(['/tanques/editar', tanque._id]);
+  }
+
+  // ====================================================================
+  // MÉTODO NUEVO: Crear nuevo tanque
+  // ====================================================================
+  crearNuevoTanque(): void {
+    if (!this.isAuthenticated) {
+      alert('Debes iniciar sesión para crear tanques');
+      return;
+    }
+    
+    // Navegar a la ruta de creación
+    this.router.navigate(['/tanques/nuevo']);
   }
 
   // ====================================================================

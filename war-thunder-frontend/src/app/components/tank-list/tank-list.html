@@ -1,11 +1,59 @@
 <div class="container">
-  <h1>War Thunder - Base de Datos de Tanques</h1>
+  
+  <!-- ================================================================ -->
+  <!-- HEADER CON AUTENTICACIÓN -->
+  <!-- ================================================================ -->
+  <div class="app-header">
+    <h1>🎮 War Thunder - Base de Datos de Tanques</h1>
+    
+    <div class="user-section">
+      @if (isAuthenticated) {
+        <!-- Usuario autenticado -->
+        <div class="user-menu">
+          <button class="user-button" (click)="toggleMenuUsuario()">
+            <span class="user-icon">👤</span>
+            <span class="username">{{ currentUsername }}</span>
+            <span class="dropdown-icon">▼</span>
+          </button>
+          
+          @if (mostrarMenuUsuario) {
+            <div class="dropdown-menu">
+              <div class="user-info">
+                <p><strong>{{ currentUsername }}</strong></p>
+                <p class="user-role">Editor</p>
+              </div>
+              <button class="dropdown-item logout" (click)="logout()">
+                🚪 Cerrar Sesión
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Usuario no autenticado -->
+        <div class="guest-section">
+          <span class="guest-badge">👁️ Modo Lectura</span>
+          <button class="btn-login-header" (click)="irALogin()">
+            Iniciar Sesión
+          </button>
+        </div>
+      }
+    </div>
+  </div>
 
   <!-- ================================================================ -->
   <!-- SECCIÓN DE FILTROS -->
   <!-- ================================================================ -->
   <div class="filtros-container">
-    <h2>Filtros</h2>
+    <div class="filtros-header">
+      <h2>Filtros</h2>
+      
+      <!-- Botón Crear Nuevo (solo para usuarios autenticados) -->
+      @if (isAuthenticated) {
+        <button (click)="crearNuevoTanque()" class="btn-crear-nuevo">
+          ➕ Crear Nuevo Tanque
+        </button>
+      }
+    </div>
     
     <!-- Filtro por nación -->
     <div class="filtro">
@@ -92,11 +140,27 @@
               class="btn-ver">
               Ver detalles
             </button>
-            <button 
-              (click)="eliminarTanque(tanque._id!); $event.stopPropagation()" 
-              class="btn-eliminar">
-              Eliminar
-            </button>
+            
+            <!-- Botones solo para usuarios autenticados -->
+            @if (isAuthenticated) {
+              <button 
+                (click)="editarTanque(tanque); $event.stopPropagation()" 
+                class="btn-editar">
+                ✏️ Editar
+              </button>
+              <button 
+                (click)="eliminarTanque(tanque._id!); $event.stopPropagation()" 
+                class="btn-eliminar">
+                🗑️ Eliminar
+              </button>
+            } @else {
+              <button 
+                class="btn-disabled"
+                disabled
+                title="Inicia sesión para editar">
+                🔒 Editar
+              </button>
+            }
           </div>
         </div>
       } @empty {
@@ -135,25 +199,22 @@
             <h3>Características</h3>
             <p><strong>Peso:</strong> {{ tanqueSeleccionado.peso }} toneladas</p>
             <p><strong>Visibilidad:</strong> {{ tanqueSeleccionado.visibilidad }}%</p>
-            <p><strong>Blindaje frontal del chasis:</strong> {{ tanqueSeleccionado.blindaje_chasis }} mm</p>
-            <p><strong>Blindaje frontal de la torreta:</strong> {{ tanqueSeleccionado.blindaje_torreta }} mm</p>
+            <p><strong>Blindaje chasis:</strong> {{ tanqueSeleccionado.blindaje_chasis }} mm</p>
+            <p><strong>Blindaje torreta:</strong> {{ tanqueSeleccionado.blindaje_torreta }} mm</p>
           </div>
 
           <div class="detalle-seccion">
             <h3>Movilidad</h3>
-            <p><strong>Velocidad hacia adelante:</strong> {{ tanqueSeleccionado.velocidad_adelante_arcade }} km/h</p>
-            <p><strong>Velocidad marcha atrás:</strong> {{ tanqueSeleccionado.velocidad_atras_arcade }} km/h</p>
+            <p><strong>Velocidad adelante:</strong> {{ tanqueSeleccionado.velocidad_adelante_arcade }} km/h</p>
+            <p><strong>Velocidad atrás:</strong> {{ tanqueSeleccionado.velocidad_atras_arcade }} km/h</p>
             <p><strong>Potencia/Peso:</strong> {{ tanqueSeleccionado.relacion_potencia_peso }} hp/t</p>
           </div>
 
           <div class="detalle-seccion">
             <h3>Armamento</h3>
             <p><strong>Recarga:</strong> {{ tanqueSeleccionado.recarga }}s</p>
-            @if(tanqueSeleccionado.cargador > 1){
-              <p><strong>Cadencia:</strong> {{ tanqueSeleccionado.cadencia.toFixed(2) }} disparos/min</p>
-              <p><strong>Cargador:</strong> {{ tanqueSeleccionado.cargador }} proyectiles</p>
-            }
-            <p><strong>Munición total:</strong> {{ tanqueSeleccionado.municion_total }} proyectiles</p>
+            <p><strong>Cadencia:</strong> {{ tanqueSeleccionado.cadencia.toFixed(2) }} disparos/min</p>
+            <p><strong>Munición total:</strong> {{ tanqueSeleccionado.municion_total }}</p>
             <p><strong>Depresión:</strong> {{ tanqueSeleccionado.angulo_depresion }}°</p>
             <p><strong>Elevación:</strong> {{ tanqueSeleccionado.angulo_elevacion }}°</p>
           </div>
@@ -170,14 +231,7 @@
                   @for (municion of arma.municiones; track municion.nombre) {
                     <li>
                       {{ municion.nombre }} ({{ municion.tipo }}) - 
-                      <ul>
-                        <li>Penetración a 0 metros: {{ municion.penetracion_mm[0] }} mm</li>
-                        <li>Penetración a 100 metros: {{ municion.penetracion_mm[1] }} mm</li>
-                        <li>Penetración a 500 metros: {{ municion.penetracion_mm[2] }} mm</li>
-                        <li>Penetración a 1000 metros: {{ municion.penetracion_mm[3] }} mm</li>
-                        <li>Penetración a 1500 metros: {{ municion.penetracion_mm[4] }} mm</li>
-                        <li>Penetración a 2000 metros: {{ municion.penetracion_mm[5] }} mm</li>
-                      </ul>
+                      Penetración: {{ municion.penetracion_mm[0] }}mm
                     </li>
                   }
                 </ul>
@@ -197,14 +251,7 @@
                   @for (municion of arma.municiones; track municion.nombre) {
                     <li>
                       {{ municion.nombre }} ({{ municion.tipo }}) - 
-                      <ul>
-                        <li>Penetración a 0 metros: {{ municion.penetracion_mm[0] }} mm</li>
-                        <li>Penetración a 100 metros: {{ municion.penetracion_mm[1] }} mm</li>
-                        <li>Penetración a 500 metros: {{ municion.penetracion_mm[2] }} mm</li>
-                        <li>Penetración a 1000 metros: {{ municion.penetracion_mm[3] }} mm</li>
-                        <li>Penetración a 1500 metros: {{ municion.penetracion_mm[4] }} mm</li>
-                        <li>Penetración a 2000 metros: {{ municion.penetracion_mm[5] }} mm</li>
-                      </ul>
+                      Penetración: {{ municion.penetracion_mm[0] }}mm
                     </li>
                   }
                 </ul>
@@ -225,29 +272,12 @@
                     <li>
                       {{ municion.nombre }} ({{ municion.tipo }})
                       <ul>
-                      @if (municion.penetracion_mm){                        
-                          <li>Penetración a 0 metros: {{ municion.penetracion_mm[0] }} mm</li>
-                          <li>Penetración a 100 metros: {{ municion.penetracion_mm[1] }} mm</li>
-                          <li>Penetración a 500 metros: {{ municion.penetracion_mm[2] }} mm</li>
-                          <li>Penetración a 1000 metros: {{ municion.penetracion_mm[3] }} mm</li>
-                          <li>Penetración a 1500 metros: {{ municion.penetracion_mm[4] }} mm</li>
-                          <li>Penetración a 2000 metros: {{ municion.penetracion_mm[5] }} mm</li>
-                      }
-                      @if (municion.masa_total){
-                        <ul>
-                          <li>Masa del proyectil: {{ municion.masa_total }} gramos</li>
-                        </ul>
-                      }
-                      @if (municion.velocidad_bala){
-                        <ul>
-                          <li>Velocidad del proyectil: {{ municion.velocidad_bala }} m/s</li>
-                        </ul>
-                      }
-                      @if (municion.masa_explosivo){
-                        <ul>
-                          <li>Masa del explosivo en TNT: {{ municion.masa_explosivo }} gramos</li>
-                        </ul>
-                      }
+                        <li>Penetración a 0 metros: {{ municion.penetracion_mm[0] }}mm</li>
+                        <li>Penetración a 100 metros: {{ municion.penetracion_mm[1] }}mm</li>
+                        <li>Penetración a 500 metros: {{ municion.penetracion_mm[2] }}mm</li>
+                        <li>Penetración a 1000 metros: {{ municion.penetracion_mm[3] }}mm</li>
+                        <li>Penetración a 1500 metros: {{ municion.penetracion_mm[4] }}mm</li>
+                        <li>Penetración a 2000 metros: {{ municion.penetracion_mm[5] }}mm</li>
                       </ul>
                     </li>
                   }
