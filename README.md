@@ -10,16 +10,18 @@ Este proyecto ofrece una **solución completa** para extraer, almacenar y visual
 
 ## 📦 Estructura del proyecto  
 / (raíz del proyecto)<br>
-│<br>
-├── main.py # Punto de entrada de FastAPI<br>
-├── database.py # Configuración de MongoDB<br>
-├── models.py # Modelos de datos (tanques)<br>
-├── user_models.py # Modelos de usuario/autenticación<br>
-├── auth.py # Lógica de autenticación (hash, tokens)<br>
-├── auth_routes.py # Rutas de autenticación<br>
-├── warthunder_todos_tanques.py # Script de scraping<br>
-├── insertar_datos.py # Módulo para insertar datos en MongoDB<br>
 └── requirements.txt # Dependencias de Python<br>
+└── backend #API en Python
+│<br>
+│ ├── main.py # Punto de entrada de FastAPI<br>
+│ ├── database.py # Configuración de MongoDB<br>
+│ ├── models.py # Modelos de datos (tanques)<br>
+│ ├── user_models.py # Modelos de usuario/autenticación<br>
+│ ├── auth.py # Lógica de autenticación (hash, tokens)<br>
+│ ├── auth_routes.py # Rutas de autenticación<br>
+│ ├── warthunder_todos_tanques.py # Script de scraping<br>
+│ ├── insertar_datos.py # Módulo para insertar datos en MongoDB<br>
+
 │<br>
 └── war-thunder-frontend/ # Aplicación Angular<br>
 ├── package.json<br>
