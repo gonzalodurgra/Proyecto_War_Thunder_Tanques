@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Instalar dependencias
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar todo el backend
+COPY . .
+
+# Copiar entrypoint y dar permisos
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
+# Usar entrypoint para inicialización y arranque
+ENTRYPOINT ["./entrypoint.sh"]

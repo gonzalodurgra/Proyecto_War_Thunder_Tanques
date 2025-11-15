@@ -1,0 +1,19 @@
+FROM node:current-alpine
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Copiar package.json y package-lock.json
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar todo el código, incluido proxy.conf.json
+COPY . .
+
+# Exponer el puerto del Angular Dev Server
+EXPOSE 4200
+
+# CMD para levantar Angular Dev Server con proxy y hot-reload
+CMD ["npm", "start"]

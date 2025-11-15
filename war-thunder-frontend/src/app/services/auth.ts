@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // ====================================================================
 // INTERFACES
@@ -40,7 +41,7 @@ export interface UsuarioPerfil {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/auth';
+  private apiUrl = environment.apiUrl;
   
   // BehaviorSubject para mantener el estado de autenticación
   // EXPLICACIÓN: BehaviorSubject es como una variable observable

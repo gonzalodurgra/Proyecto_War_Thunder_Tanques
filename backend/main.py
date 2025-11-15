@@ -9,12 +9,17 @@ from bson import ObjectId
 from auth_routes import router as auth_router
 from auth import obtener_usuario_activo_actual
 from user_models import UsuarioEnDB
+import os
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
     title="API de Tanques War Thunder",
     description="API para gestionar información de tanques del juego War Thunder",
     version="1.0.0"
+)
+
+FRONTEND_URL = os.getenv(
+    "FRONTEND_URL",
 )
 
 # Paso 1.5: Configurar CORS para permitir peticiones desde Angular
@@ -24,9 +29,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:4200",  # Angular development server
-        "http://127.0.0.1:4200",  # Alternativa de localhost
-        # Añade aquí la URL de producción cuando la tengas
+        "http://localhost:4200",  # Desarrollo local
+        "http://localhost",
+        FRONTEND_URL,  # Producción
+        "https://*.onrender.com",  # Cualquier subdominio de Render
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.

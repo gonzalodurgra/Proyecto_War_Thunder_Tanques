@@ -1,49 +1,63 @@
+# mongo_client.py
 from pymongo import MongoClient
 from pymongo.database import Database
 import os
 from dotenv import load_dotenv
-
-# Paso 1: Definir la URI de conexión
-# Para desarrollo local, usa: "mongodb://localhost:27017/"
-# Para MongoDB Atlas (nube), usa la URI que te proporciona Atlas
+# ==========================
+# Configuración de entorno
+# ==========================
 load_dotenv()
-MONGODB_URI = os.getenv("MONGO_URI")
+MONGODB_URI = os.getenv(
+    "MONGODB_URI",
+)
+DATABASE_NAME = os.getenv(
+    "DATABASE_NAME",
+)
 
-# Paso 2: Nombre de la base de datos
-DATABASE_NAME = "war_thunder_db"
+print(MONGODB_URI)
+print(DATABASE_NAME)
 
-# Paso 3: Crear el cliente de MongoDB
-client = MongoClient(MONGODB_URI)
+# ==========================
+# Inicialización del cliente
+# ==========================
+try:
+    client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
+    database: Database = client[DATABASE_NAME]
 
-# Paso 4: Obtener la base de datos
-database: Database = client[DATABASE_NAME]
+    # Verificación de conexión
+    client.admin.command('ping')
+    print(f"✓ Conexión exitosa a MongoDB: {MONGODB_URI}")
+except Exception as e:
+    print(f"✗ Error al conectar con MongoDB: {e}")
+    raise e
 
-# Paso 5: Función para obtener la colección de tanques
+# ==========================
+# Funciones para colecciones
+# ==========================
 def get_tanks_collection():
     """
-    Esta función devuelve la colección 'tanks' de MongoDB.
-    Una colección es como una tabla en SQL.
+    Devuelve la colección 'tanks' de la base de datos.
     """
     return database["tanks"]
 
-# Paso 5.5: Función para obtener la colección de usuarios
 def get_users_collection():
     """
-    Esta función devuelve la colección 'users' de MongoDB.
-    Aquí se guardan los datos de los usuarios registrados.
+    Devuelve la colección 'users' de la base de datos.
     """
     return database["users"]
 
-# Paso 6: Función para verificar la conexión
-def verificar_conexion():
+# ==========================
+# Función de verificación opcional
+# ==========================
+def verificar_conexion() -> bool:
     """
-    Verifica si la conexión a MongoDB funciona correctamente.
+    Intenta hacer ping a la base de datos y devuelve True si está conectada.
     """
     try:
-        # Intenta hacer ping a la base de datos
         client.admin.command('ping')
-        print("✓ Conexión exitosa a MongoDB")
+        print("✓ Conexión verificada con éxito")
         return True
     except Exception as e:
-        print(f"✗ Error al conectar con MongoDB: {e}")
+        print(f"✗ Error al verificar conexión: {e}")
         return False
+

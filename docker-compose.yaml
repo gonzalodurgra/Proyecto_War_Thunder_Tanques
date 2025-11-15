@@ -1,0 +1,231 @@
+# ====================================================================
+# DOCKER COMPOSE PARA WAR THUNDER APPLICATION
+# ====================================================================
+
+# Versión de Docker Compose
+version: '3.8'
+
+# EXPLICACIÓN:
+# - version: especifica la versión de la sintaxis de docker-compose
+# - 3.8 es compatible con Docker Engine 19.03.0+
+
+# ====================================================================
+# SERVICIOS (CONTENEDORES)
+# ====================================================================
+
+services:
+  
+  # ==================================================================
+  # SERVICIO 1: MONGODB (BASE DE DATOS)
+  # ==================================================================
+  
+  mongodb:
+    # Usar la imagen oficial de MongoDB
+    image: mongo:7.0
+    
+    # EXPLICACIÓN:
+    # - mongo:7.0: última versión estable de MongoDB
+    # - No necesitamos Dockerfile porque usamos imagen oficial
+    
+    # Nombre del contenedor
+    container_name: war-thunder-mongodb
+    
+    # Reiniciar automáticamente si se cae
+    restart: unless-stopped
+    
+    # EXPLICACIÓN de restart policies:
+    # - no: nunca reiniciar
+    # - always: siempre reiniciar
+    # - on-failure: reiniciar solo si falla
+    # - unless-stopped: reiniciar siempre excepto si lo detuviste manualmente
+    
+    # Puertos expuestos (host:contenedor)
+    ports:
+      - "${MONGO_PORT}:27017"
+    
+    # EXPLICACIÓN:
+    # - 27017: puerto por defecto de MongoDB
+    # - Formato: "puerto_en_tu_máquina:puerto_en_el_contenedor"
+    
+    # Variables de entorno
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DATABASE_NAME}
+    
+    # EXPLICACIÓN:
+    # - Crea un usuario admin en MongoDB
+    # - En producción, usa contraseñas más seguras
+    # - Puedes moverlas a un archivo .env
+
+    env_file:
+      - .env
+    
+    # Volúmenes para persistir datos
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    
+    # EXPLICACIÓN:
+    # - Los datos de MongoDB se guardan en volúmenes
+    # - Si borras el contenedor, los datos permanecen
+    # - /data/db: donde MongoDB guarda las bases de datos
+    
+    # Red personalizada
+    networks:
+      - war-thunder-network-prod
+    
+    # Healthcheck para verificar que MongoDB está listo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    
+    # EXPLICACIÓN:
+    # - test: comando para verificar si MongoDB responde
+    # - interval: cada cuánto verificar (cada 10 segundos)
+    # - timeout: tiempo máximo de espera (5 segundos)
+    # - retries: intentos antes de marcar como "unhealthy"
+    # - start_period: esperar 40s antes de empezar a verificar
+
+  # ==================================================================
+  # SERVICIO 2: BACKEND (FASTAPI)
+  # ==================================================================
+  
+  backend:
+    # Construir desde Dockerfile local
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    
+    # EXPLICACIÓN:
+    # - context: directorio donde está el código del backend
+    # - dockerfile: nombre del Dockerfile a usar
+    
+    # Nombre del contenedor
+    container_name: war-thunder-backend
+    
+    # Reiniciar automáticamente
+    restart: unless-stopped
+    
+    # Puertos expuestos
+    ports:
+      - "${BACKEND_PORT}:8000"
+    
+    # Variables de entorno
+    environment:
+      # Conexión a MongoDB (usando el nombre del servicio como host)
+      MONGODB_URI: ${MONGODB_URI}
+      DATABASE_NAME: ${DATABASE_NAME}
+      
+      # Configuración de JWT
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${JWT_ALGORITHM}
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+    env_file:
+      - .env
+    # EXPLICACIÓN:
+    # - mongodb://admin:admin123@mongodb:27017/
+    #   mongodb: nombre del servicio (Docker lo resuelve automáticamente)
+    #   admin:admin123: credenciales
+    #   27017: puerto de MongoDB
+    
+    # Depende de MongoDB (espera a que esté listo)
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    
+    # EXPLICACIÓN:
+    # - depends_on: especifica dependencias entre servicios
+    # - condition: service_healthy: espera a que MongoDB pase el healthcheck
+    # - Asegura que MongoDB esté 100% listo antes de iniciar el backend
+    
+    # Red personalizada
+    networks:
+      - war-thunder-network-prod
+    
+    # Healthcheck para el backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==================================================================
+  # SERVICIO 3: FRONTEND (ANGULAR + NGINX)
+  # ==================================================================
+  
+  frontend:
+    # Construir desde Dockerfile local
+    build:
+      context: ./war-thunder-frontend
+      dockerfile: Dockerfile
+    
+    # Nombre del contenedor
+    container_name: war-thunder-frontend
+    
+    # Reiniciar automáticamente
+    restart: unless-stopped
+    
+    # Puertos expuestos
+    ports:
+      - "${FRONTEND_PORT}:80"
+    
+    env_file:
+      - .env
+    # EXPLICACIÓN:
+    # - Puerto 80: HTTP estándar
+    # - Nginx sirve la aplicación Angular en este puerto
+    # - Accederás a: http://localhost
+    
+    # Depende del backend
+    depends_on:
+      backend:
+        condition: service_healthy
+    
+    # Red personalizada
+    networks:
+      - war-thunder-network-prod
+    
+    # Healthcheck para el frontend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+# ====================================================================
+# VOLÚMENES (ALMACENAMIENTO PERSISTENTE)
+# ====================================================================
+
+volumes:
+  # Volumen para datos de MongoDB
+  mongodb_data:
+    driver: local
+  
+  # Volumen para configuración de MongoDB
+  mongodb_config:
+    driver: local
+
+# EXPLICACIÓN:
+# - Los volúmenes se crean automáticamente
+# - Los datos persisten aunque borres los contenedores
+# - Para borrar los datos: docker-compose down -v
+
+# ====================================================================
+# REDES (COMUNICACIÓN ENTRE CONTENEDORES)
+# ====================================================================
+
+networks:
+  # Red personalizada para todos los servicios
+  war-thunder-network-prod:
+    driver: bridge
+
+# EXPLICACIÓN:
+# - bridge: red por defecto que permite comunicación entre contenedores
+# - Los servicios en la misma red pueden comunicarse usando sus nombres
+# - Ejemplo: el backend puede conectarse a "mongodb" en lugar de "localhost"

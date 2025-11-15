@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth';
+import { environment } from '../../environments/environment';
 
 // ====================================================================
 // PASO 1: Definir las interfaces (tipos de datos)
@@ -60,7 +61,7 @@ export interface Tanque {
 })
 export class TanksService {
   // URL base de tu API FastAPI
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = environment.apiUrl;
   
   // Headers HTTP opcionales (por si necesitas añadir autenticación después)
   private httpOptions = {

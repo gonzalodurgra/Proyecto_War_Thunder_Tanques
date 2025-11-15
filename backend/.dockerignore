@@ -1,0 +1,58 @@
+# ====================================================================
+# ARCHIVOS A IGNORAR EN LA BUILD DEL CONTENEDOR BACKEND
+# ====================================================================
+
+# EXPLICACIÓN: .dockerignore funciona como .gitignore
+# Los archivos listados aquí NO se copiarán al contenedor
+
+# Entornos virtuales de Python
+venv/
+.venv/
+env/
+ENV/
+
+# Archivos de Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Archivos de prueba
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Documentación
+README.md
+*.md
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+temp/
+tmp/
+
+insertar_datos.py
