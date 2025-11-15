@@ -12,7 +12,6 @@ __pycache__/
 *.log
 
 # Archivos de datos o resultados del scraping
-*.json
 *.csv
 *.xlsx
 *.tmp
@@ -39,3 +38,4 @@ Thumbs.db
 *.code-workspace
 tanques.json
 tanques_limpio.json
+proxy.conf.json
