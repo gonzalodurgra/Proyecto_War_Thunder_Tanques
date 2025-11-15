@@ -27,7 +27,7 @@ COPY package*.json ./
 # - Los copiamos primero para aprovechar el cache de Docker
 
 # Instalar dependencias
-RUN npm ci --silent
+RUN npm ci
 
 # EXPLICACIÓN:
 # - npm ci es más rápido y determinista que npm install
