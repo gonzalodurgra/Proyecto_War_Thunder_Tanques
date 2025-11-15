@@ -1,0 +1,9 @@
+{
+    "/api": {
+        "target": "https://proyecto-war-thunder-tanques.onrender.com/",
+        "pathRewrite": { "^/api": "" },
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+}
