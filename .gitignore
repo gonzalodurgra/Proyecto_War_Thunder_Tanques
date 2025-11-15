@@ -26,7 +26,7 @@ war-thunder-frontend/.angular/
 # Cachés de Angular
 war-thunder-frontend/.cache/
 # Archivos de entorno de Angular
-war-thunder-frontend/src/environments/*.ts
+#war-thunder-frontend/src/environments/*.ts
 
 # ======== SISTEMA ========
 .DS_Store
