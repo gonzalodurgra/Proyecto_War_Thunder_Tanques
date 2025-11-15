@@ -74,7 +74,8 @@ CMD curl -f http://localhost:${PORT:-10000}/ || exit 1
 # ====================================================================
 
 # Comando para iniciar el servidor uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PORT:-10000}"]
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+
 
 # EXPLICACIÓN:
 # - CMD define el comando que se ejecuta cuando inicia el contenedor
