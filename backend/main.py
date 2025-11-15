@@ -20,6 +20,7 @@ app = FastAPI(
 
 FRONTEND_URL = os.getenv(
     "FRONTEND_URL",
+    "http://localhost:4200"
 )
 
 # Paso 1.5: Configurar CORS para permitir peticiones desde Angular
@@ -32,7 +33,6 @@ app.add_middleware(
         "http://localhost:4200",  # Desarrollo local
         "http://localhost",
         FRONTEND_URL,  # Producción
-        "https://*.onrender.com",  # Cualquier subdominio de Render
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
