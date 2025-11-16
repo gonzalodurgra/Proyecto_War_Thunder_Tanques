@@ -27,7 +27,7 @@ export interface Tanque {
   _id?: string;  // El signo ? significa que es opcional
   nombre: string;
   rol: string;
-  imagen: string;
+  imagen_local: string;
   nacion: string;
   rating_arcade: string;
   tripulacion: number;
