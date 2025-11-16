@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth';
 import { environment } from '../../environments/environment';
+import { map } from 'rxjs';
 
 // ====================================================================
 // PASO 1: Definir las interfaces (tipos de datos)
@@ -51,6 +52,8 @@ export interface Tanque {
   setup_2?: { [key: string]: Arma };
 }
 
+const URL_IMAGENES = 'https://proyecto-war-thunder-tanques.onrender.com/';
+
 // ====================================================================
 // PASO 2: Crear el servicio
 // ====================================================================
@@ -79,28 +82,41 @@ export class TanksService {
   // MÉTODO 1: Obtener todos los tanques (GET)
   // ====================================================================
   obtenerTodosLosTanques(): Observable<Tanque[]> {
-    // EXPLICACIÓN: 
-    // - Observable es como una "promesa mejorada" de Angular
-    // - Permite suscribirse a los datos cuando lleguen
-    // - El tipo <Tanque[]> indica que devolverá una lista de tanques
-    
-    return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/`);
+    return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/`).pipe(
+      map(tanques =>
+        tanques.map(tanque => ({
+          ...tanque,
+          imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`
+        }))
+      )
+    );
   }
 
   // ====================================================================
   // MÉTODO 2: Obtener un tanque por ID (GET)
   // ====================================================================
   obtenerTanquePorId(id: string): Observable<Tanque> {
-    return this.http.get<Tanque>(`${this.apiUrl}/tanques/${id}`);
+    return this.http.get<Tanque>(`${this.apiUrl}/tanques/${id}`).pipe(
+      map(tanque => ({
+        ...tanque,
+        imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`
+      }))
+    );
   }
 
   // ====================================================================
   // MÉTODO 3: Obtener tanques por nación (GET)
   // ====================================================================
   obtenerTanquesPorNacion(nacion: string): Observable<Tanque[]> {
-    // Codificar la nación para URLs (espacios se convierten en %20)
     const nacionCodificada = encodeURIComponent(nacion);
-    return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/nacion/${nacionCodificada}`);
+    return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/nacion/${nacionCodificada}`).pipe(
+      map(tanques =>
+        tanques.map(tanque => ({
+          ...tanque,
+          imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`
+        }))
+      )
+    );
   }
 
   // ====================================================================
