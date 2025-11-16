@@ -348,7 +348,6 @@ h1 {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  gap: 15px;
 }
 
 .tanque-card:hover {
@@ -367,6 +366,7 @@ h1 {
 .tanque-header {
   display: flex;
   justify-content: space-between;
+  gap: 15px;
   align-items: center;
   margin-bottom: 15px;
   padding-bottom: 10px;
