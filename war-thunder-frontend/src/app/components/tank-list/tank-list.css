@@ -365,6 +365,7 @@ h1 {
 
 .tanque-header {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   gap: 15px;
   align-items: center;
