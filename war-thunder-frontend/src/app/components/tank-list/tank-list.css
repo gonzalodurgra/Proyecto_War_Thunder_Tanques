@@ -338,6 +338,9 @@ h1 {
 /* TARJETA DE TANQUE */
 /* ================================================================== */
 .tanque-card {
+  display: flex;
+  flex-direction: column; /* elementos apilados verticalmente */
+  align-items: center;    /* centra horizontalmente */
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -350,6 +353,14 @@ h1 {
 .tanque-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.tanque-card img {
+  display: block;
+  max-width: 100%;   /* que no se salga del ancho de la card */
+  height: auto;      /* mantiene proporción */
+  margin: 16px 0;    /* separa del header y la info */
+  object-fit: contain; /* mantiene la imagen centrada y proporcional */
 }
 
 .tanque-header {

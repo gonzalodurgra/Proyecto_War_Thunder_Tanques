@@ -116,7 +116,6 @@
     <div class="tanques-grid">
       @for (tanque of tanquesFiltrados; track tanque._id) {
         <div class="tanque-card" (click)="seleccionarTanque(tanque)">
-          
           <!-- Header con nombre y nación -->
           <div class="tanque-header">
             <h3>{{ tanque.nombre }}</h3>
