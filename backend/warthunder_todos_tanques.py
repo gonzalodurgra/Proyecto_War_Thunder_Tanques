@@ -1,6 +1,8 @@
 import json
 import time
 from playwright.sync_api import sync_playwright
+import os
+import requests
 
 def limpiar_texto(texto):
     """Limpia saltos de línea y espacios extraños del texto"""
@@ -10,6 +12,32 @@ def coger_texto(pagina, selector):
     """Extrae texto de un elemento si existe, si no devuelve None"""
     elemento = pagina.locator(selector)
     return limpiar_texto(elemento.first.inner_text()) if elemento.count() > 0 else None
+
+def descargar_imagen(url_img, nombre_tanque):
+    """Descarga la imagen JPG del tanque en carpeta /imagenes."""
+    if not url_img:
+        return None
+
+    # Crear carpeta si no existe
+    os.makedirs("imagenes", exist_ok=True)
+
+    # Quitar caracteres raros del nombre para convertirlo a archivo
+    nombre_archivo = nombre_tanque.replace(" ", "_").replace("/", "_").replace("\"", "") + ".jpg"
+    ruta_archivo = f"imagenes/{nombre_archivo}"
+
+    try:
+        # Descargar
+        r = requests.get(url_img, timeout=20)
+        if r.status_code == 200:
+            with open(ruta_archivo, "wb") as f:
+                f.write(r.content)
+            return ruta_archivo
+        else:
+            print(f"Error descargando {url_img}: {r.status_code}")
+            return None
+    except Exception as e:
+        print(f"Error al descargar imagen {url_img}: {e}")
+        return None
 
 
 def extraer_datos_municion(fila, pagina):
@@ -146,10 +174,36 @@ def fetch_data(pagina):
     4. Armamento principal (ángulos, rotación, recarga)
     5. Municiones (usando la función extraer_armamento)
     """
+    
+    url_img = None
+
+    selectores = [
+        "img.game-unit_template-image",
+        "img.game-unit_model-img",
+        "img.game-unit_model_img",
+        ".game-unit_model img",
+        ".game-unit_page-header img"
+    ]
+
+    for sel in selectores:
+        loc = pagina.locator(sel)
+        if loc.count() > 0:
+            src = loc.first.get_attribute("src")
+            if src and src.startswith("http"):
+                url_img = src
+                break
+    
     datos = {}
     
     # === DATOS BÁSICOS ===
     datos["nombre"] = coger_texto(pagina, ".game-unit_title .game-unit_name")
+    
+    if not url_img:
+        print(f"⚠ No se encontró imagen del tanque en la página {pagina.url}")
+    else:
+        ruta_imagen = descargar_imagen(url_img, datos["nombre"])
+        datos["imagen_local"] = ruta_imagen
+    
     datos["rol"] = coger_texto(pagina, "div:has(+.game-unit_card-info_title:has-text('Main Role')) .text-truncate")
     datos["nacion"] = coger_texto(pagina, ".game-unit_card-info .text-truncate")
     

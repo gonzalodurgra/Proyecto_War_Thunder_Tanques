@@ -9,3 +9,4 @@ pydantic-settings
 pydantic[email]
 argon2-cffi
 python-dotenv
+requests

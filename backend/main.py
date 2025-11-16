@@ -10,6 +10,7 @@ from auth_routes import router as auth_router
 from auth import obtener_usuario_activo_actual
 from user_models import UsuarioEnDB
 import os
+from fastapi.staticfiles import StaticFiles
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -42,6 +43,8 @@ app.add_middleware(
 # Paso 1.7: Incluir el router de autenticación
 # EXPLICACIÓN: Todas las rutas de auth_router estarán bajo /auth
 app.include_router(auth_router)
+
+app.mount("/imagenes", StaticFiles(directory="imagenes"), name="imagenes")
 
 # Paso 2: Obtener la colección de tanques
 tanks_collection = get_tanks_collection()
