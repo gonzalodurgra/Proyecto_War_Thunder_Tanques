@@ -226,6 +226,7 @@ export class TankEditComponent implements OnInit {
   crearTanqueVacio(): Tanque {
     return {
       nombre: '',
+      imagen_local: '',
       rol: '',
       nacion: '',
       rating_arcade: '1.0',
