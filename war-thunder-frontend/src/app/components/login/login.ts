@@ -62,7 +62,7 @@ export class LoginComponent {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         // SUCCESS: Login exitoso
-        console.log('Login exitoso:', response);
+        console.log('Login exitoso:');
         
         this.cargando = false;
         
