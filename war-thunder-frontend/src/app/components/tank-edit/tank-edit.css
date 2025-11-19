@@ -266,6 +266,23 @@
   animation: spin 0.8s linear infinite;
 }
 
+.penetracion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.penetracion-item label {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.penetracion-item input {
+  width: 100%;
+}
+
+
 /* ================================================================== */
 /* RESPONSIVE */
 /* ================================================================== */
