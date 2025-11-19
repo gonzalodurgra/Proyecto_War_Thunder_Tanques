@@ -58,14 +58,14 @@ export class AuthService {
   // MÉTODO 1: REGISTRAR USUARIO
   // ====================================================================
   registrar(usuario: Usuario): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, usuario);
+    return this.http.post(`${this.apiUrl}/auth/register`, usuario);
   }
 
   // ====================================================================
   // MÉTODO 2: LOGIN
   // ====================================================================
   login(loginData: LoginData): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.apiUrl}/login`, loginData).pipe(
+    return this.http.post<TokenResponse>(`${this.apiUrl}/auth//login`, loginData).pipe(
       tap(response => {
         // Guardar el token en localStorage
         // EXPLICACIÓN: localStorage guarda datos en el navegador
@@ -130,7 +130,7 @@ export class AuthService {
       'Authorization': `Bearer ${this.getToken()}`
     });
     
-    return this.http.get<UsuarioPerfil>(`${this.apiUrl}/me`, { headers });
+    return this.http.get<UsuarioPerfil>(`${this.apiUrl}/auth//me`, { headers });
   }
 
   // ====================================================================
