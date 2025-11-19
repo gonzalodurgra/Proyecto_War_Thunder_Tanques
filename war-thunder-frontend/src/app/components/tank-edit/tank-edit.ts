@@ -5,6 +5,8 @@ import { AuthService } from '../../services/auth';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
+import { Municion } from '../../services/tanks';
+import { Arma } from '../../services/tanks';
 
 // ====================================================================
 // COMPONENTE DE EDICIÓN DE TANQUES
@@ -63,6 +65,11 @@ export class TankEditComponent implements OnInit {
     } else {
       // Modo creación: usar tanque vacío
       this.modoEdicion = false;
+      // Crear tanque vacío
+      this.tanque = this.crearTanqueVacio();
+
+      // Preparar estructuras armamento/setup
+      this.prepararEstructuraArmamento();
     }
   }
 
@@ -75,11 +82,12 @@ export class TankEditComponent implements OnInit {
     
     this.cargando = true;
     this.error = '';
-    
     this.tanksService.obtenerTanquePorId(this.tanqueId).subscribe({
       next: (data) => {
         console.log(data)
         Object.assign(this.tanque, data);
+        this.prepararEstructuraArmamento();
+        this.prepararMunicionesParaEdicion();
         this.cargando = false;
         this.cd.detectChanges();
       },
@@ -245,7 +253,95 @@ export class TankEditComponent implements OnInit {
       cargador: 0,
       municion_total: 0,
       rotacion_torreta_horizontal_arcade: 0,
-      rotacion_torreta_vertical_arcade: 0
+      rotacion_torreta_vertical_arcade: 0,
+      armamento: {
+        arma_principal: this.crearArmaVacia()
+      },
+      setup_1: {},
+      setup_2: {}
     };
+  }
+
+  crearMunicionVacia(): Municion {
+    return {
+      nombre: '',
+      tipo: '',
+      penetracion_mm: [],
+      masa_total: null,
+      velocidad_bala: null,
+      masa_explosivo: null
+    };
+  }
+
+  crearArmaVacia(): Arma {
+    return {
+      municiones: [ this.crearMunicionVacia() ]
+    };
+  }
+
+  agregarArma() {
+    const key = 'arma_' + (Object.keys(this.tanque.armamento!).length + 1);
+
+    this.tanque.armamento![key] = {
+      municiones: [
+        {
+          nombre: '',
+          tipo: '',
+          penetracion_mm: [0, 0, 0, 0, 0, 0],
+          masa_total: null,
+          velocidad_bala: null,
+          masa_explosivo: null
+        }
+      ]
+    };
+  }
+
+  eliminarArma(key: string) {
+    delete this.tanque.armamento![key];
+  }
+
+  agregarMunicion(key: string) {
+    this.tanque.armamento![key].municiones.push({
+      nombre: '',
+      tipo: '',
+      penetracion_mm: [],
+      masa_total: null,
+      velocidad_bala: null,
+      masa_explosivo: null
+    });
+  }
+
+  eliminarMunicion(key: string, index: number) {
+    this.tanque.armamento![key].municiones.splice(index, 1);
+  }
+
+  convertirPenetracion(armaKey: string, index: number) {
+    const texto = this.tanque.armamento![armaKey].municiones[index].penetracion_mm.toString() || '';
+
+    this.tanque.armamento![armaKey].municiones[index].penetracion_mm =
+      texto.split(',')
+          .map(v => parseInt(v.trim(), 10))
+          .filter(v => !isNaN(v));
+  }
+
+  prepararEstructuraArmamento() {
+    if (!this.tanque.armamento) this.tanque.armamento = {};
+    if (!this.tanque.setup_1) this.tanque.setup_1 = {};
+    if (!this.tanque.setup_2) this.tanque.setup_2 = {};
+  }
+
+  private prepararMunicionesParaEdicion() {
+    if (!this.tanque.armamento) return;
+
+    for (const armaKey of Object.keys(this.tanque.armamento)) {
+      const arma = this.tanque.armamento[armaKey];
+
+      arma.municiones.forEach(m => {
+        (m as any).penetracion_mmString = m.penetracion_mm.join(', ');
+      });
+    }
+  }
+  get armaKeys(): string[] {
+    return this.tanque?.armamento ? Object.keys(this.tanque.armamento) : [];
   }
 }

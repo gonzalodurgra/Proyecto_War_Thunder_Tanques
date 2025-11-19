@@ -338,6 +338,135 @@
         </div>
       </div>
 
+  <div class="form-section">
+  <h2>🔫 Armamento Detallado</h2>
+
+  <div class="arma-card-container">
+
+  <button type="button"
+          class="btn-add"
+          (click)="agregarArma()"
+          [disabled]="guardando">
+    ➕ Añadir Arma
+  </button>
+
+  @for (armaKey of armaKeys; track armaKey) {
+
+    <div class="arma-card">
+      <h3>Arma: {{ armaKey }}</h3>
+
+      <button type="button"
+              class="btn-delete"
+              (click)="eliminarArma(armaKey)"
+              [disabled]="guardando">
+        🗑️ Eliminar arma
+      </button>
+
+      <h4>Municiones</h4>
+
+      <button type="button"
+              class="btn-add"
+              (click)="agregarMunicion(armaKey)"
+              [disabled]="guardando">
+        ➕ Añadir Munición
+      </button>
+
+      @for (m of tanque.armamento![armaKey].municiones; let j = $index; track j) {
+
+        <div class="municion-card">
+
+          <label>Nombre Munición</label>
+          <input type="text"
+                  [(ngModel)]="m.nombre"
+                  name="nombre_{{ armaKey }}_{{ j }}"
+                  [disabled]="guardando">
+
+          <label>Tipo</label>
+          <input type="text"
+                  [(ngModel)]="m.tipo"
+                  name="tipo_{{ armaKey }}_{{ j }}"
+                  [disabled]="guardando">
+
+          <!-- PENETRACIONES FIJAS -->
+          <div class="penetracion-grid">
+
+            <div class="penetracion-item">
+              <label>0 m</label>
+              <input type="number"
+                      [(ngModel)]="m.penetracion_mm[0]"
+                      name="pen0_{{ armaKey }}_{{ j }}"
+                      min="0"
+                      [disabled]="guardando">
+            </div>
+
+            <div class="penetracion-item">
+              <label>100 m</label>
+              <input type="number"
+                      [(ngModel)]="m.penetracion_mm[1]"
+                      name="pen100_{{ armaKey }}_{{ j }}"
+                      min="0"
+                      [disabled]="guardando">
+            </div>
+
+            <div class="penetracion-item">
+              <label>500 m</label>
+              <input type="number"
+                      [(ngModel)]="m.penetracion_mm[2]"
+                      name="pen500_{{ armaKey }}_{{ j }}"
+                      min="0"
+                      [disabled]="guardando">
+            </div>
+
+            <div class="penetracion-item">
+              <label>1000 m</label>
+              <input type="number"
+                      [(ngModel)]="m.penetracion_mm[3]"
+                      name="pen1000_{{ armaKey }}_{{ j }}"
+                      min="0"
+                      [disabled]="guardando">
+            </div>
+
+            <div class="penetracion-item">
+              <label>1500 m</label>
+              <input type="number"
+                      [(ngModel)]="m.penetracion_mm[4]"
+                      name="pen1500_{{ armaKey }}_{{ j }}"
+                      min="0"
+                      [disabled]="guardando">
+            </div>
+
+            <div class="penetracion-item">
+              <label>2000 m</label>
+              <input type="number"
+                      [(ngModel)]="m.penetracion_mm[5]"
+                      name="pen2000_{{ armaKey }}_{{ j }}"
+                      min="0"
+                      [disabled]="guardando">
+            </div>
+
+          </div>
+
+          <button type="button"
+                  class="btn-delete"
+                  (click)="eliminarMunicion(armaKey, j)"
+                  [disabled]="guardando">
+            🗑️ Eliminar munición
+          </button>
+
+        </div> <!-- fin municion-card -->
+
+      }
+
+    </div> <!-- fin arma-card -->
+
+  }
+
+</div>
+
+
+</div>
+
+
       <!-- ============================================================ -->
       <!-- BOTONES DE ACCIÓN -->
       <!-- ============================================================ -->
