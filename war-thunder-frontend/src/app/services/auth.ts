@@ -65,7 +65,7 @@ export class AuthService {
   // MÉTODO 2: LOGIN
   // ====================================================================
   login(loginData: LoginData): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>(`${this.apiUrl}/auth//login`, loginData).pipe(
+    return this.http.post<TokenResponse>(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap(response => {
         // Guardar el token en localStorage
         // EXPLICACIÓN: localStorage guarda datos en el navegador
@@ -130,7 +130,7 @@ export class AuthService {
       'Authorization': `Bearer ${this.getToken()}`
     });
     
-    return this.http.get<UsuarioPerfil>(`${this.apiUrl}/auth//me`, { headers });
+    return this.http.get<UsuarioPerfil>(`${this.apiUrl}/auth/me`, { headers });
   }
 
   // ====================================================================
