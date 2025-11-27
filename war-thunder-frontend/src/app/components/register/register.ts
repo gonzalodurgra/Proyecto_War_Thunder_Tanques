@@ -25,7 +25,8 @@ export class RegisterComponent {
     username: '',
     email: '',
     password: '',
-    nombre_completo: ''
+    nombre_completo: '',
+    es_admin: false
   };
   
   // Confirmación de contraseña
