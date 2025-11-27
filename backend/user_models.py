@@ -11,7 +11,7 @@ class Usuario(BaseModel):
     email: EmailStr
     nombre_completo: str
     password: str
-    es_admin: bool = False  # Por defecto, los usuarios NO son admin
+    username: str
 
 class UsuarioDB(BaseModel):
     """Modelo de usuario en la base de datos (sin password)"""
