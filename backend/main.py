@@ -15,6 +15,7 @@ from pathlib import Path
 import shutil
 from pending_changes_routes import router as pending_changes_router
 from pending_changes_routes import crear_cambio_pendiente
+from contextlib import asynccontextmanager
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -81,7 +82,7 @@ tanks_collection = get_tanks_collection()
 # Paso 3: Evento que se ejecuta al iniciar la aplicación
 #@app.on_event("startup")
 @asynccontextmanager
-async def startup_event():
+async def lifespan():
     """
     Esta función se ejecuta cuando la aplicación inicia.
     Verifica que la conexión a MongoDB funcione.
