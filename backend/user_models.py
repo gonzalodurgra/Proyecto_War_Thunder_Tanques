@@ -34,6 +34,7 @@ class UsuarioEnDB(BaseModel):
     es_admin: bool = False
     activo: bool = True
     fecha_registro: Optional[str] = None
+    username: str
 
     class Config:
         populate_by_name = True
