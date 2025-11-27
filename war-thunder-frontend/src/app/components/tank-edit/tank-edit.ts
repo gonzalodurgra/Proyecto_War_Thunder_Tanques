@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import { Municion } from '../../services/tanks';
 import { Arma } from '../../services/tanks';
-import { ImageUploadService } from '../../image-upload';
+import { ImageUploadService } from '../../services/image-upload';
 
 // ====================================================================
 // COMPONENTE DE EDICIÓN DE TANQUES

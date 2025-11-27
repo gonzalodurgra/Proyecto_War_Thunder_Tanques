@@ -450,6 +450,409 @@ input[type="file"]:disabled {
   }
 }
 
+/* ================================================================== */
+/* SECCIÓN DE ARMAMENTO DETALLADO */
+/* ================================================================== */
+
+/* Contenedor principal de armas */
+.arma-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+/* ================================================================== */
+/* BOTONES DE ACCIÓN (Añadir/Eliminar) */
+/* ================================================================== */
+
+.btn-add {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-add:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.btn-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.btn-delete:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.5);
+}
+
+.btn-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ================================================================== */
+/* TARJETA DE ARMA */
+/* ================================================================== */
+
+.arma-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 25px;
+  border-radius: 12px;
+  border: 2px solid #dee2e6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  animation: slideInRight 0.4s ease-out;
+}
+
+.arma-card h3 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #667eea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.arma-card h4 {
+  margin: 25px 0 15px 0;
+  color: #6c757d;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding-left: 10px;
+  border-left: 4px solid #764ba2;
+}
+
+/* Botón eliminar arma dentro de la card */
+.arma-card > .btn-delete {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+/* Ajustar el h3 para dar espacio al botón */
+.arma-card h3 {
+  margin-right: 150px;
+}
+
+/* ================================================================== */
+/* TARJETA DE MUNICIÓN */
+/* ================================================================== */
+
+.municion-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #dee2e6;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.municion-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.municion-card:last-child {
+  margin-bottom: 0;
+}
+
+/* Labels dentro de municion-card */
+.municion-card > label {
+  display: block;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+  margin-top: 15px;
+  font-size: 0.95rem;
+}
+
+.municion-card > label:first-child {
+  margin-top: 0;
+}
+
+/* Inputs dentro de municion-card */
+.municion-card > input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.municion-card > input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.municion-card > input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Botón eliminar munición */
+.municion-card > .btn-delete {
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* ================================================================== */
+/* GRID DE PENETRACIONES */
+/* ================================================================== */
+
+.penetracion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.penetracion-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.penetracion-item label {
+  font-weight: 700;
+  color: #6c757d;
+  font-size: 0.85rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.penetracion-item input {
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.penetracion-item input:focus {
+  outline: none;
+  border-color: #764ba2;
+  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+  transform: scale(1.05);
+}
+
+.penetracion-item input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Inputs numéricos en penetración */
+.penetracion-item input[type="number"] {
+  appearance: textfield;
+}
+
+.penetracion-item input[type="number"]::-webkit-inner-spin-button,
+.penetracion-item input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ================================================================== */
+/* ANIMACIONES */
+/* ================================================================== */
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================================================== */
+/* RESPONSIVE PARA ARMAMENTO */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+  .arma-card {
+    padding: 20px 15px;
+  }
+  
+  .arma-card h3 {
+    font-size: 1.1rem;
+    margin-right: 0;
+    margin-bottom: 50px;
+  }
+  
+  .arma-card > .btn-delete {
+    position: static;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .penetracion-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 15px;
+  }
+  
+  .municion-card {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .penetracion-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .btn-add,
+  .btn-delete {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .arma-card h3 {
+    font-size: 1rem;
+  }
+  
+  .arma-card h4 {
+    font-size: 1rem;
+  }
+}
+
+/* ================================================================== */
+/* EFECTOS HOVER MEJORADOS */
+/* ================================================================== */
+
+.arma-card {
+  transition: all 0.3s ease;
+}
+
+.arma-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+/* ================================================================== */
+/* INDICADOR VISUAL DE CAMPOS REQUERIDOS */
+/* ================================================================== */
+
+.municion-card > input:invalid {
+  border-color: #ff6b6b;
+}
+
+.municion-card > input:valid {
+  border-color: #51cf66;
+}
+
+/* ================================================================== */
+/* ESPACIADO ENTRE BOTONES */
+/* ================================================================== */
+
+.arma-card > .btn-add {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Botón añadir arma principal */
+.arma-card-container > .btn-add {
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+
+/* ================================================================== */
+/* BADGE CONTADOR (opcional - para mostrar número de municiones) */
+/* ================================================================== */
+
+.arma-card h4::after {
+  content: attr(data-count);
+  background: #667eea;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-left: 10px;
+  font-weight: 700;
+}
+
+/* ================================================================== */
+/* ESTADO VACÍO */
+/* ================================================================== */
+
+.arma-card-container:empty::before {
+  content: "No hay armas agregadas. Haz clic en 'Añadir Arma' para comenzar.";
+  display: block;
+  padding: 40px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
 /* Retraso en cascada para las secciones */
 .form-section:nth-child(1) { animation-delay: 0.1s; }
 .form-section:nth-child(2) { animation-delay: 0.2s; }

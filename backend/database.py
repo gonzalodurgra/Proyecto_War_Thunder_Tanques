@@ -32,8 +32,11 @@ except Exception as e:
     raise e
 
 # ==========================
-# Funciones para colecciones
+# Funciones para colecciones y base de datos
 # ==========================
+def get_db():
+    return database
+
 def get_tanks_collection():
     """
     Devuelve la colección 'tanks' de la base de datos.

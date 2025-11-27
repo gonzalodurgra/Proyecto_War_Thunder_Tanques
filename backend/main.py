@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException, File, UploadFile
+from fastapi import FastAPI, HTTPException, File, UploadFile, Depends
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -13,6 +13,8 @@ import os
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import shutil
+from pending_changes_routes import router as pending_changes_router
+from pending_changes_routes import crear_cambio_pendiente
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -45,6 +47,8 @@ app.add_middleware(
 # Paso 1.7: Incluir el router de autenticación
 # EXPLICACIÓN: Todas las rutas de auth_router estarán bajo /auth
 app.include_router(auth_router)
+# Incluir el router de cambios pendientes
+app.include_router(pending_changes_router)
 
 app.mount("/imagenes", StaticFiles(directory="imagenes"), name="imagenes")
 
@@ -81,26 +85,47 @@ async def root():
 
 # Paso 5: Crear un nuevo tanque (POST)
 @app.post("/tanques/", response_model=dict, status_code=201)
-async def crear_tanque(tanque: Tanque):
+async def crear_tanque(
+    tanque: Tanque,
+    usuario_actual: UsuarioEnDB = Depends(obtener_usuario_activo_actual)
+):
     """
     Crea un nuevo tanque en la base de datos.
     
+    NUEVO COMPORTAMIENTO:
+    - Si el usuario ES ADMIN: crea el tanque inmediatamente
+    - Si el usuario NO ES ADMIN: crea un cambio pendiente de aprobación
+    
     Args:
         tanque: Objeto Tanque con toda la información
+        usuario_actual: Usuario autenticado actual
         
     Returns:
-        Diccionario con el ID del tanque creado
+        Diccionario con el ID del tanque creado o ID del cambio pendiente
     """
-    # Convertir el modelo Pydantic a diccionario
     tanque_dict = tanque.model_dump()
     
-    # Insertar en MongoDB
-    resultado = tanks_collection.insert_one(tanque_dict)
-    
-    return {
-        "mensaje": "Tanque creado exitosamente",
-        "id": str(resultado.inserted_id)
-    }
+    # VERIFICAR SI ES ADMIN
+    if usuario_actual.es_admin:
+        # ADMIN: Crear inmediatamente
+        resultado = tanks_collection.insert_one(tanque_dict)
+        return {
+            "mensaje": "Tanque creado exitosamente",
+            "id": str(resultado.inserted_id)
+        }
+    else:
+        # NO ADMIN: Crear cambio pendiente
+        cambio_id = await crear_cambio_pendiente(
+            tipo_operacion="crear",
+            coleccion="tanques",
+            usuario=usuario_actual,
+            datos_nuevos=tanque_dict
+        )
+        return {
+            "mensaje": "Solicitud de creación enviada. Pendiente de aprobación del administrador",
+            "cambio_id": cambio_id,
+            "estado": "pendiente"
+        }
     
 # NUEVO ENDPOINT: Subir imagen de tanque
 @app.post("/upload-tank-image/")
@@ -239,58 +264,105 @@ async def obtener_tanques_por_nacion(nacion: str):
 
 # Paso 9: Actualizar un tanque (PUT)
 @app.put("/tanques/{id}", response_model=dict)
-async def actualizar_tanque(id: str, tanque: Tanque):
+async def actualizar_tanque(
+    id: str,
+    tanque: Tanque,
+    usuario_actual: UsuarioEnDB = Depends(obtener_usuario_activo_actual)
+):
     """
     Actualiza la información de un tanque existente.
     
-    Args:
-        tanque_id: Id del tanque a actualizar
-        tanque: Nueva información del tanque
-        
-    Returns:
-        Mensaje de confirmación
+    NUEVO COMPORTAMIENTO:
+    - Si el usuario ES ADMIN: actualiza el tanque inmediatamente
+    - Si el usuario NO ES ADMIN: crea un cambio pendiente de aprobación
     """
     try:
         if not ObjectId.is_valid(id):
             raise HTTPException(status_code=400, detail="ID de MongoDB inválido")
 
         tanque_dict = tanque.model_dump()
-
-        resultado = tanks_collection.update_one(
-            {"_id": ObjectId(id)},
-            {"$set": tanque_dict}
-        )
-
-        if resultado.matched_count == 0:
+        
+        # Obtener datos originales
+        tanque_original = tanks_collection.find_one({"_id": ObjectId(id)})
+        
+        if not tanque_original:
             raise HTTPException(status_code=404, detail="Tanque no encontrado")
+        
+        # Convertir ObjectId a string para el cambio pendiente
+        tanque_original["_id"] = str(tanque_original["_id"])
 
-        return {"mensaje": "Tanque actualizado exitosamente"}
+        # VERIFICAR SI ES ADMIN
+        if usuario_actual.es_admin:
+            # ADMIN: Actualizar inmediatamente
+            resultado = tanks_collection.update_one(
+                {"_id": ObjectId(id)},
+                {"$set": tanque_dict}
+            )
+            return {"mensaje": "Tanque actualizado exitosamente"}
+        else:
+            # NO ADMIN: Crear cambio pendiente
+            cambio_id = await crear_cambio_pendiente(
+                tipo_operacion="actualizar",
+                coleccion="tanques",
+                usuario=usuario_actual,
+                tanque_id=id,
+                datos_originales=tanque_original,
+                datos_nuevos=tanque_dict
+            )
+            return {
+                "mensaje": "Solicitud de actualización enviada. Pendiente de aprobación del administrador",
+                "cambio_id": cambio_id,
+                "estado": "pendiente"
+            }
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
 
 # Paso 10: Eliminar un tanque (DELETE)
 @app.delete("/tanques/{id}", response_model=dict)
-async def eliminar_tanque(id: str):
+async def eliminar_tanque(
+    id: str,
+    usuario_actual: UsuarioEnDB = Depends(obtener_usuario_activo_actual)
+):
     """
     Elimina un tanque de la base de datos.
     
-    Args:
-        tanque_id: Id del tanque a eliminar
-        
-    Returns:
-        Mensaje de confirmación
+    NUEVO COMPORTAMIENTO:
+    - Si el usuario ES ADMIN: elimina el tanque inmediatamente
+    - Si el usuario NO ES ADMIN: crea un cambio pendiente de aprobación
     """
     try:
         if not ObjectId.is_valid(id):
             raise HTTPException(status_code=400, detail="ID de MongoDB inválido")
 
-        resultado = tanks_collection.delete_one({"_id": ObjectId(id)})
-
-        if resultado.deleted_count == 0:
+        # Obtener datos originales
+        tanque_original = tanks_collection.find_one({"_id": ObjectId(id)})
+        
+        if not tanque_original:
             raise HTTPException(status_code=404, detail="Tanque no encontrado")
+        
+        # Convertir ObjectId a string
+        tanque_original["_id"] = str(tanque_original["_id"])
 
-        return {"mensaje": "Tanque eliminado exitosamente"}
+        # VERIFICAR SI ES ADMIN
+        if usuario_actual.es_admin:
+            # ADMIN: Eliminar inmediatamente
+            resultado = tanks_collection.delete_one({"_id": ObjectId(id)})
+            return {"mensaje": "Tanque eliminado exitosamente"}
+        else:
+            # NO ADMIN: Crear cambio pendiente
+            cambio_id = await crear_cambio_pendiente(
+                tipo_operacion="eliminar",
+                coleccion="tanques",
+                usuario=usuario_actual,
+                tanque_id=id,
+                datos_originales=tanque_original
+            )
+            return {
+                "mensaje": "Solicitud de eliminación enviada. Pendiente de aprobación del administrador",
+                "cambio_id": cambio_id,
+                "estado": "pendiente"
+            }
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {str(e)}")

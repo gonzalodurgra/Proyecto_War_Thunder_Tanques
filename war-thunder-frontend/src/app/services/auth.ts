@@ -23,6 +23,7 @@ export interface TokenResponse {
   access_token: string;
   token_type: string;
   username: string;
+  es_admin: boolean
 }
 
 export interface UsuarioPerfil {
@@ -31,6 +32,7 @@ export interface UsuarioPerfil {
   nombre_completo?: string;
   disabled: boolean;
   created_at: string;
+  es_admin: boolean
 }
 
 // ====================================================================
@@ -72,6 +74,13 @@ export class AuthService {
         // Persisten aunque cierres la pestaña
         localStorage.setItem('access_token', response.access_token);
         localStorage.setItem('username', response.username);
+        if (response.es_admin == true){
+          localStorage.setItem('esAdmin', 's')
+        }
+        else{
+          localStorage.setItem('esAdmin', "n")
+        }
+        
         
         // Actualizar el estado de autenticación
         this.isAuthenticatedSubject.next(true);
@@ -142,5 +151,9 @@ export class AuthService {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
+  }
+
+  isAdmin(): boolean {
+    return localStorage.getItem("esAdmin")?.toLowerCase() == "s"
   }
 }
