@@ -23,17 +23,6 @@
   animation: slideIn 0.5s ease-out;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ================================================================== */
 /* ENCABEZADO */
 /* ================================================================== */
@@ -60,33 +49,8 @@
   margin: 0;
 }
 
-/* ================================================================== */
-/* ALERTAS */
-/* ================================================================== */
-.alert {
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  animation: shake 0.5s;
-}
-
-.alert-error {
-  background-color: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
-}
-
 .error-icon {
   font-size: 1.5rem;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-10px); }
-  75% { transform: translateX(10px); }
 }
 
 /* ================================================================== */
@@ -96,45 +60,6 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  font-weight: 600;
-  color: #333;
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.label-icon {
-  font-size: 1.2rem;
-}
-
-.form-group input {
-  padding: 12px 15px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.3s;
-  width: 100%;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.form-group input:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
 }
 
 /* ================================================================== */
@@ -202,22 +127,6 @@
 .btn-login:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-}
-
-/* ================================================================== */
-/* SPINNER DE CARGA */
-/* ================================================================== */
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 
 /* ================================================================== */

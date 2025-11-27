@@ -1,0 +1,393 @@
+/* admin-panel.component.css */
+
+/* ================================================================== */
+/* CONTENEDOR PRINCIPAL */
+/* ================================================================== */
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* ================================================================== */
+/* HEADER */
+/* ================================================================== */
+.admin-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.admin-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2rem;
+}
+
+.admin-header p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* ================================================================== */
+/* FILTROS */
+/* ================================================================== */
+.filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.btn-filtro {
+  padding: 12px 24px;
+  border: 2px solid #dee2e6;
+  background: white;
+  color: #495057;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-filtro:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.btn-filtro.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+/* ================================================================== */
+/* LISTA DE CAMBIOS */
+/* ================================================================== */
+.cambios-lista {
+  display: grid;
+  gap: 20px;
+}
+
+.cambio-card {
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.cambio-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ================================================================== */
+/* BADGES DE OPERACIÓN Y ESTADO */
+/* ================================================================== */
+.cambio-operacion,
+.cambio-estado {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-right: 10px;
+  margin-bottom: 15px;
+}
+
+.operacion-crear {
+  background: #d4edda;
+  color: #155724;
+}
+
+.operacion-actualizar {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.operacion-eliminar {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.estado-pendiente {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.estado-aprobado {
+  background: #d4edda;
+  color: #155724;
+}
+
+.estado-rechazado {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ================================================================== */
+/* INFORMACIÓN DEL CAMBIO */
+/* ================================================================== */
+.cambio-info {
+  margin-bottom: 15px;
+}
+
+.cambio-info > div {
+  margin-bottom: 8px;
+  color: #495057;
+}
+
+/* ================================================================== */
+/* ACCIONES */
+/* ================================================================== */
+.cambio-acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-ver-detalles,
+.btn-aprobar,
+.btn-rechazar {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-ver-detalles {
+  background: #667eea;
+  color: white;
+}
+
+.btn-ver-detalles:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.btn-aprobar {
+  background: #28a745;
+  color: white;
+}
+
+.btn-aprobar:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.btn-rechazar {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-rechazar:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-2px);
+}
+
+.btn-aprobar:disabled,
+.btn-rechazar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================================================================== */
+/* ESTADO VACÍO */
+/* ================================================================== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* ================================================================== */
+/* SECCIONES DEL MODAL */
+/* ================================================================== */
+.detalle-seccion {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.detalle-seccion:last-child {
+  border-bottom: none;
+}
+
+.detalle-seccion h3 {
+  margin: 0 0 15px 0;
+  color: #667eea;
+  font-size: 1.2rem;
+}
+
+.detalle-seccion p {
+  margin: 8px 0;
+  color: #495057;
+}
+
+/* ================================================================== */
+/* DATOS JSON */
+/* ================================================================== */
+.datos-json {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-x: auto;
+}
+
+.datos-json pre {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+/* ================================================================== */
+/* DIFERENCIAS */
+/* ================================================================== */
+.diferencias {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.diferencia-item {
+  background: #fff3cd;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #ffc107;
+  color: #856404;
+  font-family: monospace;
+}
+
+/* ================================================================== */
+/* COMENTARIOS */
+/* ================================================================== */
+.comentario-admin {
+  background: #e7f3ff;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  font-style: italic;
+}
+
+.admin-revisor,
+.fecha-revision {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.comentario-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.comentario-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* ================================================================== */
+/* ACCIONES DEL MODAL */
+/* ================================================================== */
+.modal-acciones {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn-aprobar-modal,
+.btn-rechazar-modal {
+  flex: 1;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-aprobar-modal {
+  background: #28a745;
+  color: white;
+}
+
+.btn-aprobar-modal:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-rechazar-modal {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-rechazar-modal:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-aprobar-modal:disabled,
+.btn-rechazar-modal:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================================================================== */
+/* RESPONSIVE */
+/* ================================================================== */
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 20px;
+  }
+  
+  .admin-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .filtros {
+    flex-direction: column;
+  }
+  
+  .btn-filtro {
+    width: 100%;
+  }
+  
+  .cambio-acciones {
+    flex-direction: column;
+  }
+  
+  .cambio-acciones button {
+    width: 100%;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .modal-acciones {
+    flex-direction: column;
+  }
+}
+
+.cambio-card {
+  animation: slideIn 0.3s ease-out;
+}
