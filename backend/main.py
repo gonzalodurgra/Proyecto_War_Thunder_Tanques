@@ -28,22 +28,39 @@ FRONTEND_URL = os.getenv(
     "http://localhost:4200"
 )
 
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+
+allowed_origins = [
+    "http://localhost:4200",  # Desarrollo local Angular
+    "http://localhost:3000",  # Desarrollo local alternativo
+    "http://localhost",       # Localhost genérico
+    FRONTEND_URL,             # URL del frontend en producción
+]
+if BACKEND_URL and BACKEND_URL not in allowed_origins:
+    allowed_origins.append(BACKEND_URL)
+    
+if FRONTEND_URL.startswith("https://"):
+    http_version = FRONTEND_URL.replace("https://", "http://")
+    if http_version not in allowed_origins:
+        allowed_origins.append(http_version)
+elif FRONTEND_URL.startswith("http://"):
+    https_version = FRONTEND_URL.replace("http://", "https://")
+    if https_version not in allowed_origins:
+        allowed_origins.append(https_version)
+
+print(f"🌐 CORS configurado para: {allowed_origins}")
+
 # Paso 1.5: Configurar CORS para permitir peticiones desde Angular
 # EXPLICACIÓN: Angular corre en http://localhost:4200 por defecto
 # FastAPI corre en http://localhost:8000
 # Sin CORS, el navegador bloquea las peticiones entre diferentes puertos
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:4200",  # Desarrollo local
-        "http://localhost",
-        FRONTEND_URL,  # Producción
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],  # Permite todos los headers
 )
-
 # Paso 1.7: Incluir el router de autenticación
 # EXPLICACIÓN: Todas las rutas de auth_router estarán bajo /auth
 app.include_router(auth_router)
@@ -80,7 +97,10 @@ async def root():
     """
     return {
         "mensaje": "Bienvenido a la API de War Thunder",
-        "documentacion": "/docs"
+        "documentacion": "/docs",
+        "version": "1.0.0",
+        "cors_enabled": True,
+        "allowed_origins": len(allowed_origins)
     }
 
 # Paso 5: Crear un nuevo tanque (POST)
