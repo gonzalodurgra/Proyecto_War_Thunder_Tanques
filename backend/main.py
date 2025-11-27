@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depend, File, UploadFile
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -11,6 +11,8 @@ from auth import obtener_usuario_activo_actual
 from user_models import UsuarioEnDB
 import os
 from fastapi.staticfiles import StaticFiles
+from pathlib import Path
+import shutil
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -45,6 +47,12 @@ app.add_middleware(
 app.include_router(auth_router)
 
 app.mount("/imagenes", StaticFiles(directory="imagenes"), name="imagenes")
+
+# Definir la carpeta donde se guardarán las imágenes
+IMAGENES_DIR = Path("imagenes")
+
+# Crear la carpeta al iniciar la aplicación (si no existe)
+IMAGENES_DIR.mkdir(exist_ok=True)
 
 # Paso 2: Obtener la colección de tanques
 tanks_collection = get_tanks_collection()
@@ -93,6 +101,63 @@ async def crear_tanque(tanque: Tanque):
         "mensaje": "Tanque creado exitosamente",
         "id": str(resultado.inserted_id)
     }
+    
+# NUEVO ENDPOINT: Subir imagen de tanque
+@app.post("/upload-tank-image/")
+async def upload_tank_image(file: UploadFile = File(...)):
+    """
+    Endpoint para subir una imagen de tanque.
+    
+    EXPLICACIÓN PASO A PASO:
+    1. Recibe el archivo desde Angular
+    2. Verifica que sea una imagen válida
+    3. Guarda el archivo en la carpeta 'imagenes'
+    4. Retorna confirmación con el nombre del archivo
+    
+    Args:
+        file: Archivo de imagen enviado desde Angular (UploadFile)
+        
+    Returns:
+        Diccionario con mensaje de éxito y nombre del archivo
+    """
+    
+    # PASO 1: Verificar que sea una imagen
+    # content_type es algo como "image/jpeg", "image/png", etc.
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo debe ser una imagen (JPG, PNG, etc.)"
+        )
+    
+    # PASO 2: Limpiar el nombre del archivo
+    # Esto previene problemas con caracteres especiales
+    nombre_seguro = file.filename.replace(" ", "_")
+    
+    # PASO 3: Crear la ruta completa donde guardar
+    file_path = IMAGENES_DIR / nombre_seguro
+    
+    try:
+        # PASO 4: Guardar el archivo
+        # Abrimos el archivo en modo escritura binaria ('wb')
+        with file_path.open("wb") as buffer:
+            # Leemos todo el contenido del archivo subido
+            content = await file.read()
+            # Lo escribimos en el nuevo archivo
+            buffer.write(content)
+        
+        # PASO 5: Retornar confirmación
+        return {
+            "mensaje": "Imagen subida exitosamente",
+            "nombre_archivo": nombre_seguro,
+            "ruta": f"imagenes/{nombre_seguro}"
+        }
+    
+    except Exception as e:
+        # Si algo sale mal, retornar error
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al guardar la imagen: {str(e)}"
+        )
 
 # Paso 6: Obtener todos los tanques (GET)
 @app.get("/tanques/", response_model=List[dict])

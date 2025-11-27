@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import { Municion } from '../../services/tanks';
 import { Arma } from '../../services/tanks';
+import { ImageUploadService } from '../../image-upload';
 
 // ====================================================================
 // COMPONENTE DE EDICIÓN DE TANQUES
@@ -31,6 +32,11 @@ export class TankEditComponent implements OnInit {
   cargando: boolean = false;
   guardando: boolean = false;
   error: string = '';
+
+  // NUEVAS PROPIEDADES para la subida de imágenes
+  archivoSeleccionado: File | null = null;
+  subiendoImagen: boolean = false;
+  mensajeImagen: string = '';
   
   // ====================================================================
   // CONSTRUCTOR
@@ -41,7 +47,9 @@ export class TankEditComponent implements OnInit {
     private router: Router,
     private tanksService: TanksService,
     private authService: AuthService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    // NUEVO: Inyectar el servicio de imágenes
+    private imageUploadService: ImageUploadService
   ) { }
 
   // ====================================================================
@@ -343,5 +351,118 @@ export class TankEditComponent implements OnInit {
   }
   get armaKeys(): string[] {
     return this.tanque?.armamento ? Object.keys(this.tanque.armamento) : [];
+  }
+
+  // ... tu código existente (ngOnInit, cargarTanque, etc.) ...
+
+  // ====================================================================
+  // NUEVO MÉTODO: Cuando el usuario selecciona una imagen
+  // ====================================================================
+  
+  /**
+   * Se ejecuta cuando el usuario selecciona un archivo
+   * 
+   * EXPLICACIÓN:
+   * 1. Obtiene el archivo del evento del input
+   * 2. Verifica que sea una imagen
+   * 3. Guarda el archivo temporalmente
+   * 4. Muestra una vista previa (opcional)
+   * 
+   * @param event - Evento del input file
+   */
+  onImagenSeleccionada(event: any): void {
+    // PASO 1: Obtener el archivo del input
+    const archivo: File = event.target.files[0];
+    
+    // PASO 2: Verificar que se seleccionó algo
+    if (!archivo) {
+      return;
+    }
+    
+    // PASO 3: Verificar que sea una imagen
+    if (!archivo.type.startsWith('image/')) {
+      this.mensajeImagen = '⚠️ Por favor selecciona una imagen válida';
+      return;
+    }
+    
+    // PASO 4: Guardar el archivo seleccionado
+    this.archivoSeleccionado = archivo;
+    this.mensajeImagen = `✅ Imagen seleccionada: ${archivo.name}`;
+    
+    console.log('Imagen seleccionada:', archivo.name, 'Tamaño:', archivo.size, 'bytes');
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Subir la imagen al servidor
+  // ====================================================================
+  
+  /**
+   * Sube la imagen seleccionada al servidor
+   * 
+   * EXPLICACIÓN PASO A PASO:
+   * 1. Verifica que haya una imagen seleccionada
+   * 2. Muestra un indicador de carga
+   * 3. Llama al servicio para subir la imagen
+   * 4. Actualiza el campo imagen_local con la ruta
+   * 5. Muestra un mensaje de confirmación
+   */
+  subirImagen(): void {
+    // PASO 1: Verificar que hay un archivo seleccionado
+    if (!this.archivoSeleccionado) {
+      this.mensajeImagen = '⚠️ Por favor selecciona una imagen primero';
+      return;
+    }
+    
+    // PASO 2: Activar indicador de carga
+    this.subiendoImagen = true;
+    this.mensajeImagen = '⏳ Subiendo imagen...';
+    
+    // PASO 3: Llamar al servicio para subir la imagen
+    this.imageUploadService.subirImagenTanque(this.archivoSeleccionado).subscribe({
+      
+      // Si la subida es EXITOSA
+      next: (respuesta) => {
+        console.log('Imagen subida:', respuesta);
+        
+        // PASO 4: Actualizar el campo imagen_local del tanque
+        // Guardamos la ruta relativa que devuelve el servidor
+        this.tanque.imagen_local = respuesta.ruta;
+        
+        // PASO 5: Mostrar mensaje de éxito
+        this.mensajeImagen = `✅ ${respuesta.mensaje}`;
+        this.subiendoImagen = false;
+        
+        // Limpiar la selección
+        this.archivoSeleccionado = null;
+        
+        // Forzar detección de cambios para actualizar la vista previa
+        this.cd.detectChanges();
+      },
+      
+      // Si hay un ERROR
+      error: (error) => {
+        console.error('Error al subir imagen:', error);
+        
+        this.mensajeImagen = `❌ Error: ${error.error?.detail || 'No se pudo subir la imagen'}`;
+        this.subiendoImagen = false;
+      }
+    });
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Obtener URL completa de la imagen
+  // ====================================================================
+  
+  /**
+   * Obtiene la URL completa de la imagen para mostrarla
+   * 
+   * @returns URL completa de la imagen o null si no hay
+   */
+  obtenerUrlImagen(): string | null {
+    if (!this.tanque.imagen_local) {
+      return null;
+    }
+    
+    return this.imageUploadService.obtenerUrlImagen(this.tanque.imagen_local);
   }
 }

@@ -38,7 +38,6 @@
       <!-- ============================================================ -->
       <div class="form-section">
         <h2>📋 Información Básica</h2>
-        
         <div class="form-row">
           <div class="form-group">
             <label for="nombre">Nombre del Tanque *</label>
@@ -147,6 +146,82 @@
           </div>
         </div>
       </div>
+
+      <!-- Añade esta sección en tu formulario, después de "Información Básica" -->
+
+      <!-- ============================================================ -->
+      <!-- NUEVA SECCIÓN: SUBIDA DE IMAGEN -->
+      <!-- ============================================================ -->
+      <div class="form-section">
+        <h2>🖼️ Imagen del Tanque</h2>
+        
+        <!-- Campo actual de imagen_local (solo lectura/manual) -->
+        <div class="form-group">
+          <label for="imagen_local">Ruta de Imagen Actual</label>
+          <input
+            type="text"
+            id="imagen_local"
+            name="imagen_local"
+            [(ngModel)]="tanque.imagen_local"
+            placeholder="imagenes/nombre-tanque.jpg"
+            readonly
+          >
+          <small class="field-hint">Esta ruta se actualiza automáticamente al subir una imagen</small>
+        </div>
+
+        <!-- Vista previa de la imagen actual -->
+        @if (tanque.imagen_local) {
+          <div class="image-preview">
+            <p><strong>Vista previa actual:</strong></p>
+            <img 
+              [src]="obtenerUrlImagen()" 
+              [alt]="tanque.nombre"
+              style="max-width: 300px; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; padding: 8px;"
+            >
+          </div>
+        }
+
+        <!-- Selector de archivo -->
+        <div class="form-group">
+          <label for="file-input">Subir Nueva Imagen</label>
+          <input
+            type="file"
+            id="file-input"
+            accept="image/*"
+            (change)="onImagenSeleccionada($event)"
+            [disabled]="subiendoImagen || guardando"
+          >
+          <small class="field-hint">Selecciona una imagen JPG, PNG o similar</small>
+        </div>
+
+        <!-- Botón para subir -->
+        <div class="form-group">
+          <button
+            type="button"
+            class="btn-upload"
+            (click)="subirImagen()"
+            [disabled]="!archivoSeleccionado || subiendoImagen || guardando"
+          >
+            @if (subiendoImagen) {
+              <span>⏳ Subiendo...</span>
+            } @else {
+              <span>📤 Subir Imagen</span>
+            }
+          </button>
+        </div>
+
+        <!-- Mensaje de estado -->
+        @if (mensajeImagen) {
+          <div class="upload-message" 
+              [class.success]="mensajeImagen.includes('✅')"
+              [class.error]="mensajeImagen.includes('❌')"
+              [class.warning]="mensajeImagen.includes('⚠️')">
+            {{ mensajeImagen }}
+          </div>
+        }
+      </div>
+
+      <!-- NOTA: El resto de tu formulario continúa igual -->
 
       <!-- ============================================================ -->
       <!-- SECCIÓN 2: BLINDAJE -->
