@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException, Depend, File, UploadFile
+from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
