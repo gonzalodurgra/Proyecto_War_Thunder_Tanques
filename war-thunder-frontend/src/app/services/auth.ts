@@ -12,6 +12,7 @@ export interface Usuario {
   email: string;
   password: string;
   nombre_completo?: string;
+  es_admin: boolean
 }
 
 export interface LoginData {

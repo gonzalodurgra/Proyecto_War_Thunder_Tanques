@@ -36,6 +36,7 @@ allowed_origins = [
     "http://localhost:3000",  # Desarrollo local alternativo
     "http://localhost",       # Localhost genérico
     FRONTEND_URL,             # URL del frontend en producción
+    "https://war-thunder-frontend.onrender.com"
 ]
 if BACKEND_URL and BACKEND_URL not in allowed_origins:
     allowed_origins.append(BACKEND_URL)
