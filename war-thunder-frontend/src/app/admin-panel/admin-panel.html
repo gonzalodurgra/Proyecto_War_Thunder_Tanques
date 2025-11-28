@@ -1,1 +1,223 @@
-<p>admin-panel works!</p>
+<!-- admin-panel.component.html -->
+<div class="admin-container">
+  
+  <!-- HEADER -->
+  <div class="admin-header">
+    <h1>🛡️ Panel de Administración</h1>
+    <p>Gestión de cambios pendientes de aprobación</p>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <button 
+      class="btn-filtro"
+      [class.active]="filtroEstado === 'pendiente'"
+      (click)="cambiarFiltro('pendiente')">
+      ⏳ Pendientes
+    </button>
+    <button 
+      class="btn-filtro"
+      [class.active]="filtroEstado === 'aprobado'"
+      (click)="cambiarFiltro('aprobado')">
+      ✅ Aprobados
+    </button>
+    <button 
+      class="btn-filtro"
+      [class.active]="filtroEstado === 'rechazado'"
+      (click)="cambiarFiltro('rechazado')">
+      ❌ Rechazados
+    </button>
+    <button 
+      class="btn-filtro"
+      [class.active]="filtroEstado === 'todos'"
+      (click)="cambiarFiltro('todos')">
+      📋 Todos
+    </button>
+  </div>
+
+  <!-- MENSAJES -->
+  @if (mensaje) {
+    <div class="alert" [class]="'alert-' + tipoMensaje">
+      {{ mensaje }}
+    </div>
+  }
+
+  <!-- LOADING -->
+  @if (cargando) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando cambios...</p>
+    </div>
+  }
+
+  <!-- LISTA DE CAMBIOS -->
+  @if (!cargando) {
+    <div class="cambios-lista">
+      @for (cambio of cambiosPendientes; track cambio._id) {
+        <div class="cambio-card">
+          
+          <!-- Tipo de operación -->
+          <div class="cambio-operacion" [class]="getOperacionClass(cambio.tipo_operacion)">
+            {{ getOperacionLabel(cambio.tipo_operacion) }}
+          </div>
+
+          <!-- Estado -->
+          <div class="cambio-estado" [class]="getEstadoClass(cambio.estado)">
+            {{ cambio.estado.toUpperCase() }}
+          </div>
+
+          <!-- Información del cambio -->
+          <div class="cambio-info">
+            <div class="cambio-usuario">
+              <strong>👤 Usuario:</strong> {{ cambio.usuario_email }}
+            </div>
+            <div class="cambio-fecha">
+              <strong>📅 Fecha solicitud:</strong> {{ formatearFecha(cambio.fecha_solicitud) }}
+            </div>
+            @if (cambio.tipo_operacion !== 'crear') {
+              <div class="cambio-tanque">
+                <strong>🎯 Tanque:</strong> 
+                {{ cambio.datos_originales?.nombre || 'Sin nombre' }}
+              </div>
+            }
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="cambio-acciones">
+            <button 
+              class="btn-ver-detalles"
+              (click)="verDetalles(cambio)">
+              👁️ Ver Detalles
+            </button>
+
+            @if (cambio.estado === 'pendiente') {
+              <button 
+                class="btn-aprobar"
+                (click)="aprobarCambio(cambio)"
+                [disabled]="procesando">
+                ✅ Aprobar
+              </button>
+              <button 
+                class="btn-rechazar"
+                (click)="rechazarCambio(cambio)"
+                [disabled]="procesando">
+                ❌ Rechazar
+              </button>
+            }
+          </div>
+
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>No hay cambios {{ filtroEstado === 'todos' ? '' : filtroEstado + 's' }}</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- MODAL DE DETALLES -->
+  @if (cambioSeleccionado) {
+    <div class="modal-overlay" (click)="cerrarDetalles()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+          <h2>Detalles del Cambio</h2>
+          <button class="btn-cerrar" (click)="cerrarDetalles()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          
+          <!-- Información general -->
+          <div class="detalle-seccion">
+            <h3>📋 Información General</h3>
+            <p><strong>Operación:</strong> {{ getOperacionLabel(cambioSeleccionado.tipo_operacion) }}</p>
+            <p><strong>Estado:</strong> {{ cambioSeleccionado.estado }}</p>
+            <p><strong>Usuario:</strong> {{ cambioSeleccionado.usuario_email }}</p>
+            <p><strong>Fecha solicitud:</strong> {{ formatearFecha(cambioSeleccionado.fecha_solicitud) }}</p>
+          </div>
+
+          <!-- Datos según tipo de operación -->
+          @if (cambioSeleccionado.tipo_operacion === 'crear') {
+            <div class="detalle-seccion">
+              <h3>➕ Datos del Nuevo Tanque</h3>
+              <div class="datos-json">
+                <pre>{{ cambioSeleccionado.datos_nuevos | json }}</pre>
+              </div>
+            </div>
+          }
+
+          @if (cambioSeleccionado.tipo_operacion === 'actualizar') {
+            <div class="detalle-seccion">
+              <h3>✏️ Cambios Propuestos</h3>
+              <div class="diferencias">
+                @for (diferencia of getDiferencias(cambioSeleccionado); track $index) {
+                  <div class="diferencia-item">{{ diferencia }}</div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (cambioSeleccionado.tipo_operacion === 'eliminar') {
+            <div class="detalle-seccion">
+              <h3>🗑️ Tanque a Eliminar</h3>
+              <div class="datos-json">
+                <pre>{{ cambioSeleccionado.datos_originales | json }}</pre>
+              </div>
+            </div>
+          }
+
+          <!-- Comentario del admin (si existe) -->
+          @if (cambioSeleccionado.comentario_admin) {
+            <div class="detalle-seccion">
+              <h3>💬 Comentario del Admin</h3>
+              <p class="comentario-admin">{{ cambioSeleccionado.comentario_admin }}</p>
+              <p class="admin-revisor">
+                Revisado por: {{ cambioSeleccionado.admin_revisor_email }}
+              </p>
+              <p class="fecha-revision">
+                Fecha: {{ formatearFecha(cambioSeleccionado.fecha_revision!) }}
+              </p>
+            </div>
+          }
+
+          <!-- Formulario para comentario (solo si está pendiente) -->
+          @if (cambioSeleccionado.estado === 'pendiente') {
+            <div class="detalle-seccion">
+              <h3>💬 Comentario (opcional)</h3>
+              <textarea
+                [(ngModel)]="comentarioAdmin"
+                placeholder="Escribe un comentario sobre este cambio..."
+                rows="4"
+                class="comentario-input">
+              </textarea>
+              <small>*Requerido para rechazar un cambio</small>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="modal-acciones">
+              <button 
+                class="btn-aprobar-modal"
+                (click)="aprobarCambio(cambioSeleccionado)"
+                [disabled]="procesando">
+                @if (procesando) {
+                  <span>Procesando...</span>
+                } @else {
+                  <span>✅ Aprobar Cambio</span>
+                }
+              </button>
+              <button 
+                class="btn-rechazar-modal"
+                (click)="rechazarCambio(cambioSeleccionado)"
+                [disabled]="procesando">
+                ❌ Rechazar Cambio
+              </button>
+            </div>
+          }
+
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>
