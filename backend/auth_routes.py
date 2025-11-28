@@ -124,7 +124,8 @@ async def login(login_data: LoginRequest):
     return Token(
         access_token=access_token,
         token_type="bearer",
-        username=usuario.username
+        username=usuario.username,
+        es_admin=usuario.es_admin
     )
 
 # ====================================================================

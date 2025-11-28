@@ -58,6 +58,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     username: str  # Info del usuario logueado
+    es_admin: bool
 
 class TokenData(BaseModel):
     """Datos almacenados en el token JWT"""
