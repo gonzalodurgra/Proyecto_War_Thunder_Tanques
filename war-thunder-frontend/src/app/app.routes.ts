@@ -4,6 +4,7 @@ import { LoginComponent } from './components/login/login';
 import { RegisterComponent } from './components/register/register';
 import { TankListComponent } from './components/tank-list/tank-list';
 import { TankEditComponent } from './components/tank-edit/tank-edit';
+import { AdminPanelComponent } from './admin-panel/admin-panel';
 
 // ====================================================================
 // DEFINIR LAS RUTAS DE LA APLICACIÓN
@@ -57,7 +58,12 @@ export const routes: Routes = [
   {
     path: '**',
     redirectTo: '/login'
-  }
+  },
+
+  {
+    path: 'admin',
+    component: AdminPanelComponent
+  },
 ];
 
 @NgModule({
