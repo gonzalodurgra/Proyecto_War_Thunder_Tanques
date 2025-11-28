@@ -29,7 +29,7 @@ export class TankListComponent implements OnInit {
   // ⭐ NUEVO: Paginación
   tanquesPaginados: Tanque[] = [];
   paginaActual: number = 1;
-  tanquesPorPagina: number = 25;
+  tanquesPorPagina: number = 24;
   totalPaginas: number = 0;
   paginasVisibles: number[] = [];
   
