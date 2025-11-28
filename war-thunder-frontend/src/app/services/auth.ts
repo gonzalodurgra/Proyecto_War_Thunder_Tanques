@@ -12,6 +12,7 @@ export interface Usuario {
   email: string;
   password: string;
   nombre_completo?: string;
+  fecha_registro?: string
   es_admin: boolean
 }
 
@@ -31,8 +32,8 @@ export interface UsuarioPerfil {
   username: string;
   email: string;
   nombre_completo?: string;
-  disabled: boolean;
-  created_at: string;
+  activo: boolean;
+  fecha_registro: string;
   es_admin: boolean
 }
 
