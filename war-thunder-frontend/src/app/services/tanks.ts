@@ -67,11 +67,11 @@ export class TanksService {
   private apiUrl = environment.apiUrl;
   
   // Headers HTTP opcionales (por si necesitas añadir autenticación después)
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-    })
-  };
+  // private httpOptions = {
+  //   headers: new HttpHeaders({
+  //     'Content-Type': 'application/json'
+  //   })
+  // };
 
   // EXPLICACIÓN: HttpClient es el módulo de Angular para hacer peticiones HTTP
   // Lo inyectamos en el constructor
@@ -130,7 +130,7 @@ export class TanksService {
     return this.http.post<any>(
       `${this.apiUrl}/tanques/`,
       tanqueSinId,
-      this.httpOptions
+      this.getAuthHeaders()
     );
   }
 
@@ -143,7 +143,7 @@ export class TanksService {
     return this.http.put<any>(
       `${this.apiUrl}/tanques/${id}`,
       tanqueSinId,
-      this.httpOptions
+      this.getAuthHeaders()
     );
   }
 
@@ -151,7 +151,7 @@ export class TanksService {
   // MÉTODO 6: Eliminar un tanque (DELETE)
   // ====================================================================
   eliminarTanque(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/tanques/${id}`);
+    return this.http.delete<any>(`${this.apiUrl}/tanques/${id}`, this.getAuthHeaders());
   }
 
   // ====================================================================
@@ -181,5 +181,16 @@ export class TanksService {
         }
       });
     });
+  }
+
+  private getAuthHeaders() {
+    const token = localStorage.getItem('access_token');
+    
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      })
+    };
   }
 }
