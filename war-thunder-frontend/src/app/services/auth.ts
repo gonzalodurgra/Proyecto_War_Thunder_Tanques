@@ -82,7 +82,7 @@ export class AuthService {
         else{
           localStorage.setItem('esAdmin', "n")
         }
-        
+        console.log(localStorage.getItem("esAdmin"))
         
         // Actualizar el estado de autenticación
         this.isAuthenticatedSubject.next(true);
