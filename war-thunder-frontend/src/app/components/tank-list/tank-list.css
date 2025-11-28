@@ -747,3 +747,924 @@ h1 {
     align-items: flex-start;
   }
 }
+
+/* ================================================================== */
+/* TÍTULOS RESPONSIVOS */
+/* ================================================================== */
+
+.header-title {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Mostrar/ocultar versiones del título según tamaño */
+.title-full {
+  display: inline;
+}
+
+.title-short {
+  display: none;
+}
+
+.title-mobile {
+  display: none;
+}
+
+/* TABLET (768px - 1024px): Versión corta */
+@media (max-width: 1024px) {
+  .title-full {
+    display: none;
+  }
+  
+  .title-short {
+    display: inline;
+  }
+  
+  .header-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* MÓVIL (max-width: 768px): Versión corta */
+@media (max-width: 768px) {
+  .title-full {
+    display: none;
+  }
+  
+  .title-short {
+    display: inline;
+  }
+  
+  .title-mobile {
+    display: none;
+  }
+  
+  .header-title {
+    font-size: 1.3rem;
+  }
+}
+
+/* MÓVIL PEQUEÑO (max-width: 480px): Versión ultra corta */
+@media (max-width: 480px) {
+  .title-full {
+    display: none;
+  }
+  
+  .title-short {
+    display: none;
+  }
+  
+  .title-mobile {
+    display: inline;
+  }
+  
+  .header-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* ================================================================== */
+/* BOTONES RESPONSIVOS */
+/* ================================================================== */
+
+.btn-text-full {
+  display: inline;
+}
+
+.btn-text-short {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .btn-text-full {
+    display: none;
+  }
+  
+  .btn-text-short {
+    display: inline;
+  }
+}
+
+/* ================================================================== */
+/* BADGE ADMIN */
+/* ================================================================== */
+
+.badge-admin {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #333;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
+/* ================================================================== */
+/* DROPDOWN ITEM - Panel Admin */
+/* ================================================================== */
+
+.dropdown-item {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: left;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.dropdown-item.logout {
+  color: #f44336;
+  border-top: 1px solid #eee;
+}
+
+.dropdown-item.logout:hover {
+  background: #ffebee;
+}
+
+/* ================================================================== */
+/* PAGINACIÓN */
+/* ================================================================== */
+
+/* Información de resultados */
+.pagination-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.results-count {
+  margin: 0;
+  font-weight: 600;
+  color: #495057;
+  font-size: 1rem;
+}
+
+/* Contenedor principal de paginación */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 30px 0;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+/* Botones de paginación base */
+.pagination-btn {
+  padding: 10px 15px;
+  border: 2px solid #dee2e6;
+  background: white;
+  color: #495057;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f8f9fa;
+  color: #adb5bd;
+}
+
+/* Botones de navegación (primera, anterior, siguiente, última) */
+.pagination-btn-nav {
+  padding: 10px 12px;
+  font-size: 1.2rem;
+}
+
+/* Números de página */
+.pagination-numbers {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pagination-btn-number {
+  min-width: 44px;
+  font-weight: 700;
+}
+
+/* Página activa */
+.pagination-btn-number.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.pagination-btn-number.active:hover {
+  transform: none;
+}
+
+/* Detalles de paginación */
+.pagination-details {
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px;
+}
+
+.pagination-details p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ================================================================== */
+/* RESPONSIVE - PAGINACIÓN */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+  .pagination-info {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .pagination-container {
+    padding: 15px 10px;
+    gap: 6px;
+  }
+
+  .pagination-btn {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .pagination-btn-nav {
+    font-size: 1rem;
+  }
+
+  .pagination-numbers {
+    gap: 4px;
+  }
+
+  .pagination-btn-number {
+    min-width: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination-info {
+    padding: 12px 15px;
+  }
+
+  .results-count {
+    font-size: 0.9rem;
+  }
+
+  .pagination-container {
+    padding: 12px 8px;
+    gap: 4px;
+  }
+
+  .pagination-btn {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .pagination-btn-nav {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+
+  /* Ocultar botones de primera/última en móvil muy pequeño */
+  .pagination-container > .pagination-btn-nav:first-child,
+  .pagination-container > .pagination-btn-nav:last-child {
+    display: none;
+  }
+
+  .pagination-numbers {
+    gap: 3px;
+  }
+
+  .pagination-btn-number {
+    min-width: 36px;
+  }
+
+  .pagination-details p {
+    font-size: 0.85rem;
+  }
+}
+
+/* ================================================================== */
+/* ANIMACIONES */
+/* ================================================================== */
+
+.pagination-container {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================================================== */
+/* ACCESIBILIDAD */
+/* ================================================================== */
+
+.pagination-btn:focus {
+  outline: 3px solid rgba(102, 126, 234, 0.5);
+  outline-offset: 2px;
+}
+
+.pagination-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ================================================================== */
+/* MEJORAS VISUALES */
+/* ================================================================== */
+
+/* Efecto de carga al cambiar página */
+.tanques-grid {
+  transition: opacity 0.3s ease;
+}
+
+.tanques-grid.loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Indicador de página activa más destacado */
+.pagination-btn-number.active {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.5);
+}
+
+/* Hover mejorado para números */
+.pagination-btn-number:hover:not(:disabled):not(.active) {
+  background: #e7f3ff;
+  color: #667eea;
+  border-color: #667eea;
+}
+
+/* ================================================================== */
+/* VARIANTE: Paginación compacta (opcional) */
+/* ================================================================== */
+
+.pagination-container.compact {
+  padding: 10px;
+  gap: 4px;
+}
+
+.pagination-container.compact .pagination-btn {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+/* ================================================================== */
+/* MODO OSCURO (preparado para futuro) */
+/* ================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  /*
+  .pagination-container {
+    background: #2a2a2a;
+  }
+
+  .pagination-btn {
+    background: #333;
+    color: #fff;
+    border-color: #444;
+  }
+
+  .pagination-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .pagination-details p {
+    color: #aaa;
+  }
+  */
+}
+
+/* ================================================================== */
+/* MEJORAS VISUALES MÓVIL */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+  /* Hacer el header más compacto pero legible */
+  .app-header {
+    min-height: auto;
+  }
+
+  /* Asegurar que los botones tengan buen tamaño de toque */
+  .user-button,
+  .btn-login-header,
+  .dropdown-item {
+    min-height: 44px; /* Tamaño táctil recomendado de Apple */
+  }
+
+  /* Mejorar espaciado en dropdown */
+  .dropdown-menu {
+    margin-top: 12px;
+  }
+
+  .user-info {
+    padding: 18px 15px;
+  }
+
+  .dropdown-item {
+    padding: 15px 18px;
+  }
+}
+
+/* ================================================================== */
+/* ANIMACIÓN SUAVE DEL DROPDOWN */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+  .dropdown-menu {
+    animation: slideDownMobile 0.25s ease-out;
+  }
+
+  @keyframes slideDownMobile {
+    from {
+      opacity: 0;
+      transform: translateY(-15px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+/* ================================================================== */
+/* SOMBRAS Y PROFUNDIDAD EN MÓVIL */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+  .app-header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .dropdown-menu {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* ================================================================== */
+/* RESPONSIVE PARA MÓVIL - Añadir al final del archivo CSS */
+/* ================================================================== */
+
+/* ================================================================== */
+/* TABLET (768px - 1024px) */
+/* ================================================================== */
+@media (max-width: 1024px) {
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .filtros-container > *:not(.filtros-header) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro {
+    min-width: 100%;
+  }
+}
+
+/* ================================================================== */
+/* MÓVIL (max-width: 768px) */
+/* ================================================================== */
+@media (max-width: 768px) {
+  
+  /* HEADER */
+  .app-header {
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .app-header h1 {
+    font-size: 1.3rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* USER SECTION */
+  .user-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .user-menu {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .user-button {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+
+  .dropdown-menu {
+    left: 0;
+    right: 0;
+    margin: 10px auto;
+    max-width: 300px;
+  }
+
+  /* GUEST SECTION */
+  .guest-section {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .guest-badge {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .btn-login-header {
+    width: 100%;
+    padding: 12px 20px;
+  }
+
+  /* FILTROS CONTAINER */
+  .filtros-container {
+    padding: 15px;
+  }
+
+  .filtros-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filtros-header h2 {
+    text-align: center;
+    font-size: 1.2rem;
+  }
+
+  .btn-crear-nuevo {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+
+  .filtros-container > *:not(.filtros-header) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro {
+    width: 100%;
+  }
+
+  .filtro select,
+  .filtro input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px; /* Evita zoom automático en iOS */
+  }
+
+  /* Botones de acción */
+  .btn-primario,
+  .btn-secundario {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+}
+
+/* ================================================================== */
+/* MÓVIL PEQUEÑO (max-width: 480px) */
+/* ================================================================== */
+@media (max-width: 480px) {
+  
+  /* HEADER */
+  .app-header {
+    padding: 12px;
+    gap: 15px;
+  }
+
+  .app-header h1 {
+    font-size: 1.1rem;
+    /* Opción: Hacer título más corto en móvil pequeño */
+    /* word-break: break-word; */
+  }
+
+  /* USER BUTTON */
+  .user-button {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  .username {
+    display: none; /* Ocultar nombre en pantallas muy pequeñas */
+  }
+
+  .user-icon {
+    font-size: 1.5rem;
+  }
+
+  /* Mostrar solo icono + dropdown */
+  .user-button:hover .username,
+  .user-button:focus .username {
+    display: inline; /* Mostrar al hacer hover/focus */
+  }
+
+  /* DROPDOWN MENU */
+  .dropdown-menu {
+    max-width: 100%;
+    left: 10px;
+    right: 10px;
+  }
+
+  /* FILTROS */
+  .filtros-container {
+    padding: 12px;
+  }
+
+  .filtros-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .btn-crear-nuevo {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+
+  .filtro label {
+    font-size: 0.85rem;
+  }
+
+  .filtro select,
+  .filtro input {
+    padding: 10px;
+  }
+}
+
+/* ================================================================== */
+/* ORIENTACIÓN HORIZONTAL (LANDSCAPE) */
+/* ================================================================== */
+@media (max-width: 768px) and (orientation: landscape) {
+  .app-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .app-header h1 {
+    flex: 1 1 60%;
+    text-align: left;
+    font-size: 1.2rem;
+  }
+
+  .user-section {
+    flex: 1 1 35%;
+    justify-content: flex-end;
+  }
+
+  .guest-section {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .guest-badge,
+  .btn-login-header {
+    width: auto;
+  }
+}
+
+/* ================================================================== */
+/* MEJORAS DE TÁCTIL (TOUCH) */
+/* ================================================================== */
+@media (hover: none) and (pointer: coarse) {
+  /* Dispositivos táctiles */
+  
+  .user-button,
+  .btn-login-header,
+  .btn-crear-nuevo,
+  .btn-primario,
+  .btn-secundario,
+  .dropdown-item {
+    /* Área táctil mínima recomendada: 44x44px */
+    min-height: 44px;
+    padding: 12px 20px;
+  }
+
+  /* Mejorar feedback táctil */
+  .user-button:active,
+  .btn-login-header:active,
+  .btn-crear-nuevo:active,
+  .btn-primario:active,
+  .btn-secundario:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+
+  /* Dropdown más grande en táctil */
+  .dropdown-menu {
+    min-width: 250px;
+  }
+
+  .dropdown-item {
+    padding: 15px 20px;
+    font-size: 1.05rem;
+  }
+}
+
+/* ================================================================== */
+/* ACCESIBILIDAD - ALTO CONTRASTE */
+/* ================================================================== */
+@media (prefers-contrast: high) {
+  .app-header {
+    border: 2px solid white;
+  }
+
+  .user-button,
+  .guest-badge {
+    border-width: 3px;
+  }
+
+  .dropdown-menu {
+    border: 2px solid #333;
+  }
+}
+
+/* ================================================================== */
+/* MODO OSCURO (si lo implementas en el futuro) */
+/* ================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* Comentado para usar cuando implementes modo oscuro */
+  /*
+  .dropdown-menu {
+    background: #2a2a2a;
+    color: white;
+  }
+
+  .user-info {
+    background: #333;
+    border-bottom-color: #444;
+  }
+
+  .dropdown-item {
+    background: #2a2a2a;
+    color: white;
+  }
+
+  .dropdown-item:hover {
+    background: #3a3a3a;
+  }
+  */
+}
+
+/* ================================================================== */
+/* FIX PARA iOS - Prevenir zoom en inputs */
+/* ================================================================== */
+@supports (-webkit-touch-callout: none) {
+  /* Solo en iOS */
+  input[type="text"],
+  input[type="search"],
+  select {
+    font-size: 16px !important; /* Evita zoom automático */
+  }
+}
+
+/* ================================================================== */
+/* ANIMACIONES SUAVES EN MÓVIL */
+/* ================================================================== */
+@media (max-width: 768px) {
+  .user-button,
+  .btn-login-header,
+  .btn-crear-nuevo,
+  .dropdown-menu {
+    transition: all 0.2s ease; /* Más rápido en móvil */
+  }
+}
+
+/* ================================================================== */
+/* CONTAINER PRINCIPAL */
+/* ================================================================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 8px;
+  }
+}
+
+/* ================================================================== */
+/* MEJORAS DE SCROLL */
+/* ================================================================== */
+@media (max-width: 768px) {
+  /* Scroll suave en móvil */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Evitar scroll horizontal */
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* ================================================================== */
+/* ESPACIADO ENTRE ELEMENTOS EN MÓVIL */
+/* ================================================================== */
+@media (max-width: 768px) {
+  .filtros-container {
+    margin-bottom: 20px;
+  }
+
+  /* Espaciado entre botones */
+  .btn-primario + .btn-secundario,
+  .btn-secundario + .btn-primario {
+    margin-top: 10px;
+  }
+}
+
+/* ================================================================== */
+/* MEJORA DE LEGIBILIDAD */
+/* ================================================================== */
+@media (max-width: 480px) {
+  /* Aumentar tamaño de fuente ligeramente */
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Labels más legibles */
+  .filtro label {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+}
+
+/* ================================================================== */
+/* NOTCH SAFE AREA (iPhone X y superiores) */
+/* ================================================================== */
+@supports (padding: max(0px)) {
+  .app-header {
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+    padding-top: max(15px, env(safe-area-inset-top));
+  }
+
+  .container {
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}

@@ -4,41 +4,61 @@
   <!-- HEADER CON AUTENTICACIÓN -->
   <!-- ================================================================ -->
   <div class="app-header">
-    <h1>🎮 War Thunder - Base de Datos de Tanques</h1>
-    
-    <div class="user-section">
-      @if (isAuthenticated) {
-        <!-- Usuario autenticado -->
-        <div class="user-menu">
-          <button class="user-button" (click)="toggleMenuUsuario()">
-            <span class="user-icon">👤</span>
-            <span class="username">{{ currentUsername }}</span>
-            <span class="dropdown-icon">▼</span>
-          </button>
-          
-          @if (mostrarMenuUsuario) {
-            <div class="dropdown-menu">
-              <div class="user-info">
-                <p><strong>{{ currentUsername }}</strong></p>
-                <p class="user-role">Editor</p>
-              </div>
-              <button class="dropdown-item logout" (click)="logout()">
-                🚪 Cerrar Sesión
-              </button>
+  <!-- Título con versiones para diferentes tamaños -->
+  <h1 class="header-title">
+    <span class="title-full">🎮 War Thunder - Base de Datos de Tanques</span>
+    <span class="title-short">🎮 War Thunder DB</span>
+    <span class="title-mobile">🎮 WT Tanques</span>
+  </h1>
+  
+  <div class="user-section">
+    @if (isAuthenticated) {
+      <!-- Usuario autenticado -->
+      <div class="user-menu">
+        <button class="user-button" (click)="toggleMenuUsuario()">
+          <span class="user-icon">👤</span>
+          <span class="username">{{ currentUsername }}</span>
+          <span class="dropdown-icon">▼</span>
+        </button>
+        
+        @if (mostrarMenuUsuario) {
+          <div class="dropdown-menu">
+            <div class="user-info">
+              <p><strong>{{ currentUsername }}</strong></p>
+              <p class="user-role">
+                @if (isAdmin) {
+                  <span class="badge-admin">👑 Administrador</span>
+                } @else {
+                  <span>📝 Editor</span>
+                }
+              </p>
             </div>
-          }
-        </div>
-      } @else {
-        <!-- Usuario no autenticado -->
-        <div class="guest-section">
-          <span class="guest-badge">👁️ Modo Lectura</span>
-          <button class="btn-login-header" (click)="irALogin()">
-            Iniciar Sesión
-          </button>
-        </div>
-      }
-    </div>
+            
+            <!-- Botón Panel Admin (solo si es admin) -->
+            @if (isAdmin) {
+              <button class="dropdown-item" (click)="irAPanelAdmin()">
+                🛡️ Panel de Admin
+              </button>
+            }
+            
+            <button class="dropdown-item logout" (click)="logout()">
+              🚪 Cerrar Sesión
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Usuario no autenticado -->
+      <div class="guest-section">
+        <span class="guest-badge">👁️ Modo Lectura</span>
+        <button class="btn-login-header" (click)="irALogin()">
+          <span class="btn-text-full">Iniciar Sesión</span>
+          <span class="btn-text-short">Login</span>
+        </button>
+      </div>
+    }
   </div>
+</div>
 
   <!-- ================================================================ -->
   <!-- SECCIÓN DE FILTROS -->
@@ -90,6 +110,101 @@
       🔄 Recargar
     </button>
   </div>
+
+  <!-- Añadir DESPUÉS de los filtros y ANTES del grid de tanques -->
+
+<!-- ================================================================ -->
+<!-- INFORMACIÓN DE PAGINACIÓN -->
+<!-- ================================================================ -->
+<div class="pagination-info">
+  <p class="results-count">
+    📊 Mostrando {{ getRangoTanques() }}
+  </p>
+</div>
+
+<!-- ================================================================ -->
+<!-- GRID DE TANQUES (USA tanquesPaginados en lugar de tanquesFiltrados) -->
+<!-- ================================================================ -->
+<div class="tanques-grid">
+  @if (cargando) {
+    <div class="mensaje-cargando">Cargando tanques...</div>
+  } @else if (error) {
+    <div class="mensaje-error">{{ error }}</div>
+  } @else if (tanquesPaginados.length === 0) {
+    <div class="sin-resultados">
+      No se encontraron tanques con los filtros aplicados
+    </div>
+  } @else {
+    @for (tanque of tanquesPaginados; track tanque._id) {
+      <!-- Tu tarjeta de tanque existente -->
+      <div class="tanque-card" (click)="seleccionarTanque(tanque)">
+        <!-- ... contenido existente de la tarjeta ... -->
+      </div>
+    }
+  }
+</div>
+
+<!-- ================================================================ -->
+<!-- CONTROLES DE PAGINACIÓN -->
+<!-- ================================================================ -->
+@if (!cargando && tanquesFiltrados.length > tanquesPorPagina) {
+  <div class="pagination-container">
+    
+    <!-- Botón Primera Página -->
+    <button 
+      class="pagination-btn pagination-btn-nav"
+      (click)="primeraPagina()"
+      [disabled]="paginaActual === 1"
+      title="Primera página">
+      ⏮️
+    </button>
+    
+    <!-- Botón Anterior -->
+    <button 
+      class="pagination-btn pagination-btn-nav"
+      (click)="paginaAnterior()"
+      [disabled]="paginaActual === 1"
+      title="Página anterior">
+      ◀️
+    </button>
+    
+    <!-- Números de Página -->
+    <div class="pagination-numbers">
+      @for (pagina of paginasVisibles; track pagina) {
+        <button 
+          class="pagination-btn pagination-btn-number"
+          [class.active]="pagina === paginaActual"
+          (click)="irAPagina(pagina)">
+          {{ pagina }}
+        </button>
+      }
+    </div>
+    
+    <!-- Botón Siguiente -->
+    <button 
+      class="pagination-btn pagination-btn-nav"
+      (click)="paginaSiguiente()"
+      [disabled]="paginaActual === totalPaginas"
+      title="Página siguiente">
+      ▶️
+    </button>
+    
+    <!-- Botón Última Página -->
+    <button 
+      class="pagination-btn pagination-btn-nav"
+      (click)="ultimaPagina()"
+      [disabled]="paginaActual === totalPaginas"
+      title="Última página">
+      ⏭️
+    </button>
+    
+  </div>
+  
+  <!-- Información adicional de paginación -->
+  <div class="pagination-details">
+    <p>Página {{ paginaActual }} de {{ totalPaginas }}</p>
+  </div>
+}
 
   <!-- ================================================================ -->
   <!-- ESTADO DE CARGA -->

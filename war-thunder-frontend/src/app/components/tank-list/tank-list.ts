@@ -25,6 +25,13 @@ export class TankListComponent implements OnInit {
   
   // Tanques filtrados (para búsqueda y filtros)
   tanquesFiltrados: Tanque[] = [];
+
+  // ⭐ NUEVO: Paginación
+  tanquesPaginados: Tanque[] = [];
+  paginaActual: number = 1;
+  tanquesPorPagina: number = 25;
+  totalPaginas: number = 0;
+  paginasVisibles: number[] = [];
   
   // Lista de naciones disponibles
   naciones: string[] = [];
@@ -46,6 +53,8 @@ export class TankListComponent implements OnInit {
 
   currentUsername: string | null = localStorage.getItem("username");
 
+  isAdmin: boolean = localStorage.getItem("esAdmin") == "s";
+
   // ====================================================================
   // PASO 2: Inyectar el servicio en el constructor
   // ====================================================================
@@ -64,6 +73,7 @@ export class TankListComponent implements OnInit {
     this.cargarTanques();
     this.cargarNaciones();
   }
+
 
   // ====================================================================
   // MÉTODO: Cargar todos los tanques
@@ -121,22 +131,41 @@ export class TankListComponent implements OnInit {
     
     // Aplicar también el filtro de búsqueda si existe
     this.aplicarFiltroBusqueda();
+
+    // ⭐ NUEVO: Resetear a página 1 al filtrar
+    this.paginaActual = 1;
+    this.calcularPaginacion();
+    this.actualizarTanquesPaginados();
   }
 
   // ====================================================================
   // MÉTODO: Buscar tanques por nombre
   // ====================================================================
   aplicarFiltroBusqueda(): void {
-    if (this.filtroBusqueda === '') {
-      return;
+    if (this.filtroBusqueda.trim() === '') {
+      if (this.filtroNacion === '') {
+        this.tanquesFiltrados = [...this.tanques];
+      } else {
+        this.tanquesFiltrados = this.tanques.filter(
+          tanque => tanque.nacion === this.filtroNacion
+        );
+      }
+    } else {
+      const busqueda = this.filtroBusqueda.toLowerCase();
+      let tanquesBase = this.filtroNacion === '' 
+        ? this.tanques 
+        : this.tanques.filter(t => t.nacion === this.filtroNacion);
+      
+      this.tanquesFiltrados = tanquesBase.filter(tanque =>
+        tanque.nombre.toLowerCase().includes(busqueda) ||
+        tanque.rol.toLowerCase().includes(busqueda)
+      );
     }
     
-    // Convertir a minúsculas para búsqueda case-insensitive
-    const busqueda = this.filtroBusqueda.toLowerCase();
-    
-    this.tanquesFiltrados = this.tanquesFiltrados.filter(tanque =>
-      tanque.nombre.toLowerCase().includes(busqueda)
-    );
+    // ⭐ NUEVO: Resetear a página 1 al buscar
+    this.paginaActual = 1;
+    this.calcularPaginacion();
+    this.actualizarTanquesPaginados();
   }
 
   // ====================================================================
@@ -146,6 +175,122 @@ export class TankListComponent implements OnInit {
     this.filtroNacion = '';
     this.filtroBusqueda = '';
     this.tanquesFiltrados = this.tanques;
+
+    // ⭐ NUEVO: Resetear paginación
+    this.paginaActual = 1;
+    this.calcularPaginacion();
+    this.actualizarTanquesPaginados();
+  }
+
+  // ====================================================================
+  // ⭐ NUEVOS MÉTODOS DE PAGINACIÓN
+  // ====================================================================
+
+  /**
+   * Calcula el número total de páginas
+   */
+  calcularPaginacion(): void {
+    this.totalPaginas = Math.ceil(this.tanquesFiltrados.length / this.tanquesPorPagina);
+    this.calcularPaginasVisibles();
+  }
+
+  /**
+   * Actualiza el array de tanques a mostrar en la página actual
+   */
+  actualizarTanquesPaginados(): void {
+    const inicio = (this.paginaActual - 1) * this.tanquesPorPagina;
+    const fin = inicio + this.tanquesPorPagina;
+    this.tanquesPaginados = this.tanquesFiltrados.slice(inicio, fin);
+    
+    // Scroll al inicio de la lista
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /**
+   * Calcula qué números de página mostrar (max 5)
+   */
+  calcularPaginasVisibles(): void {
+    const maxPaginasVisibles = 5;
+    this.paginasVisibles = [];
+    
+    if (this.totalPaginas <= maxPaginasVisibles) {
+      // Mostrar todas las páginas
+      for (let i = 1; i <= this.totalPaginas; i++) {
+        this.paginasVisibles.push(i);
+      }
+    } else {
+      // Mostrar páginas alrededor de la actual
+      let inicio = Math.max(1, this.paginaActual - 2);
+      let fin = Math.min(this.totalPaginas, inicio + maxPaginasVisibles - 1);
+      
+      // Ajustar si estamos cerca del final
+      if (fin - inicio < maxPaginasVisibles - 1) {
+        inicio = Math.max(1, fin - maxPaginasVisibles + 1);
+      }
+      
+      for (let i = inicio; i <= fin; i++) {
+        this.paginasVisibles.push(i);
+      }
+    }
+  }
+
+  /**
+   * Cambia a una página específica
+   */
+  irAPagina(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginas) {
+      return;
+    }
+    
+    this.paginaActual = pagina;
+    this.calcularPaginasVisibles();
+    this.actualizarTanquesPaginados();
+  }
+
+  /**
+   * Página anterior
+   */
+  paginaAnterior(): void {
+    if (this.paginaActual > 1) {
+      this.irAPagina(this.paginaActual - 1);
+    }
+  }
+
+  /**
+   * Página siguiente
+   */
+  paginaSiguiente(): void {
+    if (this.paginaActual < this.totalPaginas) {
+      this.irAPagina(this.paginaActual + 1);
+    }
+  }
+
+  /**
+   * Primera página
+   */
+  primeraPagina(): void {
+    this.irAPagina(1);
+  }
+
+  /**
+   * Última página
+   */
+  ultimaPagina(): void {
+    this.irAPagina(this.totalPaginas);
+  }
+
+  /**
+   * Obtiene el rango de tanques mostrados
+   */
+  getRangoTanques(): string {
+    if (this.tanquesFiltrados.length === 0) {
+      return '0 tanques';
+    }
+    
+    const inicio = (this.paginaActual - 1) * this.tanquesPorPagina + 1;
+    const fin = Math.min(this.paginaActual * this.tanquesPorPagina, this.tanquesFiltrados.length);
+    
+    return `${inicio}-${fin} de ${this.tanquesFiltrados.length} tanques`;
   }
 
   // ====================================================================
@@ -275,5 +420,9 @@ export class TankListComponent implements OnInit {
       nombre: nombreArma,
       municiones: setup[nombreArma].municiones
     }));
+  }
+
+  irAPanelAdmin(): void{
+    this.router.navigate(["/admin"])
   }
 }
