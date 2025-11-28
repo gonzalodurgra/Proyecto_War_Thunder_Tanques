@@ -53,16 +53,16 @@ export const routes: Routes = [
     path: 'tanques/editar/:id',
     component: TankEditComponent
   },
+
+  {
+    path: 'admin',
+    component: AdminPanelComponent
+  },
   
   // Ruta 404 - cualquier ruta no definida redirige al login
   {
     path: '**',
     redirectTo: '/login'
-  },
-
-  {
-    path: 'admin',
-    component: AdminPanelComponent
   },
 ];
 
