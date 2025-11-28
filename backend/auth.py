@@ -201,7 +201,7 @@ async def obtener_usuario_activo_actual(
     Raises:
         HTTPException si el usuario está deshabilitado
     """
-    if usuario_actual.disabled:
+    if not usuario_actual.activo:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Usuario deshabilitado"
