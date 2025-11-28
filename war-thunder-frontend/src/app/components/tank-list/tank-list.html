@@ -229,7 +229,7 @@
   <!-- ================================================================ -->
   @if (!cargando && !error) {
     <div class="tanques-grid">
-      @for (tanque of tanquesFiltrados; track tanque._id) {
+      @for (tanque of tanquesPaginados; track tanque._id) {
         <div class="tanque-card" (click)="seleccionarTanque(tanque)">
           <!-- Header con nombre y nación -->
           <div class="tanque-header">
