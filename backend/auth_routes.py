@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from datetime import timedelta
+from datetime import timedelta, datetime
 from database import get_users_collection
 from user_models import Usuario, UsuarioDB, UsuarioEnDB, Token, LoginRequest
 from passlib.hash import argon2
@@ -66,7 +66,8 @@ async def registrar_usuario(usuario: Usuario):
         email=usuario.email,
         nombre_completo=usuario.nombre_completo,
         hashed_password=argon2.hash(usuario.password),  # Hashear la contraseña
-        activo=True
+        activo=True,
+        fecha_registro=datetime.__str__
     )
     
     # PASO 4: Guardar en la base de datos
