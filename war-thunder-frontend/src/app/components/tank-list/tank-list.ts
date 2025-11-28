@@ -47,6 +47,9 @@ export class TankListComponent implements OnInit {
   // Tanque seleccionado para ver detalles
   tanqueSeleccionado: Tanque | null = null;
 
+  // ⭐ NUEVO: Para usar Object.keys en el template
+  Object = Object;
+
   //Comprueba si está autenticado
   isAuthenticated: boolean = localStorage.getItem("username") !== null;
   mostrarMenuUsuario: boolean = false;
@@ -90,6 +93,9 @@ export class TankListComponent implements OnInit {
         console.log('Tanques cargados:', data);
         this.tanques = data;
         this.tanquesFiltrados = data;
+        this.paginaActual = 1;
+        this.calcularPaginacion();
+        this.actualizarTanquesPaginados();
         this.cargando = false;
       },
       error: (err) => {

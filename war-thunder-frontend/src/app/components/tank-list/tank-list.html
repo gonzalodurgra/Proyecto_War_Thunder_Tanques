@@ -4,61 +4,59 @@
   <!-- HEADER CON AUTENTICACIÓN -->
   <!-- ================================================================ -->
   <div class="app-header">
-  <!-- Título con versiones para diferentes tamaños -->
-  <h1 class="header-title">
-    <span class="title-full">🎮 War Thunder - Base de Datos de Tanques</span>
-    <span class="title-short">🎮 War Thunder DB</span>
-    <span class="title-mobile">🎮 WT Tanques</span>
-  </h1>
-  
-  <div class="user-section">
-    @if (isAuthenticated) {
-      <!-- Usuario autenticado -->
-      <div class="user-menu">
-        <button class="user-button" (click)="toggleMenuUsuario()">
-          <span class="user-icon">👤</span>
-          <span class="username">{{ currentUsername }}</span>
-          <span class="dropdown-icon">▼</span>
-        </button>
-        
-        @if (mostrarMenuUsuario) {
-          <div class="dropdown-menu">
-            <div class="user-info">
-              <p><strong>{{ currentUsername }}</strong></p>
-              <p class="user-role">
-                @if (isAdmin) {
-                  <span class="badge-admin">👑 Administrador</span>
-                } @else {
-                  <span>📝 Editor</span>
-                }
-              </p>
-            </div>
-            
-            <!-- Botón Panel Admin (solo si es admin) -->
-            @if (isAdmin) {
-              <button class="dropdown-item" (click)="irAPanelAdmin()">
-                🛡️ Panel de Admin
+    <h1 class="header-title">
+      <span class="title-full">🎮 War Thunder - Base de Datos de Tanques</span>
+      <span class="title-short">🎮 War Thunder DB</span>
+      <span class="title-mobile">🎮 WT Tanques</span>
+    </h1>
+    
+    <div class="user-section">
+      @if (isAuthenticated) {
+        <!-- Usuario autenticado -->
+        <div class="user-menu">
+          <button class="user-button" (click)="toggleMenuUsuario()">
+            <span class="user-icon">👤</span>
+            <span class="username">{{ currentUsername }}</span>
+            <span class="dropdown-icon">▼</span>
+          </button>
+          
+          @if (mostrarMenuUsuario) {
+            <div class="dropdown-menu">
+              <div class="user-info">
+                <p><strong>{{ currentUsername }}</strong></p>
+                <p class="user-role">
+                  @if (isAdmin) {
+                    <span class="badge-admin">👑 Administrador</span>
+                  } @else {
+                    <span>📝 Editor</span>
+                  }
+                </p>
+              </div>
+              
+              @if (isAdmin) {
+                <button class="dropdown-item" (click)="irAPanelAdmin()">
+                  🛡️ Panel de Admin
+                </button>
+              }
+              
+              <button class="dropdown-item logout" (click)="logout()">
+                🚪 Cerrar Sesión
               </button>
-            }
-            
-            <button class="dropdown-item logout" (click)="logout()">
-              🚪 Cerrar Sesión
-            </button>
-          </div>
-        }
-      </div>
-    } @else {
-      <!-- Usuario no autenticado -->
-      <div class="guest-section">
-        <span class="guest-badge">👁️ Modo Lectura</span>
-        <button class="btn-login-header" (click)="irALogin()">
-          <span class="btn-text-full">Iniciar Sesión</span>
-          <span class="btn-text-short">Login</span>
-        </button>
-      </div>
-    }
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Usuario no autenticado -->
+        <div class="guest-section">
+          <span class="guest-badge">👁️ Modo Lectura</span>
+          <button class="btn-login-header" (click)="irALogin()">
+            <span class="btn-text-full">Iniciar Sesión</span>
+            <span class="btn-text-short">Login</span>
+          </button>
+        </div>
+      }
+    </div>
   </div>
-</div>
 
   <!-- ================================================================ -->
   <!-- SECCIÓN DE FILTROS -->
@@ -67,7 +65,6 @@
     <div class="filtros-header">
       <h2>Filtros</h2>
       
-      <!-- Botón Crear Nuevo (solo para usuarios autenticados) -->
       @if (isAuthenticated) {
         <button (click)="crearNuevoTanque()" class="btn-crear-nuevo">
           ➕ Crear Nuevo Tanque
@@ -75,7 +72,6 @@
       }
     </div>
     
-    <!-- Filtro por nación -->
     <div class="filtro">
       <label for="filtroNacion">Nación:</label>
       <select 
@@ -89,7 +85,6 @@
       </select>
     </div>
 
-    <!-- Filtro por búsqueda -->
     <div class="filtro">
       <label for="filtroBusqueda">Buscar:</label>
       <input 
@@ -100,118 +95,32 @@
         placeholder="Nombre del tanque...">
     </div>
 
-    <!-- Botón para limpiar filtros -->
     <button (click)="limpiarFiltros()" class="btn-secundario">
       Limpiar filtros
     </button>
 
-    <!-- Botón para recargar -->
     <button (click)="cargarTanques()" class="btn-primario">
       🔄 Recargar
     </button>
   </div>
 
-  <!-- Añadir DESPUÉS de los filtros y ANTES del grid de tanques -->
-
-<!-- ================================================================ -->
-<!-- INFORMACIÓN DE PAGINACIÓN -->
-<!-- ================================================================ -->
-<div class="pagination-info">
-  <p class="results-count">
-    📊 Mostrando {{ getRangoTanques() }}
-  </p>
-</div>
-
-<!-- ================================================================ -->
-<!-- GRID DE TANQUES (USA tanquesPaginados en lugar de tanquesFiltrados) -->
-<!-- ================================================================ -->
-<div class="tanques-grid">
-  @if (cargando) {
-    <div class="mensaje-cargando">Cargando tanques...</div>
-  } @else if (error) {
-    <div class="mensaje-error">{{ error }}</div>
-  } @else if (tanquesPaginados.length === 0) {
-    <div class="sin-resultados">
-      No se encontraron tanques con los filtros aplicados
+  <!-- ================================================================ -->
+  <!-- INFORMACIÓN DE PAGINACIÓN -->
+  <!-- ================================================================ -->
+  @if (!cargando && tanquesFiltrados.length > 0) {
+    <div class="pagination-info">
+      <p class="results-count">
+        📊 Mostrando {{ getRangoTanques() }}
+      </p>
     </div>
-  } @else {
-    @for (tanque of tanquesPaginados; track tanque._id) {
-      <!-- Tu tarjeta de tanque existente -->
-      <div class="tanque-card" (click)="seleccionarTanque(tanque)">
-        <!-- ... contenido existente de la tarjeta ... -->
-      </div>
-    }
   }
-</div>
-
-<!-- ================================================================ -->
-<!-- CONTROLES DE PAGINACIÓN -->
-<!-- ================================================================ -->
-@if (!cargando && tanquesFiltrados.length > tanquesPorPagina) {
-  <div class="pagination-container">
-    
-    <!-- Botón Primera Página -->
-    <button 
-      class="pagination-btn pagination-btn-nav"
-      (click)="primeraPagina()"
-      [disabled]="paginaActual === 1"
-      title="Primera página">
-      ⏮️
-    </button>
-    
-    <!-- Botón Anterior -->
-    <button 
-      class="pagination-btn pagination-btn-nav"
-      (click)="paginaAnterior()"
-      [disabled]="paginaActual === 1"
-      title="Página anterior">
-      ◀️
-    </button>
-    
-    <!-- Números de Página -->
-    <div class="pagination-numbers">
-      @for (pagina of paginasVisibles; track pagina) {
-        <button 
-          class="pagination-btn pagination-btn-number"
-          [class.active]="pagina === paginaActual"
-          (click)="irAPagina(pagina)">
-          {{ pagina }}
-        </button>
-      }
-    </div>
-    
-    <!-- Botón Siguiente -->
-    <button 
-      class="pagination-btn pagination-btn-nav"
-      (click)="paginaSiguiente()"
-      [disabled]="paginaActual === totalPaginas"
-      title="Página siguiente">
-      ▶️
-    </button>
-    
-    <!-- Botón Última Página -->
-    <button 
-      class="pagination-btn pagination-btn-nav"
-      (click)="ultimaPagina()"
-      [disabled]="paginaActual === totalPaginas"
-      title="Última página">
-      ⏭️
-    </button>
-    
-  </div>
-  
-  <!-- Información adicional de paginación -->
-  <div class="pagination-details">
-    <p>Página {{ paginaActual }} de {{ totalPaginas }}</p>
-  </div>
-}
 
   <!-- ================================================================ -->
   <!-- ESTADO DE CARGA -->
   <!-- ================================================================ -->
   @if (cargando) {
     <div class="mensaje-cargando">
-      <p>Cargando tanques...</p>
+      <p>⏳ Cargando tanques...</p>
     </div>
   }
 
@@ -220,69 +129,131 @@
   <!-- ================================================================ -->
   @if (error) {
     <div class="mensaje-error">
-      <p>{{ error }}</p>
+      <p>❌ {{ error }}</p>
     </div>
   }
 
   <!-- ================================================================ -->
-  <!-- LISTA DE TANQUES -->
+  <!-- GRID DE TANQUES -->
   <!-- ================================================================ -->
   @if (!cargando && !error) {
     <div class="tanques-grid">
-      @for (tanque of tanquesPaginados; track tanque._id) {
-        <div class="tanque-card" (click)="seleccionarTanque(tanque)">
-          <!-- Header con nombre y nación -->
-          <div class="tanque-header">
-            <h3>{{ tanque.nombre }}</h3>
-            <span class="nacion-badge" [ngClass]="obtenerColorNacion(tanque.nacion)">
-              {{ tanque.nacion }}
-            </span>
-          </div>
-          <img [src]="tanque.imagen_local" alt="imagen del tanque">
-          <!-- Información básica -->
-          <div class="tanque-info">
-            <p><strong>Rol:</strong> {{ tanque.rol }}</p>
-            <p><strong>Rating:</strong> {{ tanque.rating_arcade }}</p>
-            <p><strong>Peso:</strong> {{ tanque.peso }} t</p>
-            <p><strong>Velocidad:</strong> {{ tanque.velocidad_adelante_arcade }} km/h</p>
-          </div>
-
-          <!-- Botones de acción -->
-          <div class="tanque-acciones">
-            <button 
-              (click)="seleccionarTanque(tanque); $event.stopPropagation()" 
-              class="btn-ver">
-              Ver detalles
-            </button>
-            
-            <!-- Botones solo para usuarios autenticados -->
-            @if (isAuthenticated) {
-              <button 
-                (click)="editarTanque(tanque); $event.stopPropagation()" 
-                class="btn-editar">
-                ✏️ Editar
-              </button>
-              <button 
-                (click)="eliminarTanque(tanque._id!); $event.stopPropagation()" 
-                class="btn-eliminar">
-                🗑️ Eliminar
-              </button>
-            } @else {
-              <button 
-                class="btn-disabled"
-                disabled
-                title="Inicia sesión para editar">
-                🔒 Editar
-              </button>
-            }
-          </div>
-        </div>
-      } @empty {
-        <!-- Mensaje si no hay tanques -->
+      @if (tanquesPaginados.length === 0) {
         <div class="sin-resultados">
-          <p>No se encontraron tanques con los filtros seleccionados</p>
+          <p>No se encontraron tanques con los filtros aplicados</p>
         </div>
+      } @else {
+        @for (tanque of tanquesPaginados; track tanque._id) {
+          <div class="tanque-card" (click)="seleccionarTanque(tanque)">
+            
+            <!-- Header con nombre y nación -->
+            <div class="tanque-header">
+              <h3>{{ tanque.nombre }}</h3>
+              <span class="nacion-badge" [ngClass]="obtenerColorNacion(tanque.nacion)">
+                {{ tanque.nacion }}
+              </span>
+            </div>
+
+            <!-- Imagen del tanque -->
+            @if (tanque.imagen_local) {
+              <img [src]="tanque.imagen_local" [alt]="tanque.nombre">
+            }
+            
+            <!-- Información básica -->
+            <div class="tanque-info">
+              <p><strong>Rol:</strong> {{ tanque.rol }}</p>
+              <p><strong>Rating:</strong> {{ tanque.rating_arcade }}</p>
+              <p><strong>Peso:</strong> {{ tanque.peso }} t</p>
+              <p><strong>Velocidad:</strong> {{ tanque.velocidad_adelante_arcade }} km/h</p>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="tanque-acciones">
+              <button 
+                (click)="seleccionarTanque(tanque); $event.stopPropagation()" 
+                class="btn-ver">
+                👁️ Ver
+              </button>
+              
+              @if (isAuthenticated) {
+                <button 
+                  (click)="editarTanque(tanqueSeleccionado!); $event.stopPropagation()" 
+                  class="btn-editar">
+                  ✏️ Editar
+                </button>
+                <button 
+                  (click)="eliminarTanque(tanque._id!); $event.stopPropagation()" 
+                  class="btn-eliminar">
+                  🗑️
+                </button>
+              } @else {
+                <button 
+                  class="btn-disabled"
+                  disabled
+                  title="Inicia sesión para editar">
+                  🔒 Editar
+                </button>
+              }
+            </div>
+          </div>
+        }
       }
+    </div>
+  }
+
+  <!-- ================================================================ -->
+  <!-- CONTROLES DE PAGINACIÓN -->
+  <!-- ================================================================ -->
+  @if (!cargando && tanquesFiltrados.length > tanquesPorPagina) {
+    <div class="pagination-container">
+      
+      <button 
+        class="pagination-btn pagination-btn-nav"
+        (click)="primeraPagina()"
+        [disabled]="paginaActual === 1"
+        title="Primera página">
+        ⏮️
+      </button>
+      
+      <button 
+        class="pagination-btn pagination-btn-nav"
+        (click)="paginaAnterior()"
+        [disabled]="paginaActual === 1"
+        title="Página anterior">
+        ◀️
+      </button>
+      
+      <div class="pagination-numbers">
+        @for (pagina of paginasVisibles; track pagina) {
+          <button 
+            class="pagination-btn pagination-btn-number"
+            [class.active]="pagina === paginaActual"
+            (click)="irAPagina(pagina)">
+            {{ pagina }}
+          </button>
+        }
+      </div>
+      
+      <button 
+        class="pagination-btn pagination-btn-nav"
+        (click)="paginaSiguiente()"
+        [disabled]="paginaActual === totalPaginas"
+        title="Página siguiente">
+        ▶️
+      </button>
+      
+      <button 
+        class="pagination-btn pagination-btn-nav"
+        (click)="ultimaPagina()"
+        [disabled]="paginaActual === totalPaginas"
+        title="Última página">
+        ⏭️
+      </button>
+      
+    </div>
+    
+    <div class="pagination-details">
+      <p>Página {{ paginaActual }} de {{ totalPaginas }}</p>
     </div>
   }
 
@@ -293,13 +264,10 @@
     <div class="modal-overlay" (click)="cerrarDetalles()">
       <div class="modal-contenido" (click)="$event.stopPropagation()">
         
-        <!-- Botón cerrar -->
         <button class="btn-cerrar" (click)="cerrarDetalles()">✕</button>
 
-        <!-- Título -->
         <h2>{{ tanqueSeleccionado.nombre }}</h2>
 
-        <!-- Información detallada -->
         <div class="detalles-grid">
           <div class="detalle-seccion">
             <h3>Información General</h3>
@@ -334,68 +302,25 @@
           </div>
         </div>
 
-        <!-- Setup de armas 1 -->
-        @if (tanqueSeleccionado.setup_1) {
-          <div class="setup-seccion">
-            <h3>Setup 1</h3>
-            @for (arma of obtenerArmasSetup(tanqueSeleccionado.setup_1); track arma.nombre) {
-              <div>
-                <h4>{{ arma.nombre }}</h4>
-                <ul>
-                  @for (municion of arma.municiones; track municion.nombre) {
-                    <li>
-                      {{ municion.nombre }} ({{ municion.tipo }}) - 
-                      Penetración: {{ municion.penetracion_mm[0] }}mm
-                    </li>
-                  }
-                </ul>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Setup de armas 2 -->
-        @if (tanqueSeleccionado.setup_2) {
-          <div class="setup-seccion">
-            <h3>Setup 2</h3>
-            @for (arma of obtenerArmasSetup(tanqueSeleccionado.setup_2); track arma.nombre) {
-              <div>
-                <h4>{{ arma.nombre }}</h4>
-                <ul>
-                  @for (municion of arma.municiones; track municion.nombre) {
-                    <li>
-                      {{ municion.nombre }} ({{ municion.tipo }}) - 
-                      Penetración: {{ municion.penetracion_mm[0] }}mm
-                    </li>
-                  }
-                </ul>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Armamento (con detalles expandidos de penetración) -->
         @if (tanqueSeleccionado.armamento) {
           <div class="setup-seccion">
-            <h3>Armamento</h3>
-            @for (arma of obtenerArmasSetup(tanqueSeleccionado.armamento); track arma.nombre) {
-              <div>
-                <h4>{{ arma.nombre }}</h4>
-                <ul>
-                  @for (municion of arma.municiones; track municion.nombre) {
-                    <li>
-                      {{ municion.nombre }} ({{ municion.tipo }})
-                      <ul>
-                        <li>Penetración a 0 metros: {{ municion.penetracion_mm[0] }}mm</li>
-                        <li>Penetración a 100 metros: {{ municion.penetracion_mm[1] }}mm</li>
-                        <li>Penetración a 500 metros: {{ municion.penetracion_mm[2] }}mm</li>
-                        <li>Penetración a 1000 metros: {{ municion.penetracion_mm[3] }}mm</li>
-                        <li>Penetración a 1500 metros: {{ municion.penetracion_mm[4] }}mm</li>
-                        <li>Penetración a 2000 metros: {{ municion.penetracion_mm[5] }}mm</li>
-                      </ul>
-                    </li>
-                  }
-                </ul>
+            <h3>🔫 Armamento Detallado</h3>
+            @for (armaKey of Object.keys(tanqueSeleccionado.armamento); track armaKey) {
+              <div class="arma-detalle">
+                <h4>{{ armaKey }}</h4>
+                @for (municion of tanqueSeleccionado.armamento[armaKey].municiones; track $index) {
+                  <div class="municion-detalle">
+                    <p><strong>{{ municion.nombre }}</strong> ({{ municion.tipo }})</p>
+                    <ul class="penetracion-lista">
+                      <li>0m: {{ municion.penetracion_mm[0] }}mm</li>
+                      <li>100m: {{ municion.penetracion_mm[1] }}mm</li>
+                      <li>500m: {{ municion.penetracion_mm[2] }}mm</li>
+                      <li>1000m: {{ municion.penetracion_mm[3] }}mm</li>
+                      <li>1500m: {{ municion.penetracion_mm[4] }}mm</li>
+                      <li>2000m: {{ municion.penetracion_mm[5] }}mm</li>
+                    </ul>
+                  </div>
+                }
               </div>
             }
           </div>
