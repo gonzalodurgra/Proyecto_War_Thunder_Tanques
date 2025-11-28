@@ -66,7 +66,7 @@ async def registrar_usuario(usuario: Usuario):
         email=usuario.email,
         nombre_completo=usuario.nombre_completo,
         hashed_password=argon2.hash(usuario.password),  # Hashear la contraseña
-        disabled=False
+        activo=True
     )
     
     # PASO 4: Guardar en la base de datos
@@ -78,7 +78,7 @@ async def registrar_usuario(usuario: Usuario):
         username=usuario_db.username,
         email=usuario_db.email,
         nombre_completo=usuario_db.nombre_completo,
-        disabled=usuario_db.disabled,
+        activo=usuario_db.activo,
         created_at=usuario_db.created_at
     )
 
@@ -149,6 +149,6 @@ async def obtener_perfil(
         username=usuario_actual.username,
         email=usuario_actual.email,
         nombre_completo=usuario_actual.nombre_completo,
-        disabled=usuario_actual.disabled,
+        activo=usuario_actual.activo,
         created_at=usuario_actual.created_at
     )
