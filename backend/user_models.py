@@ -55,5 +55,5 @@ class TokenData(BaseModel):
 
 class LoginRequest(BaseModel):
     """Modelo para la solicitud de login"""
-    email: EmailStr
+    username: str
     password: str
