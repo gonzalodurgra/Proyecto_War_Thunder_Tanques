@@ -47,11 +47,11 @@ class Token(BaseModel):
     """Modelo para el token JWT"""
     access_token: str
     token_type: str
-    usuario: UsuarioDB  # Info del usuario logueado
+    username: str  # Info del usuario logueado
 
 class TokenData(BaseModel):
     """Datos almacenados en el token JWT"""
-    email: Optional[str] = None
+    username: Optional[str] = None
 
 class LoginRequest(BaseModel):
     """Modelo para la solicitud de login"""
