@@ -79,7 +79,7 @@ async def registrar_usuario(usuario: Usuario):
         email=usuario_db.email,
         nombre_completo=usuario_db.nombre_completo,
         activo=usuario_db.activo,
-        created_at=usuario_db.created_at
+        fecha_registro=usuario_db.fecha_registro
     )
 
 # ====================================================================
@@ -150,5 +150,5 @@ async def obtener_perfil(
         email=usuario_actual.email,
         nombre_completo=usuario_actual.nombre_completo,
         activo=usuario_actual.activo,
-        created_at=usuario_actual.created_at
+        fecha_registro=usuario_actual.fecha_registro
     )
