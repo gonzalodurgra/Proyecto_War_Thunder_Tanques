@@ -67,7 +67,7 @@ async def registrar_usuario(usuario: Usuario):
         nombre_completo=usuario.nombre_completo,
         hashed_password=argon2.hash(usuario.password),  # Hashear la contraseña
         activo=True,
-        fecha_registro=datetime.__str__
+        fecha_registro=datetime.now().isoformat()
     )
     
     # PASO 4: Guardar en la base de datos
