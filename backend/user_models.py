@@ -1,6 +1,7 @@
 # user_models.py
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional
+from bson import ObjectId
 
 # ====================================================================
 # MODELOS DE USUARIO
@@ -21,7 +22,11 @@ class UsuarioDB(BaseModel):
     es_admin: bool = False
     activo: bool = True
     fecha_registro: Optional[str] = None
-
+    @field_validator("id", mode="before")
+    def convertir_objectid(cls, v):
+        if isinstance(v, ObjectId):
+            return str(v)
+        return v
     class Config:
         populate_by_name = True
 
@@ -35,6 +40,11 @@ class UsuarioEnDB(BaseModel):
     activo: bool = True
     fecha_registro: Optional[str] = None
     username: str
+    @field_validator("id", mode="before")
+    def convertir_objectid(cls, v):
+        if isinstance(v, ObjectId):
+            return str(v)
+        return v
 
     class Config:
         populate_by_name = True
