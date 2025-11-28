@@ -34,7 +34,7 @@ export interface RevisionCambio {
 })
 export class PendingChangesService {
   
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}/cambios-pendientes`;
 
   constructor(
     private http: HttpClient,
