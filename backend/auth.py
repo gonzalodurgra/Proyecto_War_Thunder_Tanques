@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 # IMPORTANTE: En producción, usa una clave secreta segura y guárdala en variables de entorno
 load_dotenv()
-SECRET_KEY =  os.getenv("SECRETKEY") # Cámbiala!
+SECRET_KEY =  os.getenv("SECRET_KEY") # Cámbiala!
 ALGORITHM = os.getenv("JWT_ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # El token expira en 30 minutos
 
