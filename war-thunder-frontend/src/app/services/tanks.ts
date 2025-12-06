@@ -30,18 +30,18 @@ export interface Tanque {
   imagen_local: string;
   nacion: string;
   rating_arcade: string;
-  rating_realista: string;
+  rating_realista?: string;
   tripulacion: number;
   visibilidad: number;
   peso: number;
   blindaje_chasis: number;
   blindaje_torreta: number;
   velocidad_adelante_arcade: number;
-  velocidad_adelante_realista: number;
+  velocidad_adelante_realista?: number;
   velocidad_atras_arcade: number;
-  velocidad_atras_realista: number
+  velocidad_atras_realista?: number
   relacion_potencia_peso: number;
-  relacion_potencia_peso_realista: number;
+  relacion_potencia_peso_realista?: number;
   angulo_depresion: number;
   angulo_elevacion: number;
   recarga: number;
@@ -49,9 +49,9 @@ export interface Tanque {
   cargador: number;
   municion_total: number;
   rotacion_torreta_horizontal_arcade: number;
-  rotacion_torreta_horizontal_realista: number;
+  rotacion_torreta_horizontal_realista?: number;
   rotacion_torreta_vertical_arcade: number;
-  rotacion_torreta_vertical_realista: number;
+  rotacion_torreta_vertical_realista?: number;
   armamento?: { [key: string]: Arma }
   setup_1?: { [key: string]: Arma };
   setup_2?: { [key: string]: Arma };
