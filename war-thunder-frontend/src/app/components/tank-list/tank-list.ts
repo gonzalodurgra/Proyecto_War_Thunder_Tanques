@@ -332,7 +332,7 @@ export class TankListComponent implements OnInit {
         console.log('Tanque eliminado:', response);
         this.cargarTanques();
         
-        if (this.tanqueSeleccionado && this.tanqueSeleccionado._id === id) {
+        if (this.tanqueSeleccionado && this.tanqueSeleccionado.id === id) {
           this.cerrarDetalles();
         }
       },
@@ -381,7 +381,7 @@ export class TankListComponent implements OnInit {
     }
     
     // Navegar a la ruta de edición con el ID del tanque
-    this.router.navigate(['/tanques/editar', tanque._id]);
+    this.router.navigate(['/tanques/editar', tanque.id]);
   }
 
   // ====================================================================

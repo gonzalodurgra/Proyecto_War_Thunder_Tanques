@@ -24,7 +24,7 @@ export interface Arma {
 }
 
 export interface Tanque {
-  _id?: string;  // El signo ? significa que es opcional
+  id?: string;  // El signo ? significa que es opcional
   nombre: string;
   rol: string;
   imagen_local: string;
@@ -131,7 +131,7 @@ export class TanksService {
     // EXPLICACIÓN:
     // - Omitimos el _id porque MongoDB lo genera automáticamente
     // - Enviamos el tanque en el body de la petición
-    const { _id, ...tanqueSinId } = tanque;
+    const { id: _id, ...tanqueSinId } = tanque;
     
     return this.http.post<any>(
       `${this.apiUrl}/tanques/`,
@@ -144,7 +144,7 @@ export class TanksService {
   // MÉTODO 5: Actualizar un tanque (PUT)
   // ====================================================================
   actualizarTanque(id: string, tanque: Tanque): Observable<any> {
-    const { _id, ...tanqueSinId } = tanque;
+    const { id: _id, ...tanqueSinId } = tanque;
     
     return this.http.put<any>(
       `${this.apiUrl}/tanques/${id}`,
