@@ -143,7 +143,7 @@
           <p>No se encontraron tanques con los filtros aplicados</p>
         </div>
       } @else {
-        @for (tanque of tanquesPaginados; track tanque.id) {
+        @for (tanque of tanquesPaginados; track tanque._id) {
           <div class="tanque-card" (click)="seleccionarTanque(tanque)">
             
             <!-- Header con nombre y nación -->
@@ -182,7 +182,7 @@
                   ✏️ Editar
                 </button>
                 <button 
-                  (click)="eliminarTanque(tanque.id!); $event.stopPropagation()" 
+                  (click)="eliminarTanque(tanque._id!); $event.stopPropagation()" 
                   class="btn-eliminar">
                   🗑️
                 </button>
