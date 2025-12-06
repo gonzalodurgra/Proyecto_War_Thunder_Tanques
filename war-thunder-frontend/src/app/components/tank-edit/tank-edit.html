@@ -105,6 +105,18 @@
               [disabled]="guardando"
             >
           </div>
+
+          <div class="form-group">
+            <label for="rating_realista">Rating Realista</label>
+            <input
+              type="text"
+              id="rating_realista"
+              name="rating_realista"
+              [(ngModel)]="tanque.rating_realista"
+              placeholder="Ej: 2.3"
+              [disabled]="guardando"
+            >
+          </div>
         </div>
 
         <div class="form-row">
@@ -264,23 +276,36 @@
         
         <div class="form-row">
           <div class="form-group">
-            <label for="velocidad_adelante">Velocidad Adelante (km/h)</label>
+            <label for="velocidad_adelante_arcade">Velocidad Adelante Arcade (km/h)</label>
             <input
               type="number"
-              id="velocidad_adelante"
-              name="velocidad_adelante"
+              id="velocidad_adelante_arcade"
+              name="velocidad_adelante_arcade"
               [(ngModel)]="tanque.velocidad_adelante_arcade"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+        </div>
+
+          <div class="form-group">
+            <label for="velocidad_adelante_realista">Velocidad Adelante Realista (km/h)</label>
+            <input
+              type="number"
+              id="velocidad_adelante_realista"
+              name="velocidad_adelante_realista"
+              [(ngModel)]="tanque.velocidad_adelante_realista"
               min="0"
               [disabled]="guardando"
             >
           </div>
 
           <div class="form-group">
-            <label for="velocidad_atras">Velocidad Atrás (km/h)</label>
+            <label for="velocidad_atras_arcade">Velocidad Atrás Arcade (km/h)</label>
             <input
               type="number"
-              id="velocidad_atras"
-              name="velocidad_atras"
+              id="velocidad_atras_arcade"
+              name="velocidad_atras_arcade"
               [(ngModel)]="tanque.velocidad_atras_arcade"
               min="0"
               [disabled]="guardando"
@@ -288,19 +313,43 @@
           </div>
 
           <div class="form-group">
-            <label for="relacion_potencia">Relación Potencia/Peso</label>
+            <label for="velocidad_atras_realista">Velocidad Atrás Realista (km/h)</label>
             <input
               type="number"
-              id="relacion_potencia"
-              name="relacion_potencia"
+              id="velocidad_atras_realista"
+              name="velocidad_atras_realista"
+              [(ngModel)]="tanque.velocidad_atras_realista"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="relacion_potencia_arcade">Relación Potencia/Peso Arcade</label>
+            <input
+              type="number"
+              id="relacion_potencia_arcade"
+              name="relacion_potencia_arcade"
               [(ngModel)]="tanque.relacion_potencia_peso"
               step="0.1"
               min="0"
               [disabled]="guardando"
             >
           </div>
+
+          <div class="form-group">
+            <label for="relacion_potencia_realista">Relación Potencia/Peso Realista</label>
+            <input
+              type="number"
+              id="relacion_potencia_realista"
+              name="relacion_potencia_realista"
+              [(ngModel)]="tanque.relacion_potencia_peso_realista"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
         </div>
-      </div>
 
       <!-- ============================================================ -->
       <!-- SECCIÓN 4: ARMAMENTO -->
@@ -386,11 +435,11 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="rotacion_horizontal">Rotación Horizontal (°/s)</label>
+            <label for="rotacion_horizontal_arcade">Rotación Horizontal Arcade(°/s)</label>
             <input
               type="number"
-              id="rotacion_horizontal"
-              name="rotacion_horizontal"
+              id="rotacion_horizontal_arcade"
+              name="rotacion_horizontal_arcade"
               [(ngModel)]="tanque.rotacion_torreta_horizontal_arcade"
               step="0.1"
               min="0"
@@ -399,12 +448,38 @@
           </div>
 
           <div class="form-group">
-            <label for="rotacion_vertical">Rotación Vertical (°/s)</label>
+            <label for="rotacion_horizontal_realista">Rotación Horizontal Realista(°/s)</label>
             <input
               type="number"
-              id="rotacion_vertical"
-              name="rotacion_vertical"
+              id="rotacion_horizontal_realista"
+              name="rotacion_horizontal_realista"
+              [(ngModel)]="tanque.rotacion_torreta_horizontal_realista"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="rotacion_vertical_arcade">Rotación Vertical Arcade(°/s)</label>
+            <input
+              type="number"
+              id="rotacion_vertical_arcade"
+              name="rotacion_vertical_arcade"
               [(ngModel)]="tanque.rotacion_torreta_vertical_arcade"
+              step="0.1"
+              min="0"
+              [disabled]="guardando"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="rotacion_vertical_realista">Rotación Vertical Realista(°/s)</label>
+            <input
+              type="number"
+              id="rotacion_vertical_realista"
+              name="rotacion_vertical_realista"
+              [(ngModel)]="tanque.rotacion_torreta_vertical_realista"
               step="0.1"
               min="0"
               [disabled]="guardando"

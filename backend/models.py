@@ -38,8 +38,11 @@ class Tanque(BaseModel):
     blindaje_chasis: int
     blindaje_torreta: int
     velocidad_adelante_arcade: int
+    velocidad_adelante_realista: int
     velocidad_atras_arcade: int
+    velocidad_atras_realista: int
     relacion_potencia_peso: float
+    relacion_potencia_peso_realista: float
     angulo_depresion: int
     angulo_elevacion: int
     recarga: float
@@ -47,7 +50,9 @@ class Tanque(BaseModel):
     cargador: int
     municion_total: int
     rotacion_torreta_horizontal_arcade: float
+    rotacion_torreta_horizontal_realista: float
     rotacion_torreta_vertical_arcade: float
+    rotacion_torreta_vertical_realista: float
     setup_1: Dict[str, Arma]  # Diccionario con las armas del setup 1
     setup_2: Dict[str, Arma]  # Diccionario con las armas del setup 2
 

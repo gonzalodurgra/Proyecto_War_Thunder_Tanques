@@ -101,7 +101,6 @@ def extraer_datos_municion(fila, pagina):
         shell["masa_explosivo"] = None
         shell["masa_total"] = None
         shell["velocidad_bala"] = None
-    
     return shell
 
 
@@ -210,6 +209,9 @@ def fetch_data(pagina):
     rating_locator = pagina.locator(".game-unit_br-item", has_text="AB").locator(".value")
     datos["rating_arcade"] = limpiar_texto(rating_locator.first.inner_text()) if rating_locator.count() > 0 else None
     
+    rating_locator = pagina.locator(".game-unit_br-item", has_text="RB").locator(".value")
+    datos["rating_realista"] = limpiar_texto(rating_locator.first.inner_text()) if rating_locator.count() > 0 else None
+    
     # === CARACTERÍSTICAS ===
     datos["tripulacion"] = int(coger_texto(pagina, ".game-unit_chars-line:has(.game-unit_chars-header:has-text('Crew')) .game-unit_chars-value").replace("persons", "").strip())
     datos["visibilidad"] = int(coger_texto(pagina, ".game-unit_chars-header:has-text('Visibility') + .game-unit_chars-value").replace("%", "").strip())
@@ -234,6 +236,13 @@ def fetch_data(pagina):
         datos["relacion_potencia_peso"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .text-success"))
     else:
         datos["relacion_potencia_peso"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value span"))
+        
+    if pagina.locator(".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .show-char-rb").count() > 0:
+        datos["velocidad_adelante_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .show-char-rb"))
+    if pagina.locator(".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb").count() > 0:
+        datos["velocidad_atras_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb"))
+    if pagina.locator(".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb").count() > 0:
+        datos["relacion_potencia_peso_realista"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb"))
     
     # === ARMAMENTO PRINCIPAL ===
     if pagina.locator(".game-unit_weapon-title").count() > 0:
@@ -277,6 +286,21 @@ def fetch_data(pagina):
             if len(valores) > 1:
                 rotacion_vertical = float(valores[1].inner_text())
                 datos["rotacion_torreta_vertical_arcade"] = rotacion_vertical
+                
+        selector_horizontal = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Horizontal']]//span[contains(@class,'show-char-rb-mod-ref')]"
+        selector_vertical = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Vertical']]//span[contains(@class,'show-char-rb-mod-ref')]"
+        
+        if linea_torreta.locator(selector_horizontal).count() > 0:
+            valores = linea_torreta.locator(selector_horizontal).all()
+            if len(valores) > 1:
+                rotacion_horizontal = float(valores[1].inner_text())
+                datos["rotacion_torreta_horizontal_realista"] = rotacion_horizontal
+                
+        if linea_torreta.locator(selector_vertical).count() > 0:
+            valores = linea_torreta.locator(selector_vertical).all()
+            if len(valores) > 1:
+                rotacion_vertical = float(valores[1].inner_text())
+                datos["rotacion_torreta_vertical_realista"] = rotacion_vertical
         
         # === MUNICIONES (código unificado) ===
         armamento = extraer_armamento(pagina)

@@ -162,9 +162,9 @@
             <!-- Información básica -->
             <div class="tanque-info">
               <p><strong>Rol:</strong> {{ tanque.rol }}</p>
-              <p><strong>Rating:</strong> {{ tanque.rating_arcade }}</p>
+              <p><strong>Rating</strong> {{ tanque.rating_arcade }}/{{ tanque.rating_realista}}</p>
               <p><strong>Peso:</strong> {{ tanque.peso }} t</p>
-              <p><strong>Velocidad:</strong> {{ tanque.velocidad_adelante_arcade }} km/h</p>
+              <p><strong>Velocidad:</strong> {{ tanque.velocidad_adelante_arcade }}/{{tanque.velocidad_adelante_realista}} km/h</p>
             </div>
 
             <!-- Botones de acción -->
@@ -273,7 +273,7 @@
             <h3>Información General</h3>
             <p><strong>Nación:</strong> {{ tanqueSeleccionado.nacion }}</p>
             <p><strong>Rol:</strong> {{ tanqueSeleccionado.rol }}</p>
-            <p><strong>Rating:</strong> {{ tanqueSeleccionado.rating_arcade }}</p>
+            <p><strong>Rating:</strong> {{ tanqueSeleccionado.rating_arcade }}/{{ tanqueSeleccionado.rating_realista }}</p>
             <p><strong>Tripulación:</strong> {{ tanqueSeleccionado.tripulacion }}</p>
           </div>
 
@@ -287,9 +287,9 @@
 
           <div class="detalle-seccion">
             <h3>Movilidad</h3>
-            <p><strong>Velocidad adelante:</strong> {{ tanqueSeleccionado.velocidad_adelante_arcade }} km/h</p>
-            <p><strong>Velocidad atrás:</strong> {{ tanqueSeleccionado.velocidad_atras_arcade }} km/h</p>
-            <p><strong>Potencia/Peso:</strong> {{ tanqueSeleccionado.relacion_potencia_peso }} hp/t</p>
+            <p><strong>Velocidad adelante:</strong> {{ tanqueSeleccionado.velocidad_adelante_arcade }}/{{ tanqueSeleccionado.velocidad_adelante_realista }} km/h</p>
+            <p><strong>Velocidad atrás:</strong> {{ tanqueSeleccionado.velocidad_atras_arcade }}/{{ tanqueSeleccionado.velocidad_atras_realista }} km/h</p>
+            <p><strong>Potencia/Peso:</strong> {{ tanqueSeleccionado.relacion_potencia_peso }}/{{ tanqueSeleccionado.relacion_potencia_peso_realista }} hp/t</p>
           </div>
 
           <div class="detalle-seccion">
@@ -299,6 +299,12 @@
             <p><strong>Munición total:</strong> {{ tanqueSeleccionado.municion_total }}</p>
             <p><strong>Depresión:</strong> {{ tanqueSeleccionado.angulo_depresion }}°</p>
             <p><strong>Elevación:</strong> {{ tanqueSeleccionado.angulo_elevacion }}°</p>
+            @if (tanqueSeleccionado.rotacion_torreta_horizontal_arcade) {
+              <p><strong>Rotación lateral de la torreta:</strong> {{ tanqueSeleccionado.rotacion_torreta_horizontal_arcade }}/{{tanqueSeleccionado.rotacion_torreta_horizontal_realista}}º/s</p>
+            }
+            @if (tanqueSeleccionado.rotacion_torreta_vertical_arcade) {
+              <p><strong>Rotación vertical de la torreta:</strong> {{ tanqueSeleccionado.rotacion_torreta_vertical_arcade }}/{{tanqueSeleccionado.rotacion_torreta_vertical_realista}}º/s</p>
+            }
           </div>
         </div>
 
