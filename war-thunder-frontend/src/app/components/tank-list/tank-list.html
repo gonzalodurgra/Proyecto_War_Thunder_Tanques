@@ -311,7 +311,50 @@
             }
           </div>
         </div>
-
+        @if (tanqueSeleccionado.setup_1 && tanqueSeleccionado.setup_2) {
+          <div class="setup-seccion">
+            <h3>🔫 Setup 1</h3>
+          @for (armaKey of Object.keys(tanqueSeleccionado.setup_1); track armaKey) {
+              <div class="arma-detalle">
+                <h4>{{ armaKey }}</h4>
+                @for (municion of tanqueSeleccionado.setup_1[armaKey].municiones; track $index) {
+                  <div class="municion-detalle">
+                    <p><strong>{{ municion.nombre }}</strong> ({{ municion.tipo }})</p>
+                    <ul class="penetracion-lista">
+                      <li>0m: {{ municion.penetracion_mm[0] }}mm</li>
+                      <li>100m: {{ municion.penetracion_mm[1] }}mm</li>
+                      <li>500m: {{ municion.penetracion_mm[2] }}mm</li>
+                      <li>1000m: {{ municion.penetracion_mm[3] }}mm</li>
+                      <li>1500m: {{ municion.penetracion_mm[4] }}mm</li>
+                      <li>2000m: {{ municion.penetracion_mm[5] }}mm</li>
+                    </ul>
+                  </div>
+                }
+              </div>
+            }
+            </div>
+            <div class="setup-seccion">
+            <h3>🔫 Setup 2</h3>
+            @for (armaKey of Object.keys(tanqueSeleccionado.setup_2); track armaKey) {
+              <div class="arma-detalle">
+                <h4>{{ armaKey }}</h4>
+                @for (municion of tanqueSeleccionado.setup_2[armaKey].municiones; track $index) {
+                  <div class="municion-detalle">
+                    <p><strong>{{ municion.nombre }}</strong> ({{ municion.tipo }})</p>
+                    <ul class="penetracion-lista">
+                      <li>0m: {{ municion.penetracion_mm[0] }}mm</li>
+                      <li>100m: {{ municion.penetracion_mm[1] }}mm</li>
+                      <li>500m: {{ municion.penetracion_mm[2] }}mm</li>
+                      <li>1000m: {{ municion.penetracion_mm[3] }}mm</li>
+                      <li>1500m: {{ municion.penetracion_mm[4] }}mm</li>
+                      <li>2000m: {{ municion.penetracion_mm[5] }}mm</li>
+                    </ul>
+                  </div>
+                }
+              </div>
+            }
+            </div>
+        }
         @if (tanqueSeleccionado.armamento) {
           <div class="setup-seccion">
             <h3>🔫 Armamento Detallado</h3>
