@@ -241,8 +241,8 @@ def fetch_data(pagina):
         datos["velocidad_adelante_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .show-char-rb"))
     if pagina.locator(".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb").count() > 0:
         datos["velocidad_atras_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb"))
-    if pagina.locator(".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb").count() > 0:
-        datos["relacion_potencia_peso_realista"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb"))
+    if pagina.locator(".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb-mod-ref").count() > 0:
+        datos["relacion_potencia_peso_realista"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb-mod-ref"))
     
     # === ARMAMENTO PRINCIPAL ===
     if pagina.locator(".game-unit_weapon-title").count() > 0:
