@@ -324,6 +324,41 @@ export class TankListComponent implements OnInit {
     console.log('🎨 Colores calculados para:', tanque.nombre);
     console.log('Rating:', tanque.rating_arcade);
     console.log('Colores:', this.coloresTanque);
+
+    const statsNormales = [
+      'tripulacion',
+      'blindaje_chasis',
+      'blindaje_torreta',
+      'velocidad_adelante_arcade',
+      'velocidad_atras_arcade',
+      'relacion_potencia_peso',
+      'cadencia',
+      'angulo_depresion',
+      'angulo_elevacion',
+      'rotacion_torreta_horizontal_arcade',
+      'rotacion_torreta_vertical_arcade'
+    ];
+
+    const statsInvertidas = [
+      'visibilidad',
+      'recarga'
+    ];
+
+    for (const stat of statsNormales) {
+      const valor = (tanque as any)[stat];
+      if (valor !== undefined && valor !== null) {
+        const p = this.obtenerPercentil(tanque, stat, valor);
+        this.coloresTanque[stat] = this.obtenerColorPorPercentil(p);
+      }
+    }
+
+    for (const stat of statsInvertidas) {
+      const valor = (tanque as any)[stat];
+      if (valor !== undefined && valor !== null) {
+        const p = this.obtenerPercentil(tanque, stat, valor);
+        this.coloresTanque[stat] = this.obtenerColorPorPercentilInvertido(p);
+      }
+    }
   }
 
   // ====================================================================
@@ -510,4 +545,20 @@ export class TankListComponent implements OnInit {
   toggleEstadisticasAvanzadas(): void {
     this.mostrarEstadisticasAvanzadas = !this.mostrarEstadisticasAvanzadas;
   }
+  obtenerColorPorPercentil(percentil: number): string {
+    if (percentil <= 10) return '#ef4444';
+    if (percentil <= 20) return '#f87171';
+    if (percentil <= 30) return '#fb923c';
+    if (percentil <= 40) return '#fbbf24';
+    if (percentil <= 50) return '#facc15';
+    if (percentil <= 60) return '#a3e635';
+    if (percentil <= 70) return '#84cc16';
+    if (percentil <= 80) return '#4ade80';
+    if (percentil <= 90) return '#22c55e';
+    return '#16a34a';
+  }
+  obtenerColorPorPercentilInvertido(percentil: number): string {
+    return this.obtenerColorPorPercentil(100 - percentil);
+  }
+
 }
