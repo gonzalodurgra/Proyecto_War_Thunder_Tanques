@@ -27,15 +27,27 @@ export interface RangosEstadisticas {
   visibilidad: RangoEstadistica;
   blindaje_chasis: RangoEstadistica;
   blindaje_torreta: RangoEstadistica;
+  
   velocidad_adelante_arcade: RangoEstadistica;
+  velocidad_adelante_realista: RangoEstadistica;
+
   velocidad_atras_arcade: RangoEstadistica;
+  velocidad_atras_realista: RangoEstadistica;
+
   relacion_potencia_peso: RangoEstadistica;
+  relacion_potencia_peso_realista: RangoEstadistica;
+
   angulo_depresion: RangoEstadistica;
   angulo_elevacion: RangoEstadistica;
+
   recarga: RangoEstadistica;
   cadencia: RangoEstadistica;
+
   rotacion_torreta_horizontal_arcade: RangoEstadistica;
+  rotacion_torreta_horizontal_realista: RangoEstadistica;
+  
   rotacion_torreta_vertical_arcade: RangoEstadistica;
+  rotacion_torreta_vertical_realista: RangoEstadistica;
 }
 
 // Interfaz para estadísticas agrupadas por rating
