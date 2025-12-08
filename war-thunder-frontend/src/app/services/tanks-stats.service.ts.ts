@@ -73,6 +73,7 @@ export class TanksStatsService {
   // ====================================================================
   
   calcularRangosGlobales(tanques: Tanque[]): RangosEstadisticas {
+    tanques = this.limpiarTanques(tanques)
     const tabla = aq.from(tanques);
 
     const columnasEstadisticas = [
@@ -175,6 +176,7 @@ export class TanksStatsService {
   // ====================================================================
   
   private calcularRangosParaGrupo(tanques: Tanque[]): RangosEstadisticas {
+    tanques = this.limpiarTanques(tanques)
     const tabla = aq.from(tanques);
 
     const columnasEstadisticas = [
@@ -322,15 +324,15 @@ export class TanksStatsService {
       visibilidad_realista: this.obtenerColor('visibilidad', tanque.visibilidad, rating_realista, true),
       blindaje_chasis_realista: this.obtenerColor('blindaje_chasis', tanque.blindaje_chasis, rating_realista),
       blindaje_torreta_realista: this.obtenerColor('blindaje_torreta', tanque.blindaje_torreta, rating_realista),
-      velocidad_adelante_realista: this.obtenerColor('velocidad_adelante_arcade', tanque.velocidad_adelante_arcade, rating_realista),
-      velocidad_atras_realista: this.obtenerColor('velocidad_atras_arcade', tanque.velocidad_atras_arcade, rating_realista),
-      potencia_peso_realista: this.obtenerColor('relacion_potencia_peso', tanque.relacion_potencia_peso, rating_realista),
+      velocidad_adelante_realista: this.obtenerColor('velocidad_adelante_realista', tanque.velocidad_adelante_arcade, rating_realista),
+      velocidad_atras_realista: this.obtenerColor('velocidad_atras_realista', tanque.velocidad_atras_arcade, rating_realista),
+      potencia_peso_realista: this.obtenerColor('relacion_potencia_peso_realista', tanque.relacion_potencia_peso, rating_realista),
       depresion_realista: this.obtenerColor('angulo_depresion', tanque.angulo_depresion, rating_realista),
       elevacion_realista: this.obtenerColor('angulo_elevacion', tanque.angulo_elevacion, rating_realista),
       recarga_realista: this.obtenerColor('recarga', tanque.recarga, rating_realista, true),
       cadencia_realista: this.obtenerColor('cadencia', tanque.cadencia, rating_realista),
-      rotacion_horizontal_realista: this.obtenerColor('rotacion_torreta_horizontal_arcade', tanque.rotacion_torreta_horizontal_arcade, rating_realista),
-      rotacion_vertical_realista: this.obtenerColor('rotacion_torreta_vertical_arcade', tanque.rotacion_torreta_vertical_arcade, rating_realista)
+      rotacion_horizontal_realista: this.obtenerColor('rotacion_torreta_horizontal_realista', tanque.rotacion_torreta_horizontal_arcade, rating_realista),
+      rotacion_vertical_realista: this.obtenerColor('rotacion_torreta_vertical_realista', tanque.rotacion_torreta_vertical_arcade, rating_realista)
     };
   }
 
@@ -432,4 +434,41 @@ export class TanksStatsService {
     if (penetracionMm <= stats.d9) return '#22c55e';
     return '#16a34a';
   }
+
+  private limpiarTanques(tanques: Tanque[]): Tanque[] {
+  const columnasNumericas = [
+    'tripulacion',
+    'visibilidad',
+    'blindaje_chasis',
+    'blindaje_torreta',
+    'velocidad_adelante_arcade',
+    'velocidad_adelante_realista',
+    'velocidad_atras_arcade',
+    'velocidad_atras_realista',
+    'relacion_potencia_peso',
+    'relacion_potencia_peso_realista',
+    'angulo_depresion',
+    'angulo_elevacion',
+    'recarga',
+    'cadencia',
+    'rotacion_torreta_horizontal_arcade',
+    'rotacion_torreta_horizontal_realista',
+    'rotacion_torreta_vertical_arcade',
+    'rotacion_torreta_vertical_realista'
+  ];
+
+  return tanques.map(t => {
+    const copia = { ...t };
+
+    columnasNumericas.forEach(col => {
+      const valor = (copia as any)[col];
+
+      // Convertir string a número, o dejar 0 si no se puede convertir
+      (copia as any)[col] = typeof valor === 'number' ? valor : Number(valor) || 0;
+    });
+
+    return copia;
+  });
+}
+
 }
