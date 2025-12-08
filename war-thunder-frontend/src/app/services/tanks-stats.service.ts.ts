@@ -378,36 +378,28 @@ export class TanksStatsService {
   // ====================================================================
   
   obtenerColorPenetracion(penetracionMm: number, todosLosTanques: Tanque[]): string {
-    const todasLasPenetraciones: number[] = [];
+    const todasLasPenetraciones: any[] = [];
 
     todosLosTanques.forEach(tanque => {
-      if (tanque.armamento) {
-        Object.values(tanque.armamento).forEach(arma => {
-          arma.municiones.forEach(municion => {
-            todasLasPenetraciones.push(...municion.penetracion_mm);
+      [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
+        if (setup) {
+          Object.values(setup).forEach(arma => {
+            arma.municiones.forEach(municion => {
+              todasLasPenetraciones.push(...municion.penetracion_mm);
+            });
           });
-        });
-      }
-
-      if (tanque.setup_1) {
-        Object.values(tanque.setup_1).forEach(arma => {
-          arma.municiones.forEach(municion => {
-            todasLasPenetraciones.push(...municion.penetracion_mm);
-          });
-        });
-      }
-
-      if (tanque.setup_2) {
-        Object.values(tanque.setup_2).forEach(arma => {
-          arma.municiones.forEach(municion => {
-            todasLasPenetraciones.push(...municion.penetracion_mm);
-          });
-        });
-      }
+        }
+      });
     });
 
-    const tablaPenetraciones = aq.from({ penetracion: todasLasPenetraciones });
-    
+    // 🔥 LIMPIAR todas las penetraciones antes de usar Arquero
+    const penetracionesLimpias = this.limpiarPenetraciones(todasLasPenetraciones);
+
+    // Si no hay datos válidos, devolver color neutro
+    if (penetracionesLimpias.length === 0) return '#999999';
+
+    const tablaPenetraciones = aq.from({ penetracion: penetracionesLimpias });
+
     const stats = tablaPenetraciones
       .rollup({
         d1: aq.op.quantile('penetracion', 0.10),
@@ -422,7 +414,7 @@ export class TanksStatsService {
       })
       .object() as RangoEstadistica;
 
-    // Asignar color según decil (10 niveles)
+    // Asignar color según deciles
     if (penetracionMm <= stats.d1) return '#ef4444';
     if (penetracionMm <= stats.d2) return '#f87171';
     if (penetracionMm <= stats.d3) return '#fb923c';
@@ -435,40 +427,56 @@ export class TanksStatsService {
     return '#16a34a';
   }
 
+
   private limpiarTanques(tanques: Tanque[]): Tanque[] {
-  const columnasNumericas = [
-    'tripulacion',
-    'visibilidad',
-    'blindaje_chasis',
-    'blindaje_torreta',
-    'velocidad_adelante_arcade',
-    'velocidad_adelante_realista',
-    'velocidad_atras_arcade',
-    'velocidad_atras_realista',
-    'relacion_potencia_peso',
-    'relacion_potencia_peso_realista',
-    'angulo_depresion',
-    'angulo_elevacion',
-    'recarga',
-    'cadencia',
-    'rotacion_torreta_horizontal_arcade',
-    'rotacion_torreta_horizontal_realista',
-    'rotacion_torreta_vertical_arcade',
-    'rotacion_torreta_vertical_realista'
-  ];
+    const columnasNumericas = [
+      'tripulacion',
+      'visibilidad',
+      'blindaje_chasis',
+      'blindaje_torreta',
+      'velocidad_adelante_arcade',
+      'velocidad_adelante_realista',
+      'velocidad_atras_arcade',
+      'velocidad_atras_realista',
+      'relacion_potencia_peso',
+      'relacion_potencia_peso_realista',
+      'angulo_depresion',
+      'angulo_elevacion',
+      'recarga',
+      'cadencia',
+      'rotacion_torreta_horizontal_arcade',
+      'rotacion_torreta_horizontal_realista',
+      'rotacion_torreta_vertical_arcade',
+      'rotacion_torreta_vertical_realista'
+    ];
 
-  return tanques.map(t => {
-    const copia = { ...t };
+    return tanques.map(t => {
+      const copia = { ...t };
 
-    columnasNumericas.forEach(col => {
-      const valor = (copia as any)[col];
+      columnasNumericas.forEach(col => {
+        const valor = (copia as any)[col];
 
-      // Convertir string a número, o dejar 0 si no se puede convertir
-      (copia as any)[col] = typeof valor === 'number' ? valor : Number(valor) || 0;
+        // Convertir string a número, o dejar 0 si no se puede convertir
+        (copia as any)[col] = typeof valor === 'number' ? valor : Number(valor) || 0;
+      });
+
+      return copia;
     });
+  }
+  private limpiarPenetraciones(valores: any[]): number[] {
+    return valores
+      .map((v): number | null => {
 
-    return copia;
-  });
-}
+        if (typeof v === 'string') {
+          const limpio = v.replace(/[^\d.]/g, '');
+          const num = Number(limpio);
+          return isNaN(num) ? null : num;
+        }
 
+        if (typeof v === 'number') return v;
+
+        return null;
+      })
+      .filter((v): v is number => typeof v === 'number' && !isNaN(v) && v > 0);
+  }
 }
