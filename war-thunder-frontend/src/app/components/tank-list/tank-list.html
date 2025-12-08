@@ -299,12 +299,12 @@
           <!-- Tripulación con color y percentil -->
           <p>
             <strong>Tripulación:</strong> 
-            <span [style.color]="coloresTanque['tripulacion']" class="stat-colored">
+            <span [style.color]="coloresTanque['tripulacion_realista']" class="stat-colored">
               {{ tanqueSeleccionado.tripulacion }}
             </span>
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'tripulacion', tanqueSeleccionado.tripulacion)) }}
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'tripulacion_realista', tanqueSeleccionado.tripulacion)) }}
               </span>
             }
           </p>
@@ -312,12 +312,12 @@
           <!-- Visibilidad con color (menor es mejor) -->
           <p>
             <strong>Visibilidad:</strong> 
-            <span [style.color]="coloresTanque['visibilidad']" class="stat-colored">
+            <span [style.color]="coloresTanque['visibilidad_realista']" class="stat-colored">
               {{ tanqueSeleccionado.visibilidad }}%
             </span>
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge good">
-                {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'visibilidad', tanqueSeleccionado.visibilidad)) }}
+                {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'visibilidad_realista', tanqueSeleccionado.visibilidad)) }}
               </span>
             }
           </p>
@@ -334,12 +334,12 @@
           <!-- Blindaje chasis con color -->
           <p>
             <strong>Blindaje chasis:</strong> 
-            <span [style.color]="coloresTanque['blindaje_chasis']" class="stat-colored">
+            <span [style.color]="coloresTanque['blindaje_chasis_realista']" class="stat-colored">
               {{ tanqueSeleccionado.blindaje_chasis }} mm
             </span>
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_chasis', tanqueSeleccionado.blindaje_chasis)) }}
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_chasis_realista', tanqueSeleccionado.blindaje_chasis)) }}
               </span>
             }
           </p>
@@ -347,12 +347,12 @@
           <!-- Blindaje torreta con color -->
           <p>
             <strong>Blindaje torreta:</strong> 
-            <span [style.color]="coloresTanque['blindaje_torreta']" class="stat-colored">
+            <span [style.color]="coloresTanque['blindaje_torreta_realista']" class="stat-colored">
               {{ tanqueSeleccionado.blindaje_torreta }} mm
             </span>
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_torreta', tanqueSeleccionado.blindaje_torreta)) }}
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_torreta_realista', tanqueSeleccionado.blindaje_torreta)) }}
               </span>
             }
           </p>
@@ -367,7 +367,7 @@
           <!-- Velocidad adelante con color -->
           <p>
             <strong>Velocidad adelante:</strong> 
-            <span [style.color]="coloresTanque['velocidad_adelante']" class="stat-colored">
+            <span [style.color]="coloresTanque['velocidad_adelante_arcade']" class="stat-colored">
               {{ tanqueSeleccionado.velocidad_adelante_arcade }}
             </span>
             @if (tanqueSeleccionado.velocidad_adelante_realista) {
@@ -384,7 +384,7 @@
           <!-- Velocidad atrás con color -->
           <p>
             <strong>Velocidad atrás:</strong> 
-            <span [style.color]="coloresTanque['velocidad_atras']" class="stat-colored">
+            <span [style.color]="coloresTanque['velocidad_atras_arcade']" class="stat-colored">
               {{ tanqueSeleccionado.velocidad_atras_arcade }}
             </span>
             @if (tanqueSeleccionado.velocidad_atras_realista) {
@@ -426,12 +426,12 @@
           @if (tanqueSeleccionado.recarga) {
             <p>
               <strong>Recarga:</strong> 
-              <span [style.color]="coloresTanque['recarga']" class="stat-colored">
+              <span [style.color]="coloresTanque['recarga_realista']" class="stat-colored">
                 {{ tanqueSeleccionado.recarga }}s
               </span>
               @if (mostrarEstadisticasAvanzadas) {
                 <span class="percentil-badge good">
-                  {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'recarga', tanqueSeleccionado.recarga)) }}
+                  {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'recarga_realista', tanqueSeleccionado.recarga)) }}
                 </span>
               }
             </p>
