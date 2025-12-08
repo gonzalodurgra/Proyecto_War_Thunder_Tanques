@@ -398,7 +398,9 @@ export class TanksStatsService {
     // Si no hay datos válidos, devolver color neutro
     if (penetracionesLimpias.length === 0) return '#999999';
 
-    const tablaPenetraciones = aq.from({ penetracion: penetracionesLimpias });
+    const tablaPenetraciones = aq.from(
+      penetracionesLimpias.map(p => ({ penetracion: p }))
+    );
 
     const stats = tablaPenetraciones
       .rollup({
