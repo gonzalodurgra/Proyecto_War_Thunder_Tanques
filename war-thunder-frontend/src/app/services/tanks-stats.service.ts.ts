@@ -142,11 +142,15 @@ export class TanksStatsService {
 
     // PASO 2: Para cada rating, calcular sus propios rangos
     const estadisticasPorRating: EstadisticasPorRating[] = [];
-
+    let tanquesDelRating: Tanque[] = []
     ratingsUnicos.forEach(rating => {
       // Filtrar tanques de este rating
-      const tanquesDelRating = tanques.filter(t => t.rating_arcade === rating);
-      
+      if(modo == "rating_arcade"){
+        tanquesDelRating = tanques.filter(t => t.rating_arcade === rating);
+      }
+      else{
+        tanquesDelRating = tanques.filter(t => t.rating_realista === rating);
+      }
       if (tanquesDelRating.length > 0) {
         // Calcular rangos para este rating específico
         const rangos = this.calcularRangosParaGrupo(tanquesDelRating);
