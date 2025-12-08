@@ -258,127 +258,484 @@
   }
 
   <!-- ================================================================ -->
-  <!-- MODAL DE DETALLES DEL TANQUE -->
-  <!-- ================================================================ -->
-  @if (tanqueSeleccionado) {
-    <div class="modal-overlay" (click)="cerrarDetalles()">
-      <div class="modal-contenido" (click)="$event.stopPropagation()">
-        
-        <button class="btn-cerrar" (click)="cerrarDetalles()">✕</button>
+<!-- MODAL DE DETALLES DEL TANQUE CON ESTADÍSTICAS COLOREADAS -->
+<!-- ================================================================ -->
+@if (tanqueSeleccionado) {
+  <div class="modal-overlay" (click)="cerrarDetalles()">
+    <div class="modal-contenido modal-ampliado" (click)="$event.stopPropagation()">
+      
+      <button class="btn-cerrar" (click)="cerrarDetalles()">✕</button>
 
-        <h2>{{ tanqueSeleccionado.nombre }}</h2>
-
-        <div class="detalles-grid">
-          <div class="detalle-seccion">
-            <h3>Información General</h3>
-            <p><strong>Nación:</strong> {{ tanqueSeleccionado.nacion }}</p>
-            <p><strong>Rol:</strong> {{ tanqueSeleccionado.rol }}</p>
-            <p><strong>Rating:</strong> {{ tanqueSeleccionado.rating_arcade }}/{{ tanqueSeleccionado.rating_realista }}</p>
-            <p><strong>Tripulación:</strong> {{ tanqueSeleccionado.tripulacion }}</p>
-          </div>
-
-          <div class="detalle-seccion">
-            <h3>Características</h3>
-            <p><strong>Peso:</strong> {{ tanqueSeleccionado.peso }} toneladas</p>
-            <p><strong>Visibilidad:</strong> {{ tanqueSeleccionado.visibilidad }}%</p>
-            <p><strong>Blindaje chasis:</strong> {{ tanqueSeleccionado.blindaje_chasis }} mm</p>
-            <p><strong>Blindaje torreta:</strong> {{ tanqueSeleccionado.blindaje_torreta }} mm</p>
-          </div>
-
-          <div class="detalle-seccion">
-            <h3>Movilidad</h3>
-            <p><strong>Velocidad adelante:</strong> {{ tanqueSeleccionado.velocidad_adelante_arcade }}/{{ tanqueSeleccionado.velocidad_adelante_realista }} km/h</p>
-            <p><strong>Velocidad atrás:</strong> {{ tanqueSeleccionado.velocidad_atras_arcade }}/{{ tanqueSeleccionado.velocidad_atras_realista }} km/h</p>
-            <p><strong>Potencia/Peso:</strong> {{ tanqueSeleccionado.relacion_potencia_peso }}/{{ tanqueSeleccionado.relacion_potencia_peso_realista }} hp/t</p>
-          </div>
-
-          <div class="detalle-seccion">
-            <h3>Armamento</h3>
-            @if (tanqueSeleccionado.recarga) {
-              <p><strong>Recarga:</strong> {{ tanqueSeleccionado.recarga }}s</p>
-            }
-            @if (tanqueSeleccionado.cadencia) {
-              <p><strong>Cadencia:</strong> {{ tanqueSeleccionado.cadencia.toFixed(2) }} disparos/min</p>
-            }
-            <p><strong>Munición total:</strong> {{ tanqueSeleccionado.municion_total }}</p>
-            <p><strong>Depresión:</strong> {{ tanqueSeleccionado.angulo_depresion }}°</p>
-            <p><strong>Elevación:</strong> {{ tanqueSeleccionado.angulo_elevacion }}°</p>
-            @if (tanqueSeleccionado.rotacion_torreta_horizontal_arcade) {
-              <p><strong>Rotación lateral de la torreta:</strong> {{ tanqueSeleccionado.rotacion_torreta_horizontal_arcade }}/{{tanqueSeleccionado.rotacion_torreta_horizontal_realista}}º/s</p>
-            }
-            @if (tanqueSeleccionado.rotacion_torreta_vertical_arcade) {
-              <p><strong>Rotación vertical de la torreta:</strong> {{ tanqueSeleccionado.rotacion_torreta_vertical_arcade }}/{{tanqueSeleccionado.rotacion_torreta_vertical_realista}}º/s</p>
-            }
-          </div>
-        </div>
-        @if (tanqueSeleccionado.setup_1 && tanqueSeleccionado.setup_2) {
-          <div class="setup-seccion">
-            <h3>🔫 Setup 1</h3>
-          @for (armaKey of Object.keys(tanqueSeleccionado.setup_1); track armaKey) {
-              <div class="arma-detalle">
-                <h4>{{ armaKey }}</h4>
-                @for (municion of tanqueSeleccionado.setup_1[armaKey].municiones; track $index) {
-                  <div class="municion-detalle">
-                    <p><strong>{{ municion.nombre }}</strong> ({{ municion.tipo }})</p>
-                    <ul class="penetracion-lista">
-                      <li>0m: {{ municion.penetracion_mm[0] }}mm</li>
-                      <li>100m: {{ municion.penetracion_mm[1] }}mm</li>
-                      <li>500m: {{ municion.penetracion_mm[2] }}mm</li>
-                      <li>1000m: {{ municion.penetracion_mm[3] }}mm</li>
-                      <li>1500m: {{ municion.penetracion_mm[4] }}mm</li>
-                      <li>2000m: {{ municion.penetracion_mm[5] }}mm</li>
-                    </ul>
-                  </div>
-                }
-              </div>
-            }
-            </div>
-            <div class="setup-seccion">
-            <h3>🔫 Setup 2</h3>
-            @for (armaKey of Object.keys(tanqueSeleccionado.setup_2); track armaKey) {
-              <div class="arma-detalle">
-                <h4>{{ armaKey }}</h4>
-                @for (municion of tanqueSeleccionado.setup_2[armaKey].municiones; track $index) {
-                  <div class="municion-detalle">
-                    <p><strong>{{ municion.nombre }}</strong> ({{ municion.tipo }})</p>
-                    <ul class="penetracion-lista">
-                      <li>0m: {{ municion.penetracion_mm[0] }}mm</li>
-                      <li>100m: {{ municion.penetracion_mm[1] }}mm</li>
-                      <li>500m: {{ municion.penetracion_mm[2] }}mm</li>
-                      <li>1000m: {{ municion.penetracion_mm[3] }}mm</li>
-                      <li>1500m: {{ municion.penetracion_mm[4] }}mm</li>
-                      <li>2000m: {{ municion.penetracion_mm[5] }}mm</li>
-                    </ul>
-                  </div>
-                }
-              </div>
-            }
-            </div>
-        }
-        @if (tanqueSeleccionado.armamento) {
-          <div class="setup-seccion">
-            <h3>🔫 Armamento Detallado</h3>
-            @for (armaKey of Object.keys(tanqueSeleccionado.armamento); track armaKey) {
-              <div class="arma-detalle">
-                <h4>{{ armaKey }}</h4>
-                @for (municion of tanqueSeleccionado.armamento[armaKey].municiones; track $index) {
-                  <div class="municion-detalle">
-                    <p><strong>{{ municion.nombre }}</strong> ({{ municion.tipo }})</p>
-                    <ul class="penetracion-lista">
-                      <li>0m: {{ municion.penetracion_mm[0] }}mm</li>
-                      <li>100m: {{ municion.penetracion_mm[1] }}mm</li>
-                      <li>500m: {{ municion.penetracion_mm[2] }}mm</li>
-                      <li>1000m: {{ municion.penetracion_mm[3] }}mm</li>
-                      <li>1500m: {{ municion.penetracion_mm[4] }}mm</li>
-                      <li>2000m: {{ municion.penetracion_mm[5] }}mm</li>
-                    </ul>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        }
+      <h2>{{ tanqueSeleccionado.nombre }}</h2>
+      
+      <!-- Badge del rating con color -->
+      <div class="rating-badge">
+        <span class="badge-rating">
+          ⭐ Rating: {{ tanqueSeleccionado.rating_arcade }}
+          @if (tanqueSeleccionado.rating_realista) {
+            / {{ tanqueSeleccionado.rating_realista }}
+          }
+        </span>
       </div>
+
+      <!-- Toggle para estadísticas avanzadas -->
+      <div class="stats-toggle">
+        <button 
+          class="btn-toggle-stats" 
+          (click)="toggleEstadisticasAvanzadas()">
+          {{ mostrarEstadisticasAvanzadas ? '📊 Ocultar' : '📊 Mostrar' }} Estadísticas Comparativas
+        </button>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- SECCIÓN: Información General -->
+      <!-- ================================================================ -->
+      <div class="detalles-grid">
+        <div class="detalle-seccion">
+          <h3>ℹ️ Información General</h3>
+          <p><strong>Nación:</strong> {{ tanqueSeleccionado.nacion }}</p>
+          <p><strong>Rol:</strong> {{ tanqueSeleccionado.rol }}</p>
+          
+          <!-- Tripulación con color y percentil -->
+          <p>
+            <strong>Tripulación:</strong> 
+            <span [style.color]="coloresTanque['tripulacion']" class="stat-colored">
+              {{ tanqueSeleccionado.tripulacion }}
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'tripulacion', tanqueSeleccionado.tripulacion)) }}
+              </span>
+            }
+          </p>
+          
+          <!-- Visibilidad con color (menor es mejor) -->
+          <p>
+            <strong>Visibilidad:</strong> 
+            <span [style.color]="coloresTanque['visibilidad']" class="stat-colored">
+              {{ tanqueSeleccionado.visibilidad }}%
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge good">
+                {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'visibilidad', tanqueSeleccionado.visibilidad)) }}
+              </span>
+            }
+          </p>
+          
+          <p><strong>Peso:</strong> {{ tanqueSeleccionado.peso }} toneladas</p>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- SECCIÓN: Blindaje -->
+        <!-- ================================================================ -->
+        <div class="detalle-seccion">
+          <h3>🛡️ Blindaje</h3>
+          
+          <!-- Blindaje chasis con color -->
+          <p>
+            <strong>Blindaje chasis:</strong> 
+            <span [style.color]="coloresTanque['blindaje_chasis']" class="stat-colored">
+              {{ tanqueSeleccionado.blindaje_chasis }} mm
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_chasis', tanqueSeleccionado.blindaje_chasis)) }}
+              </span>
+            }
+          </p>
+          
+          <!-- Blindaje torreta con color -->
+          <p>
+            <strong>Blindaje torreta:</strong> 
+            <span [style.color]="coloresTanque['blindaje_torreta']" class="stat-colored">
+              {{ tanqueSeleccionado.blindaje_torreta }} mm
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_torreta', tanqueSeleccionado.blindaje_torreta)) }}
+              </span>
+            }
+          </p>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- SECCIÓN: Movilidad -->
+        <!-- ================================================================ -->
+        <div class="detalle-seccion">
+          <h3>🏃 Movilidad</h3>
+          
+          <!-- Velocidad adelante con color -->
+          <p>
+            <strong>Velocidad adelante:</strong> 
+            <span [style.color]="coloresTanque['velocidad_adelante']" class="stat-colored">
+              {{ tanqueSeleccionado.velocidad_adelante_arcade }}
+            </span>
+            @if (tanqueSeleccionado.velocidad_adelante_realista) {
+              / {{ tanqueSeleccionado.velocidad_adelante_realista }}
+            }
+            km/h
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_adelante_arcade', tanqueSeleccionado.velocidad_adelante_arcade)) }}
+              </span>
+            }
+          </p>
+          
+          <!-- Velocidad atrás con color -->
+          <p>
+            <strong>Velocidad atrás:</strong> 
+            <span [style.color]="coloresTanque['velocidad_atras']" class="stat-colored">
+              {{ tanqueSeleccionado.velocidad_atras_arcade }}
+            </span>
+            @if (tanqueSeleccionado.velocidad_atras_realista) {
+              / {{ tanqueSeleccionado.velocidad_atras_realista }}
+            }
+            km/h
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_atras_arcade', tanqueSeleccionado.velocidad_atras_arcade)) }}
+              </span>
+            }
+          </p>
+          
+          <!-- Relación potencia/peso con color -->
+          <p>
+            <strong>Potencia/Peso:</strong> 
+            <span [style.color]="coloresTanque['potencia_peso']" class="stat-colored">
+              {{ tanqueSeleccionado.relacion_potencia_peso }}
+            </span>
+            @if (tanqueSeleccionado.relacion_potencia_peso_realista) {
+              / {{ tanqueSeleccionado.relacion_potencia_peso_realista }}
+            }
+            hp/t
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'relacion_potencia_peso', tanqueSeleccionado.relacion_potencia_peso)) }}
+              </span>
+            }
+          </p>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- SECCIÓN: Armamento -->
+        <!-- ================================================================ -->
+        <div class="detalle-seccion">
+          <h3>🔫 Armamento</h3>
+          
+          <!-- Recarga con color (menor es mejor) -->
+          @if (tanqueSeleccionado.recarga) {
+            <p>
+              <strong>Recarga:</strong> 
+              <span [style.color]="coloresTanque['recarga']" class="stat-colored">
+                {{ tanqueSeleccionado.recarga }}s
+              </span>
+              @if (mostrarEstadisticasAvanzadas) {
+                <span class="percentil-badge good">
+                  {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'recarga', tanqueSeleccionado.recarga)) }}
+                </span>
+              }
+            </p>
+          }
+          
+          <!-- Cadencia con color -->
+          @if (tanqueSeleccionado.cadencia) {
+            <p>
+              <strong>Cadencia:</strong> 
+              <span [style.color]="coloresTanque['cadencia']" class="stat-colored">
+                {{ tanqueSeleccionado.cadencia.toFixed(2) }} disparos/min
+              </span>
+              @if (mostrarEstadisticasAvanzadas) {
+                <span class="percentil-badge">
+                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'cadencia', tanqueSeleccionado.cadencia)) }}
+                </span>
+              }
+            </p>
+          }
+          
+          <p><strong>Munición total:</strong> {{ tanqueSeleccionado.municion_total }}</p>
+          
+          <!-- Depresión con color -->
+          <p>
+            <strong>Depresión:</strong> 
+            <span [style.color]="coloresTanque['depresion']" class="stat-colored">
+              {{ tanqueSeleccionado.angulo_depresion }}°
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_depresion', tanqueSeleccionado.angulo_depresion)) }}
+              </span>
+            }
+          </p>
+          
+          <!-- Elevación con color -->
+          <p>
+            <strong>Elevación:</strong> 
+            <span [style.color]="coloresTanque['elevacion']" class="stat-colored">
+              {{ tanqueSeleccionado.angulo_elevacion }}°
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_elevacion', tanqueSeleccionado.angulo_elevacion)) }}
+              </span>
+            }
+          </p>
+          
+          <!-- Rotación horizontal con color -->
+          @if (tanqueSeleccionado.rotacion_torreta_horizontal_arcade) {
+            <p>
+              <strong>Rotación horizontal:</strong> 
+              <span [style.color]="coloresTanque['rotacion_horizontal']" class="stat-colored">
+                {{ tanqueSeleccionado.rotacion_torreta_horizontal_arcade }}
+              </span>
+              @if (tanqueSeleccionado.rotacion_torreta_horizontal_realista) {
+                / {{ tanqueSeleccionado.rotacion_torreta_horizontal_realista }}
+              }
+              º/s
+              @if (mostrarEstadisticasAvanzadas) {
+                <span class="percentil-badge">
+                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_horizontal_arcade', tanqueSeleccionado.rotacion_torreta_horizontal_arcade)) }}
+                </span>
+              }
+            </p>
+          }
+          
+          <!-- Rotación vertical con color -->
+          @if (tanqueSeleccionado.rotacion_torreta_vertical_arcade) {
+            <p>
+              <strong>Rotación vertical:</strong> 
+              <span [style.color]="coloresTanque['rotacion_vertical']" class="stat-colored">
+                {{ tanqueSeleccionado.rotacion_torreta_vertical_arcade }}
+              </span>
+              @if (tanqueSeleccionado.rotacion_torreta_vertical_realista) {
+                / {{ tanqueSeleccionado.rotacion_torreta_vertical_realista }}
+              }
+              º/s
+              @if (mostrarEstadisticasAvanzadas) {
+                <span class="percentil-badge">
+                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_vertical_arcade', tanqueSeleccionado.rotacion_torreta_vertical_arcade)) }}
+                </span>
+              }
+            </p>
+          }
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- SECCIÓN: Setup 1 con penetraciones coloreadas -->
+      <!-- ================================================================ -->
+      @if (tanqueSeleccionado.setup_1) {
+        <div class="setup-seccion">
+          <h3>🔫 Setup 1</h3>
+          @for (armaKey of Object.keys(tanqueSeleccionado.setup_1); track armaKey) {
+            <div class="arma-detalle">
+              <h4>{{ armaKey }}</h4>
+              @for (municion of tanqueSeleccionado.setup_1[armaKey].municiones; track $index) {
+                <div class="municion-detalle">
+                  <p class="municion-header">
+                    <strong>{{ municion.nombre }}</strong> 
+                    <span class="municion-tipo-badge">{{ municion.tipo }}</span>
+                  </p>
+                  <ul class="penetracion-lista-coloreada">
+                    <li>
+                      <span class="distancia">0m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
+                        {{ municion.penetracion_mm[0] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">100m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
+                        {{ municion.penetracion_mm[1] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">500m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
+                        {{ municion.penetracion_mm[2] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">1000m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
+                        {{ municion.penetracion_mm[3] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">1500m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
+                        {{ municion.penetracion_mm[4] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">2000m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
+                        {{ municion.penetracion_mm[5] }}mm
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ================================================================ -->
+      <!-- SECCIÓN: Setup 2 con penetraciones coloreadas -->
+      <!-- ================================================================ -->
+      @if (tanqueSeleccionado.setup_2) {
+        <div class="setup-seccion">
+          <h3>🔫 Setup 2</h3>
+          @for (armaKey of Object.keys(tanqueSeleccionado.setup_2); track armaKey) {
+            <div class="arma-detalle">
+              <h4>{{ armaKey }}</h4>
+              @for (municion of tanqueSeleccionado.setup_2[armaKey].municiones; track $index) {
+                <div class="municion-detalle">
+                  <p class="municion-header">
+                    <strong>{{ municion.nombre }}</strong> 
+                    <span class="municion-tipo-badge">{{ municion.tipo }}</span>
+                  </p>
+                  <ul class="penetracion-lista-coloreada">
+                    <li>
+                      <span class="distancia">0m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
+                        {{ municion.penetracion_mm[0] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">100m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
+                        {{ municion.penetracion_mm[1] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">500m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
+                        {{ municion.penetracion_mm[2] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">1000m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
+                        {{ municion.penetracion_mm[3] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">1500m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
+                        {{ municion.penetracion_mm[4] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">2000m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
+                        {{ municion.penetracion_mm[5] }}mm
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ================================================================ -->
+      <!-- SECCIÓN: Armamento Detallado con penetraciones coloreadas -->
+      <!-- ================================================================ -->
+      @if (tanqueSeleccionado.armamento) {
+        <div class="setup-seccion">
+          <h3>🔫 Armamento Detallado</h3>
+          @for (armaKey of Object.keys(tanqueSeleccionado.armamento); track armaKey) {
+            <div class="arma-detalle">
+              <h4>{{ armaKey }}</h4>
+              @for (municion of tanqueSeleccionado.armamento[armaKey].municiones; track $index) {
+                <div class="municion-detalle">
+                  <p class="municion-header">
+                    <strong>{{ municion.nombre }}</strong> 
+                    <span class="municion-tipo-badge">{{ municion.tipo }}</span>
+                  </p>
+                  <ul class="penetracion-lista-coloreada">
+                    <li>
+                      <span class="distancia">0m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
+                        {{ municion.penetracion_mm[0] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">100m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
+                        {{ municion.penetracion_mm[1] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">500m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
+                        {{ municion.penetracion_mm[2] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">1000m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
+                        {{ municion.penetracion_mm[3] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">1500m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
+                        {{ municion.penetracion_mm[4] }}mm
+                      </span>
+                    </li>
+                    <li>
+                      <span class="distancia">2000m:</span>
+                      <span 
+                        class="penetracion-valor"
+                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
+                        {{ municion.penetracion_mm[5] }}mm
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
     </div>
-  }
+  </div>
+}
 </div>

@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TanksStatsService, EstadisticasPorRating } from '../../services/tanks-stats.service.ts';
 
 // ====================================================================
 // Configuración del componente
@@ -58,10 +59,14 @@ export class TankListComponent implements OnInit {
 
   isAdmin: boolean = localStorage.getItem("esAdmin") == "s";
 
+  estadisticasPorRatingArcade: EstadisticasPorRating[] = [];
+  estadisticasPorRatingRealista: EstadisticasPorRating[] = []
+  coloresTanque: { [key: string]: string } = {};
+  mostrarEstadisticasAvanzadas: boolean = false;
   // ====================================================================
   // PASO 2: Inyectar el servicio en el constructor
   // ====================================================================
-  constructor(private tanksService: TanksService, private authService: AuthService, private router: Router) {
+  constructor(private tanksService: TanksService, private authService: AuthService, private statsService: TanksStatsService, private router: Router) {
     // EXPLICACIÓN: Angular automáticamente crea una instancia de TanksService
     // y la inyecta aquí. Esto se llama "Inyección de Dependencias"
   }
@@ -72,7 +77,6 @@ export class TankListComponent implements OnInit {
   ngOnInit(): void {
     // EXPLICACIÓN: ngOnInit se ejecuta cuando el componente se carga
     // Es el lugar ideal para cargar los datos iniciales
-    
     this.cargarTanques();
     this.cargarNaciones();
   }
@@ -93,6 +97,16 @@ export class TankListComponent implements OnInit {
         console.log('Tanques cargados:', data);
         this.tanques = data;
         this.tanquesFiltrados = data;
+        // NUEVO: Calcular estadísticas globales
+        console.log('📊 Calculando estadísticas globales...');
+        this.statsService.calcularRangosGlobales(this.tanques);
+
+        // NUEVO: Calcular estadísticas por rating
+        console.log('📊 Calculando estadísticas por rating...');
+        this.estadisticasPorRatingArcade = this.statsService.calcularRangosPorRating(this.tanques, "rating_arcade");
+        console.log('📊 Ratings procesados:', this.estadisticasPorRatingArcade.length);
+        this.estadisticasPorRatingRealista = this.statsService.calcularRangosPorRating(this.tanques, "rating_realista");
+        console.log('📊 Ratings procesados:', this.estadisticasPorRatingRealista.length);
         this.paginaActual = 1;
         this.calcularPaginacion();
         this.actualizarTanquesPaginados();
@@ -304,6 +318,12 @@ export class TankListComponent implements OnInit {
   // ====================================================================
   seleccionarTanque(tanque: Tanque): void {
     this.tanqueSeleccionado = tanque;
+    // Calcular colores para este tanque usando su rating específico
+    this.coloresTanque = this.statsService.obtenerColoresTanque(tanque, true);
+    
+    console.log('🎨 Colores calculados para:', tanque.nombre);
+    console.log('Rating:', tanque.rating_arcade);
+    console.log('Colores:', this.coloresTanque);
   }
 
   // ====================================================================
@@ -430,5 +450,64 @@ export class TankListComponent implements OnInit {
 
   irAPanelAdmin(): void{
     this.router.navigate(["/admin"])
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Obtener color de una estadística específica
+  // ====================================================================
+  obtenerColorEstadistica(
+    tanque: Tanque, 
+    nombreEstadistica: string,
+    valor: number,
+    invertir: boolean = false
+  ): string {
+    return this.statsService.obtenerColor(
+      nombreEstadistica as any,
+      valor,
+      tanque.rating_arcade,
+      invertir
+    );
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Obtener percentil de una estadística
+  // ====================================================================
+  obtenerPercentil(
+    tanque: Tanque,
+    nombreEstadistica: string,
+    valor: number
+  ): number {
+    return this.statsService.obtenerPercentil(
+      nombreEstadistica as any,
+      valor,
+      tanque.rating_arcade
+    );
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Obtener color de penetración
+  // ====================================================================
+  obtenerColorPenetracion(penetracionMm: number): string {
+    return this.statsService.obtenerColorPenetracion(penetracionMm, this.tanques);
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Formatear percentil para mostrar
+  // ====================================================================
+  formatearPercentil(percentil: number): string {
+    if (percentil >= 90) return 'Top 10%';
+    if (percentil >= 80) return 'Top 20%';
+    if (percentil >= 70) return 'Top 30%';
+    if (percentil >= 60) return 'Sobre promedio';
+    if (percentil >= 40) return 'Promedio';
+    if (percentil >= 30) return 'Bajo promedio';
+    return 'Bottom 30%';
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Toggle para mostrar/ocultar estadísticas avanzadas
+  // ====================================================================
+  toggleEstadisticasAvanzadas(): void {
+    this.mostrarEstadisticasAvanzadas = !this.mostrarEstadisticasAvanzadas;
   }
 }
