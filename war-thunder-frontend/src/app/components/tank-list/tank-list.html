@@ -339,7 +339,7 @@
             }
           </p>
           
-          <p><strong>Peso:</strong> {{ tanqueSeleccionado.peso }} toneladas</p>
+          <p><strong>Peso:</strong> {{ tanqueSeleccionado.peso }} t</p>
         </div>
 
         <!-- ================================================================ -->
@@ -435,8 +435,9 @@
           
           <!-- Relación potencia/peso con color -->
           <p>
+            <strong>Relación potencia-peso:</strong> 
             @if (modoActual == "rating_arcade") {
-              <span [style.color]="coloresTanque['potencia_peso']" class="stat-colored">
+              <span [style.color]="coloresTanque['potencia_peso_arcade']" class="stat-colored">
                 {{ tanqueSeleccionado.relacion_potencia_peso }}
               </span>
             } 
