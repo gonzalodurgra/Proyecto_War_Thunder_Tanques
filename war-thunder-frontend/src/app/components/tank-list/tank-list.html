@@ -351,7 +351,7 @@
           <!-- Blindaje chasis con color -->
           <p>
             <strong>Blindaje chasis:</strong> 
-            <span [style.color]="coloresTanque['blindaje_chasis']" class="stat-colored">
+            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_chasis_arcade']: coloresTanque['blindaje_chasis_realista']" class="stat-colored">
               {{ tanqueSeleccionado.blindaje_chasis }} mm
             </span>
             @if (mostrarEstadisticasAvanzadas) {
@@ -364,7 +364,7 @@
           <!-- Blindaje torreta con color -->
           <p>
             <strong>Blindaje torreta:</strong> 
-            <span [style.color]="coloresTanque['blindaje_torreta']" class="stat-colored">
+            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_torreta_arcade']: coloresTanque['blindaje_torreta_realista']" class="stat-colored">
               {{ tanqueSeleccionado.blindaje_torreta }} mm
             </span>
             @if (mostrarEstadisticasAvanzadas) {
@@ -383,17 +383,26 @@
           
           <!-- Velocidad adelante con color -->
           <p>
-            <strong>Velocidad adelante:</strong> 
-            <span [style.color]="coloresTanque['velocidad_adelante']" class="stat-colored">
-              {{ tanqueSeleccionado.velocidad_adelante_arcade }}
-            </span>
-            @if (tanqueSeleccionado.velocidad_adelante_realista) {
-              / {{ tanqueSeleccionado.velocidad_adelante_realista }}
+            <strong>Velocidad adelante:</strong>
+            @if (modoActual == "rating_arcade") {
+              <span [style.color]="coloresTanque['velocidad_adelante_arcade']" class="stat-colored">
+                {{ tanqueSeleccionado.velocidad_adelante_arcade }}
+              </span>
+            } 
+            @if (modoActual == "rating_realista") {
+              <span [style.color]="coloresTanque['velocidad_adelante_realista']" class="stat-colored">
+                {{ tanqueSeleccionado.velocidad_adelante_realista }}
+              </span>
             }
             km/h
-            @if (mostrarEstadisticasAvanzadas) {
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade") {
               <span class="percentil-badge">
                 {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_adelante_arcade', tanqueSeleccionado.velocidad_adelante_arcade)) }}
+              </span>
+            }
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_adelante_realista', tanqueSeleccionado.velocidad_adelante_realista)) }}
               </span>
             }
           </p>
@@ -401,33 +410,50 @@
           <!-- Velocidad atrás con color -->
           <p>
             <strong>Velocidad atrás:</strong> 
-            <span [style.color]="coloresTanque['velocidad_atras']" class="stat-colored">
-              {{ tanqueSeleccionado.velocidad_atras_arcade }}
-            </span>
-            @if (tanqueSeleccionado.velocidad_atras_realista) {
-              / {{ tanqueSeleccionado.velocidad_atras_realista }}
+            @if (modoActual == "rating_arcade") {
+              <span [style.color]="coloresTanque['velocidad_atras_arcade']" class="stat-colored">
+                {{ tanqueSeleccionado.velocidad_atras_arcade }}
+              </span>
+            } 
+            @if (modoActual == "rating_realista") {
+              <span [style.color]="coloresTanque['velocidad_atras_realista']" class="stat-colored">
+                {{ tanqueSeleccionado.velocidad_atras_realista }}
+              </span>
             }
             km/h
-            @if (mostrarEstadisticasAvanzadas) {
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade" ) {
               <span class="percentil-badge">
                 {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_atras_arcade', tanqueSeleccionado.velocidad_atras_arcade)) }}
+              </span>
+            }
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_atras_realista', tanqueSeleccionado.velocidad_atras_realista)) }}
               </span>
             }
           </p>
           
           <!-- Relación potencia/peso con color -->
           <p>
-            <strong>Potencia/Peso:</strong> 
-            <span [style.color]="coloresTanque['potencia_peso']" class="stat-colored">
-              {{ tanqueSeleccionado.relacion_potencia_peso }}
-            </span>
-            @if (tanqueSeleccionado.relacion_potencia_peso_realista) {
-              / {{ tanqueSeleccionado.relacion_potencia_peso_realista }}
+            @if (modoActual == "rating_arcade") {
+              <span [style.color]="coloresTanque['potencia_peso']" class="stat-colored">
+                {{ tanqueSeleccionado.relacion_potencia_peso }}
+              </span>
+            } 
+            @if (modoActual == "rating_realista") {
+              <span [style.color]="coloresTanque['potencia_peso_realista']" class="stat-colored">
+                {{ tanqueSeleccionado.relacion_potencia_peso_realista }}
+              </span>
             }
             hp/t
-            @if (mostrarEstadisticasAvanzadas) {
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade") {
               <span class="percentil-badge">
                 {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'relacion_potencia_peso', tanqueSeleccionado.relacion_potencia_peso)) }}
+              </span>
+            }
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'relacion_potencia_peso_realista', tanqueSeleccionado.relacion_potencia_peso_realista)) }}
               </span>
             }
           </p>
@@ -443,7 +469,7 @@
           @if (tanqueSeleccionado.recarga) {
             <p>
               <strong>Recarga:</strong> 
-              <span [style.color]="coloresTanque['recarga']" class="stat-colored">
+              <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['recarga_arcade']: coloresTanque['recarga_realista']" class="stat-colored">
                 {{ tanqueSeleccionado.recarga }}s
               </span>
               @if (mostrarEstadisticasAvanzadas) {
@@ -458,7 +484,7 @@
           @if (tanqueSeleccionado.cadencia) {
             <p>
               <strong>Cadencia:</strong> 
-              <span [style.color]="coloresTanque['cadencia']" class="stat-colored">
+              <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['cadencia_arcade']: coloresTanque['cadencia_realista']" class="stat-colored">
                 {{ tanqueSeleccionado.cadencia.toFixed(2) }} disparos/min
               </span>
               @if (mostrarEstadisticasAvanzadas) {
@@ -474,7 +500,7 @@
           <!-- Depresión con color -->
           <p>
             <strong>Depresión:</strong> 
-            <span [style.color]="coloresTanque['depresion']" class="stat-colored">
+            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['depresion_arcade']: coloresTanque['depresion_realista']" class="stat-colored">
               {{ tanqueSeleccionado.angulo_depresion }}°
             </span>
             @if (mostrarEstadisticasAvanzadas) {
@@ -487,7 +513,7 @@
           <!-- Elevación con color -->
           <p>
             <strong>Elevación:</strong> 
-            <span [style.color]="coloresTanque['elevacion']" class="stat-colored">
+            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['elevacion_arcade']: coloresTanque['elevacion_realista']" class="stat-colored">
               {{ tanqueSeleccionado.angulo_elevacion }}°
             </span>
             @if (mostrarEstadisticasAvanzadas) {
@@ -501,18 +527,27 @@
           @if (tanqueSeleccionado.rotacion_torreta_horizontal_arcade) {
             <p>
               <strong>Rotación horizontal:</strong> 
-              <span [style.color]="coloresTanque['rotacion_horizontal']" class="stat-colored">
-                {{ tanqueSeleccionado.rotacion_torreta_horizontal_arcade }}
-              </span>
-              @if (tanqueSeleccionado.rotacion_torreta_horizontal_realista) {
-                / {{ tanqueSeleccionado.rotacion_torreta_horizontal_realista }}
+              @if (modoActual == "rating_arcade") {
+                <span [style.color]="coloresTanque['rotacion_horizontal_arcade']" class="stat-colored">
+                  {{ tanqueSeleccionado.rotacion_torreta_horizontal_arcade }}
+                </span>
+              } 
+              @if (modoActual == "rating_realista") {
+                <span [style.color]="coloresTanque['rotacion_horizontal_realista']" class="stat-colored">
+                  {{ tanqueSeleccionado.rotacion_torreta_horizontal_realista }}
+                </span>
               }
               º/s
-              @if (mostrarEstadisticasAvanzadas) {
+              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade" ) {
                 <span class="percentil-badge">
                   {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_horizontal_arcade', tanqueSeleccionado.rotacion_torreta_horizontal_arcade)) }}
                 </span>
               }
+              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
+              <span class="percentil-badge">
+                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_horizontal_realista', tanqueSeleccionado.rotacion_torreta_horizontal_realista)) }}
+              </span>
+            }
             </p>
           }
           
@@ -520,16 +555,25 @@
           @if (tanqueSeleccionado.rotacion_torreta_vertical_arcade) {
             <p>
               <strong>Rotación vertical:</strong> 
-              <span [style.color]="coloresTanque['rotacion_vertical']" class="stat-colored">
-                {{ tanqueSeleccionado.rotacion_torreta_vertical_arcade }}
-              </span>
-              @if (tanqueSeleccionado.rotacion_torreta_vertical_realista) {
-                / {{ tanqueSeleccionado.rotacion_torreta_vertical_realista }}
+              @if (modoActual == "rating_arcade") {
+                <span [style.color]="coloresTanque['rotacion_vertical_arcade']" class="stat-colored">
+                  {{ tanqueSeleccionado.rotacion_torreta_vertical_arcade }}
+                </span>
+              } 
+              @if (modoActual == "rating_realista") {
+                <span [style.color]="coloresTanque['rotacion_vertical_realista']" class="stat-colored">
+                  {{ tanqueSeleccionado.rotacion_torreta_vertical_realista }}
+                </span>
               }
               º/s
-              @if (mostrarEstadisticasAvanzadas) {
+              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade") {
                 <span class="percentil-badge">
                   {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_vertical_arcade', tanqueSeleccionado.rotacion_torreta_vertical_arcade)) }}
+                </span>
+              }
+              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
+                <span class="percentil-badge">
+                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_vertical_realista', tanqueSeleccionado.rotacion_torreta_vertical_realista)) }}
                 </span>
               }
             </p>

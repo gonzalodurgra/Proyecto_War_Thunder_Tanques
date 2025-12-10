@@ -249,7 +249,7 @@ def fetch_data(pagina):
         # Nombres de las armas
         if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value"):
             datos["angulo_depresion"] = abs(int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value").split("/")[0].strip()))
-            datos["angulo_elevacion"] = int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value").split("/")[0].strip())
+            datos["angulo_elevacion"] = int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value").split("/")[1].replace("°", "").strip())
         
         if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value"):
             if "→" in coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value"):
