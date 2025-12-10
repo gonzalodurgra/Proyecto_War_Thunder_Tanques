@@ -256,8 +256,7 @@
       <p>Página {{ paginaActual }} de {{ totalPaginas }}</p>
     </div>
   }
-
-  <!-- ================================================================ -->
+<!-- ================================================================ -->
 <!-- MODAL DE DETALLES DEL TANQUE CON ESTADÍSTICAS COLOREADAS -->
 <!-- ================================================================ -->
 @if (tanqueSeleccionado) {
@@ -268,14 +267,32 @@
 
       <h2>{{ tanqueSeleccionado.nombre }}</h2>
       
-      <!-- Badge del rating con color -->
-      <div class="rating-badge">
-        <span class="badge-rating">
-          ⭐ Rating: {{ tanqueSeleccionado.rating_arcade }}
-          @if (tanqueSeleccionado.rating_realista) {
-            / {{ tanqueSeleccionado.rating_realista }}
-          }
-        </span>
+      <!-- Badge del rating con color y selector de modo -->
+      <div class="rating-section">
+        <div class="rating-badge">
+          <span class="badge-rating">
+            ⭐ Rating: {{ tanqueSeleccionado.rating_arcade }}
+            @if (tanqueSeleccionado.rating_realista) {
+              / {{ tanqueSeleccionado.rating_realista }}
+            }
+          </span>
+        </div>
+
+        <!-- Selector de modo de juego -->
+        <div class="modo-selector">
+          <button 
+            class="btn-modo"
+            [class.active]="modoActual === 'rating_arcade'"
+            (click)="cambiarModo('rating_arcade')">
+            🎮 Arcade
+          </button>
+          <button 
+            class="btn-modo"
+            [class.active]="modoActual === 'rating_realista'"
+            (click)="cambiarModo('rating_realista')">
+            🎯 Realista
+          </button>
+        </div>
       </div>
 
       <!-- Toggle para estadísticas avanzadas -->
@@ -299,7 +316,7 @@
           <!-- Tripulación con color y percentil -->
           <p>
             <strong>Tripulación:</strong> 
-            <span [style.color]="coloresTanque['tripulacion']" class="stat-colored">
+            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['tripulacion_arcade'] : coloresTanque['tripulacion_realista']" class="stat-colored">
               {{ tanqueSeleccionado.tripulacion }}
             </span>
             @if (mostrarEstadisticasAvanzadas) {
@@ -312,7 +329,7 @@
           <!-- Visibilidad con color (menor es mejor) -->
           <p>
             <strong>Visibilidad:</strong> 
-            <span [style.color]="coloresTanque['visibilidad']" class="stat-colored">
+            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['visibilidad_arcade'] : coloresTanque['visibilidad_realista']" class="stat-colored">
               {{ tanqueSeleccionado.visibilidad }}%
             </span>
             @if (mostrarEstadisticasAvanzadas) {
@@ -543,6 +560,11 @@
                         [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
                         {{ municion.penetracion_mm[0] }}mm
                       </span>
+                      @if (mostrarEstadisticasAvanzadas) {
+                        <span class="percentil-badge-small">
+                          {{ formatearPercentil(obtenerPercentilPenetracion(municion.penetracion_mm[0])) }}
+                        </span>
+                      }
                     </li>
                     <li>
                       <span class="distancia">100m:</span>
@@ -735,6 +757,7 @@
           }
         </div>
       }
+
     </div>
   </div>
 }

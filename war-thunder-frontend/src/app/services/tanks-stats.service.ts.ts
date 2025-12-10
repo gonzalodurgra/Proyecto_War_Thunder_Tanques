@@ -66,6 +66,9 @@ export class TanksStatsService {
   private rangosGlobales: RangosEstadisticas | null = null;
   private rangosPorRating: Map<string, RangosEstadisticas> = new Map();
 
+  // NUEVO: Variables para almacenar rangos de penetración por rating
+  private rangosPenetracionPorRating: Map<string, RangoEstadistica> = new Map();
+
   constructor() { }
 
   // ====================================================================
@@ -374,49 +377,137 @@ export class TanksStatsService {
   }
 
   // ====================================================================
+  // NUEVO MÉTODO: Calcular rangos de penetración por rating
+  // ====================================================================
+  // EXPLICACIÓN: Este método agrupa las penetraciones por rating del tanque
+  // y calcula los deciles para cada grupo
+  
+  calcularRangosPenetracionPorRating(tanques: Tanque[], modo: string): void {
+    console.log('📊 Calculando rangos de penetración por rating...');
+    
+    // Limpiar rangos anteriores
+    this.rangosPenetracionPorRating.clear();
+    
+    // Obtener ratings únicos
+    const ratingsUnicos = new Set<string>();
+    tanques.forEach(tanque => {
+      const rating = modo === 'rating_arcade' ? tanque.rating_arcade : tanque.rating_realista;
+      if (rating) ratingsUnicos.add(rating);
+    });
+
+    // Para cada rating, calcular rangos de penetración
+    ratingsUnicos.forEach(rating => {
+      // Filtrar tanques de este rating
+      const tanquesDelRating = tanques.filter(t => 
+        modo === 'rating_arcade' ? t.rating_arcade === rating : t.rating_realista === rating
+      );
+
+      // Extraer todas las penetraciones de estos tanques
+      const penetracionesDelRating: any[] = [];
+      
+      tanquesDelRating.forEach(tanque => {
+        [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
+          if (setup) {
+            Object.values(setup).forEach(arma => {
+              arma.municiones.forEach(municion => {
+                penetracionesDelRating.push(...municion.penetracion_mm);
+              });
+            });
+          }
+        });
+      });
+
+      // Limpiar y calcular estadísticas
+      const penetracionesLimpias = this.limpiarPenetraciones(penetracionesDelRating);
+      
+      if (penetracionesLimpias.length > 0) {
+        const tablaPenetraciones = aq.from(
+          penetracionesLimpias.map(p => ({ penetracion: p }))
+        );
+
+        const stats = tablaPenetraciones
+          .rollup({
+            min: aq.op.min('penetracion'),
+            max: aq.op.max('penetracion'),
+            d1: aq.op.quantile('penetracion', 0.10),
+            d2: aq.op.quantile('penetracion', 0.20),
+            d3: aq.op.quantile('penetracion', 0.30),
+            d4: aq.op.quantile('penetracion', 0.40),
+            d5: aq.op.quantile('penetracion', 0.50),
+            d6: aq.op.quantile('penetracion', 0.60),
+            d7: aq.op.quantile('penetracion', 0.70),
+            d8: aq.op.quantile('penetracion', 0.80),
+            d9: aq.op.quantile('penetracion', 0.90)
+          })
+          .object() as RangoEstadistica;
+
+        // Guardar en el Map
+        this.rangosPenetracionPorRating.set(rating, stats);
+        
+        console.log(`✅ Rating ${rating}: ${penetracionesLimpias.length} penetraciones procesadas`);
+      }
+    })
+  }
+  // ====================================================================
   // MÉTODO: Obtener color para penetración de munición
   // ====================================================================
   
-  obtenerColorPenetracion(penetracionMm: number, todosLosTanques: Tanque[]): string {
-    const todasLasPenetraciones: any[] = [];
+  obtenerColorPenetracion(
+    penetracionMm: number, 
+    todosLosTanques: Tanque[],
+    rating: string | null = null
+  ): string {
+    
+    let stats: RangoEstadistica | undefined;
 
-    todosLosTanques.forEach(tanque => {
-      [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
-        if (setup) {
-          Object.values(setup).forEach(arma => {
-            arma.municiones.forEach(municion => {
-              todasLasPenetraciones.push(...municion.penetracion_mm);
+    // PASO 1: Intentar usar rangos específicos del rating
+    if (rating && this.rangosPenetracionPorRating.has(rating)) {
+      stats = this.rangosPenetracionPorRating.get(rating);
+    } 
+    // PASO 2: Si no hay rangos por rating, calcular globales
+    else {
+      const todasLasPenetraciones: any[] = [];
+
+      todosLosTanques.forEach(tanque => {
+        [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
+          if (setup) {
+            Object.values(setup).forEach(arma => {
+              arma.municiones.forEach(municion => {
+                todasLasPenetraciones.push(...municion.penetracion_mm);
+              });
             });
-          });
-        }
+          }
+        });
       });
-    });
 
-    // 🔥 LIMPIAR todas las penetraciones antes de usar Arquero
-    const penetracionesLimpias = this.limpiarPenetraciones(todasLasPenetraciones);
+      const penetracionesLimpias = this.limpiarPenetraciones(todasLasPenetraciones);
 
-    // Si no hay datos válidos, devolver color neutro
-    if (penetracionesLimpias.length === 0) return '#999999';
+      if (penetracionesLimpias.length === 0) return '#999999';
 
-    const tablaPenetraciones = aq.from(
-      penetracionesLimpias.map(p => ({ penetracion: p }))
-    );
+      const tablaPenetraciones = aq.from(
+        penetracionesLimpias.map(p => ({ penetracion: p }))
+      );
 
-    const stats = tablaPenetraciones
-      .rollup({
-        d1: aq.op.quantile('penetracion', 0.10),
-        d2: aq.op.quantile('penetracion', 0.20),
-        d3: aq.op.quantile('penetracion', 0.30),
-        d4: aq.op.quantile('penetracion', 0.40),
-        d5: aq.op.quantile('penetracion', 0.50),
-        d6: aq.op.quantile('penetracion', 0.60),
-        d7: aq.op.quantile('penetracion', 0.70),
-        d8: aq.op.quantile('penetracion', 0.80),
-        d9: aq.op.quantile('penetracion', 0.90)
-      })
-      .object() as RangoEstadistica;
+      stats = tablaPenetraciones
+        .rollup({
+          min: aq.op.min('penetracion'),
+          max: aq.op.max('penetracion'),
+          d1: aq.op.quantile('penetracion', 0.10),
+          d2: aq.op.quantile('penetracion', 0.20),
+          d3: aq.op.quantile('penetracion', 0.30),
+          d4: aq.op.quantile('penetracion', 0.40),
+          d5: aq.op.quantile('penetracion', 0.50),
+          d6: aq.op.quantile('penetracion', 0.60),
+          d7: aq.op.quantile('penetracion', 0.70),
+          d8: aq.op.quantile('penetracion', 0.80),
+          d9: aq.op.quantile('penetracion', 0.90)
+        })
+        .object() as RangoEstadistica;
+    }
 
-    // Asignar color según deciles
+    if (!stats) return '#999999';
+
+    // PASO 3: Asignar color según decil
     if (penetracionMm <= stats.d1) return '#ef4444';
     if (penetracionMm <= stats.d2) return '#f87171';
     if (penetracionMm <= stats.d3) return '#fb923c';
@@ -427,6 +518,36 @@ export class TanksStatsService {
     if (penetracionMm <= stats.d8) return '#4ade80';
     if (penetracionMm <= stats.d9) return '#22c55e';
     return '#16a34a';
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Obtener percentil de penetración
+  // ====================================================================
+  
+  obtenerPercentilPenetracion(
+    penetracionMm: number,
+    rating: string | null = null
+  ): number {
+    
+    let stats: RangoEstadistica | undefined;
+
+    if (rating && this.rangosPenetracionPorRating.has(rating)) {
+      stats = this.rangosPenetracionPorRating.get(rating);
+    }
+
+    if (!stats) return 50;
+
+    // Interpolar entre deciles
+    if (penetracionMm <= stats.d1) return 5;
+    if (penetracionMm <= stats.d2) return 15;
+    if (penetracionMm <= stats.d3) return 25;
+    if (penetracionMm <= stats.d4) return 35;
+    if (penetracionMm <= stats.d5) return 45;
+    if (penetracionMm <= stats.d6) return 55;
+    if (penetracionMm <= stats.d7) return 65;
+    if (penetracionMm <= stats.d8) return 75;
+    if (penetracionMm <= stats.d9) return 85;
+    return 95;
   }
 
 

@@ -59,10 +59,15 @@ export class TankListComponent implements OnInit {
 
   isAdmin: boolean = localStorage.getItem("esAdmin") == "s";
 
-  estadisticasPorRatingArcade: EstadisticasPorRating[] = [];
-  estadisticasPorRatingRealista: EstadisticasPorRating[] = []
+  estadisticasPorRating: EstadisticasPorRating[] = [];
   coloresTanque: { [key: string]: string } = {};
   mostrarEstadisticasAvanzadas: boolean = false;
+
+  // ====================================================================
+  // Variables para modo de juego
+  // ====================================================================
+  modoActual: string = 'rating_arcade'; // Por defecto Arcade
+
   // ====================================================================
   // PASO 2: Inyectar el servicio en el constructor
   // ====================================================================
@@ -88,37 +93,58 @@ export class TankListComponent implements OnInit {
   cargarTanques(): void {
     this.cargando = true;
     this.error = '';
-    
-    // EXPLICACIÓN: subscribe() es como .then() en promesas
-    // Se ejecuta cuando la petición HTTP termina
+
     this.tanksService.obtenerTodosLosTanques().subscribe({
-      next: (data) => {
-        // SUCCESS: Los datos llegaron correctamente
-        console.log('Tanques cargados:', data);
-        this.tanques = data;
-        this.tanquesFiltrados = data;
+      next: (tanques) => {
+        console.log('✅ Tanques cargados:', tanques.length);
+        this.tanques = tanques;
+        this.tanquesFiltrados = tanques;
+
         // NUEVO: Calcular estadísticas globales
         console.log('📊 Calculando estadísticas globales...');
-        this.statsService.calcularRangosGlobales(this.tanques);
+        this.statsService.calcularRangosGlobales(tanques);
 
         // NUEVO: Calcular estadísticas por rating
         console.log('📊 Calculando estadísticas por rating...');
-        this.estadisticasPorRatingArcade = this.statsService.calcularRangosPorRating(this.tanques, "rating_arcade");
-        console.log('📊 Ratings procesados:', this.estadisticasPorRatingArcade.length);
-        this.estadisticasPorRatingRealista = this.statsService.calcularRangosPorRating(this.tanques, "rating_realista");
-        console.log('📊 Ratings procesados:', this.estadisticasPorRatingRealista.length);
-        this.paginaActual = 1;
+        this.estadisticasPorRating = this.statsService.calcularRangosPorRating(tanques, this.modoActual);
+        console.log('📊 Ratings procesados:', this.estadisticasPorRating.length);
+
+        // NUEVO: Calcular rangos de penetración por rating
+        console.log('🎯 Calculando penetraciones por rating...');
+        this.statsService.calcularRangosPenetracionPorRating(tanques, this.modoActual);
+
+        // Cargar naciones únicas
+        this.cargarNaciones();
+        
+        // Actualizar paginación
         this.calcularPaginacion();
         this.actualizarTanquesPaginados();
+        
         this.cargando = false;
       },
-      error: (err) => {
-        // ERROR: Algo salió mal
-        console.error('Error al cargar tanques:', err);
-        this.error = 'No se pudieron cargar los tanques. Verifica que la API esté corriendo.';
+      error: (error) => {
+        console.error('❌ Error al cargar tanques:', error);
+        this.error = 'Error al cargar los tanques. Por favor, intenta de nuevo.';
         this.cargando = false;
       }
     });
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Cambiar modo de juego
+  // ====================================================================
+  cambiarModo(modo: string): void {
+    this.modoActual = modo;
+    console.log(`🎮 Cambiando a modo: ${modo}`);
+    
+    // Recalcular estadísticas con el nuevo modo
+    this.estadisticasPorRating = this.statsService.calcularRangosPorRating(this.tanques, modo);
+    this.statsService.calcularRangosPenetracionPorRating(this.tanques, modo);
+    
+    // Si hay un tanque seleccionado, recalcular sus colores
+    if (this.tanqueSeleccionado) {
+      this.seleccionarTanque(this.tanqueSeleccionado);
+    }
   }
 
   // ====================================================================
@@ -318,47 +344,14 @@ export class TankListComponent implements OnInit {
   // ====================================================================
   seleccionarTanque(tanque: Tanque): void {
     this.tanqueSeleccionado = tanque;
+    
     // Calcular colores para este tanque usando su rating específico
     this.coloresTanque = this.statsService.obtenerColoresTanque(tanque, true);
     
     console.log('🎨 Colores calculados para:', tanque.nombre);
-    console.log('Rating:', tanque.rating_arcade);
+    console.log('Rating Arcade:', tanque.rating_arcade);
+    console.log('Rating Realista:', tanque.rating_realista);
     console.log('Colores:', this.coloresTanque);
-
-    const statsNormales = [
-      'tripulacion',
-      'blindaje_chasis',
-      'blindaje_torreta',
-      'velocidad_adelante_arcade',
-      'velocidad_atras_arcade',
-      'relacion_potencia_peso',
-      'cadencia',
-      'angulo_depresion',
-      'angulo_elevacion',
-      'rotacion_torreta_horizontal_arcade',
-      'rotacion_torreta_vertical_arcade'
-    ];
-
-    const statsInvertidas = [
-      'visibilidad',
-      'recarga'
-    ];
-
-    for (const stat of statsNormales) {
-      const valor = (tanque as any)[stat];
-      if (valor !== undefined && valor !== null) {
-        const p = this.obtenerPercentil(tanque, stat, valor);
-        this.coloresTanque[stat] = this.obtenerColorPorPercentil(p);
-      }
-    }
-
-    for (const stat of statsInvertidas) {
-      const valor = (tanque as any)[stat];
-      if (valor !== undefined && valor !== null) {
-        const p = this.obtenerPercentil(tanque, stat, valor);
-        this.coloresTanque[stat] = this.obtenerColorPorPercentilInvertido(p);
-      }
-    }
   }
 
   // ====================================================================
@@ -523,7 +516,29 @@ export class TankListComponent implements OnInit {
   // NUEVO MÉTODO: Obtener color de penetración
   // ====================================================================
   obtenerColorPenetracion(penetracionMm: number): string {
-    return this.statsService.obtenerColorPenetracion(penetracionMm, this.tanques);
+    if (!this.tanqueSeleccionado) {
+      return this.statsService.obtenerColorPenetracion(penetracionMm, this.tanques);
+    }
+    
+    // Usar el rating del tanque seleccionado según el modo actual
+    const rating = this.modoActual === 'rating_arcade' 
+      ? this.tanqueSeleccionado.rating_arcade 
+      : this.tanqueSeleccionado.rating_realista;
+    
+    return this.statsService.obtenerColorPenetracion(penetracionMm, this.tanques, rating);
+  }
+
+  // ====================================================================
+  // NUEVO MÉTODO: Formatear percentil para mostrar
+  // ====================================================================
+  obtenerPercentilPenetracion(penetracionMm: number): number {
+    if (!this.tanqueSeleccionado) return 50;
+    
+    const rating = this.modoActual === 'rating_arcade'
+      ? this.tanqueSeleccionado.rating_arcade
+      : this.tanqueSeleccionado.rating_realista;
+    
+    return this.statsService.obtenerPercentilPenetracion(penetracionMm, rating);
   }
 
   // ====================================================================

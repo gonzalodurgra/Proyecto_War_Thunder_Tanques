@@ -1668,6 +1668,7 @@ h1 {
     padding-bottom: max(10px, env(safe-area-inset-bottom));
   }
 }
+
 /* ================================================================ */
 /* ESTILOS PARA ESTADÍSTICAS COLOREADAS */
 /* ================================================================ */
@@ -1679,10 +1680,14 @@ h1 {
   overflow-y: auto;
 }
 
-/* Badge del rating */
-.rating-badge {
+/* Badge del rating y selector de modo */
+.rating-section {
   text-align: center;
-  margin: 15px 0;
+  margin: 20px 0;
+}
+
+.rating-badge {
+  margin-bottom: 15px;
 }
 
 .badge-rating {
@@ -1694,6 +1699,43 @@ h1 {
   font-weight: bold;
   font-size: 1.1rem;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Selector de modo de juego */
+.modo-selector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-modo {
+  background-color: #e5e7eb;
+  color: #374151;
+  border: 2px solid #d1d5db;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btn-modo:hover {
+  background-color: #d1d5db;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.btn-modo.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border-color: #6366f1;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+.btn-modo.active:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
 }
 
 /* Toggle de estadísticas avanzadas */
@@ -1747,6 +1789,20 @@ h1 {
   background-color: #d1fae5;
   color: #065f46;
   border-color: #86efac;
+}
+
+/* Badge pequeño de percentil para penetraciones */
+.percentil-badge-small {
+  display: inline-block;
+  background-color: rgba(229, 231, 235, 0.8);
+  color: #374151;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-left: 4px;
+  vertical-align: middle;
+  border: 1px solid #d1d5db;
 }
 
 /* Secciones de detalle mejoradas */
