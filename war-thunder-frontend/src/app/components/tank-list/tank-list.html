@@ -486,7 +486,7 @@
             <p>
               <strong>Cadencia:</strong> 
               <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['cadencia_arcade']: coloresTanque['cadencia_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.cadencia.toFixed(2) }} disparos/min
+                {{ tanqueSeleccionado.cadencia.toFixed(2) }} rpm
               </span>
               @if (mostrarEstadisticasAvanzadas) {
                 <span class="percentil-badge">
