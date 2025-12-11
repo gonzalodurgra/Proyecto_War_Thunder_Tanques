@@ -327,15 +327,15 @@ export class TanksStatsService {
       visibilidad_realista: this.obtenerColor('visibilidad', tanque.visibilidad, rating_realista, true),
       blindaje_chasis_realista: this.obtenerColor('blindaje_chasis', tanque.blindaje_chasis, rating_realista),
       blindaje_torreta_realista: this.obtenerColor('blindaje_torreta', tanque.blindaje_torreta, rating_realista),
-      velocidad_adelante_realista: this.obtenerColor('velocidad_adelante_realista', tanque.velocidad_adelante_arcade, rating_realista),
-      velocidad_atras_realista: this.obtenerColor('velocidad_atras_realista', tanque.velocidad_atras_arcade, rating_realista),
-      potencia_peso_realista: this.obtenerColor('relacion_potencia_peso_realista', tanque.relacion_potencia_peso, rating_realista),
+      velocidad_adelante_realista: this.obtenerColor('velocidad_adelante_realista', tanque.velocidad_adelante_realista, rating_realista),
+      velocidad_atras_realista: this.obtenerColor('velocidad_atras_realista', tanque.velocidad_atras_realista, rating_realista),
+      potencia_peso_realista: this.obtenerColor('relacion_potencia_peso_realista', tanque.relacion_potencia_peso_realista, rating_realista),
       depresion_realista: this.obtenerColor('angulo_depresion', tanque.angulo_depresion, rating_realista),
       elevacion_realista: this.obtenerColor('angulo_elevacion', tanque.angulo_elevacion, rating_realista),
       recarga_realista: this.obtenerColor('recarga', tanque.recarga, rating_realista, true),
       cadencia_realista: this.obtenerColor('cadencia', tanque.cadencia, rating_realista),
-      rotacion_horizontal_realista: this.obtenerColor('rotacion_torreta_horizontal_realista', tanque.rotacion_torreta_horizontal_arcade, rating_realista),
-      rotacion_vertical_realista: this.obtenerColor('rotacion_torreta_vertical_realista', tanque.rotacion_torreta_vertical_arcade, rating_realista)
+      rotacion_horizontal_realista: this.obtenerColor('rotacion_torreta_horizontal_realista', tanque.rotacion_torreta_horizontal_realista, rating_realista),
+      rotacion_vertical_realista: this.obtenerColor('rotacion_torreta_vertical_realista', tanque.rotacion_torreta_vertical_realista, rating_realista)
     };
   }
 
