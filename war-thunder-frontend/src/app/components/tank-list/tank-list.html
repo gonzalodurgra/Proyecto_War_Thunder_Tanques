@@ -330,8 +330,9 @@
           <p>
             <strong>Visibilidad:</strong> 
             <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['visibilidad_arcade'] : coloresTanque['visibilidad_realista']" class="stat-colored">
-              {{ tanqueSeleccionado.visibilidad }}%
+              {{ tanqueSeleccionado.visibilidad }}
             </span>
+            %
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge good">
                 {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'visibilidad', tanqueSeleccionado.visibilidad)) }}
@@ -352,8 +353,9 @@
           <p>
             <strong>Blindaje chasis:</strong> 
             <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_chasis_arcade']: coloresTanque['blindaje_chasis_realista']" class="stat-colored">
-              {{ tanqueSeleccionado.blindaje_chasis }} mm
+              {{ tanqueSeleccionado.blindaje_chasis }}
             </span>
+            mm
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge">
                 {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_chasis', tanqueSeleccionado.blindaje_chasis)) }}
@@ -365,8 +367,9 @@
           <p>
             <strong>Blindaje torreta:</strong> 
             <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_torreta_arcade']: coloresTanque['blindaje_torreta_realista']" class="stat-colored">
-              {{ tanqueSeleccionado.blindaje_torreta }} mm
+              {{ tanqueSeleccionado.blindaje_torreta }} 
             </span>
+            mm
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge">
                 {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_torreta', tanqueSeleccionado.blindaje_torreta)) }}
@@ -471,8 +474,9 @@
             <p>
               <strong>Recarga:</strong> 
               <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['recarga_arcade']: coloresTanque['recarga_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.recarga }}s
+                {{ tanqueSeleccionado.recarga }}
               </span>
+              s
               @if (mostrarEstadisticasAvanzadas) {
                 <span class="percentil-badge good">
                   {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'recarga', tanqueSeleccionado.recarga)) }}
@@ -486,8 +490,9 @@
             <p>
               <strong>Cadencia:</strong> 
               <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['cadencia_arcade']: coloresTanque['cadencia_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.cadencia.toFixed(2) }} rpm
+                {{ tanqueSeleccionado.cadencia.toFixed(2) }} 
               </span>
+              rpm
               @if (mostrarEstadisticasAvanzadas) {
                 <span class="percentil-badge">
                   {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'cadencia', tanqueSeleccionado.cadencia)) }}
@@ -502,8 +507,9 @@
           <p>
             <strong>Depresión:</strong> 
             <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['depresion_arcade']: coloresTanque['depresion_realista']" class="stat-colored">
-              {{ tanqueSeleccionado.angulo_depresion }}°
+              {{ tanqueSeleccionado.angulo_depresion }}
             </span>
+            °
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge">
                 {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_depresion', tanqueSeleccionado.angulo_depresion)) }}
@@ -515,8 +521,9 @@
           <p>
             <strong>Elevación:</strong> 
             <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['elevacion_arcade']: coloresTanque['elevacion_realista']" class="stat-colored">
-              {{ tanqueSeleccionado.angulo_elevacion }}°
+              {{ tanqueSeleccionado.angulo_elevacion }}
             </span>
+            °
             @if (mostrarEstadisticasAvanzadas) {
               <span class="percentil-badge">
                 {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_elevacion', tanqueSeleccionado.angulo_elevacion)) }}
