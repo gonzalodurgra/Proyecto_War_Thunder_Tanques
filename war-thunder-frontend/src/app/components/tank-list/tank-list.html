@@ -492,7 +492,15 @@
               }
             </p>
           }
-          
+          <!-- Cadencia con color -->
+          @if (tanqueSeleccionado.cargador > 1) {
+            <p>
+              <strong>Cargador:</strong> 
+              <span>
+                {{ tanqueSeleccionado.cargador }}
+              </span>
+            </p>
+          }
           <p><strong>Munición total:</strong> {{ tanqueSeleccionado.municion_total }}</p>
           
           <!-- Depresión con color -->
