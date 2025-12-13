@@ -263,7 +263,7 @@ def fetch_data(pagina):
             if "→" in coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value"):
                 datos["recarga"] = float(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value").split("→")[1].replace("s", "").strip())
             else:
-                datos["recarga"] = float(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value").replace("s", "").strip())
+                datos["recarga"] = float(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) .game-unit_chars-value").replace("s", "").strip())
         
         if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Fire Rate') + .game-unit_chars-value"):
             datos["cadencia"] = int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Fire Rate') + .game-unit_chars-value").replace("shots/min", "").replace(",","").strip())

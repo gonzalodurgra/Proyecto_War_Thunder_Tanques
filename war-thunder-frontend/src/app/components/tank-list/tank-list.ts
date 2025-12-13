@@ -84,6 +84,9 @@ export class TankListComponent implements OnInit {
     // Es el lugar ideal para cargar los datos iniciales
     this.cargarTanques();
     this.cargarNaciones();
+    if(!this.authService.isLoggedIn()){
+      this.authService.logout()
+    }
   }
 
 
