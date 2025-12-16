@@ -16,6 +16,8 @@ import shutil
 from pending_changes_routes import router as pending_changes_router
 from pending_changes_routes import crear_cambio_pendiente
 from contextlib import asynccontextmanager
+from discord_bot import start_discord_bot
+import asyncio
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -90,6 +92,7 @@ async def lifespan():
     """
     print("Iniciando aplicación...")
     verificar_conexion()
+    asyncio.create_task(start_discord_bot())
 
 # Paso 4: Ruta principal (raíz)
 @app.get("/")
