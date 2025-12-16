@@ -1,0 +1,21 @@
+# ====================================================================
+# DOCKERFILE PARA EL BOT DE DISCORD
+# ====================================================================
+
+FROM python:3.11-slim
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de requisitos
+COPY requirements.txt .
+
+# Instalar dependencias
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar el código del bot
+COPY discord_bot.py .
+COPY .env .
+
+# Comando para ejecutar el bot
+CMD ["python", "discord_bot.py"]
