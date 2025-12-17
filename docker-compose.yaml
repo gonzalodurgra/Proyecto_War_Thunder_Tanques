@@ -156,19 +156,6 @@ services:
   # ====================================================================
   # SERVICIO 2: Bot de Discord
   # ====================================================================
-  discord_bot:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.bot
-    container_name: war_thunder_bot
-    environment:
-      - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - BACKEND_URL=${BACKEND_URL}
-    depends_on:
-      - backend
-    networks:
-      - war_thunder_network
-    restart: unless-stopped
   # ==================================================================
   # SERVICIO 3: FRONTEND (ANGULAR + NGINX)
   # ==================================================================

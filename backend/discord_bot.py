@@ -29,12 +29,12 @@ import aiohttp
 load_dotenv()
 
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-API_URL = os.getenv('API_URL', 'http://localhost:8000')
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:8000')
 
 if not DISCORD_TOKEN:
     raise ValueError("⚠️ DISCORD_TOKEN no encontrado en .env")
 
-print(f"🔗 Bot conectándose a API: {API_URL}")
+print(f"🔗 Bot conectándose a API: {BACKEND_URL}")
 
 # ====================================================================
 # PASO 2: Configurar el bot
@@ -102,7 +102,7 @@ class WarThunderAPI:
                 return []
 
 # Instancia de la API
-api = WarThunderAPI(API_URL)
+api = WarThunderAPI(BACKEND_URL)
 
 # ====================================================================
 # PASO 4: Funciones auxiliares para cálculos estadísticos
@@ -489,7 +489,7 @@ async def ayuda(ctx):
 
 if __name__ == '__main__':
     print("🤖 Iniciando bot de Discord...")
-    print(f"🔗 Conectando a API: {API_URL}")
+    print(f"🔗 Conectando a API: {BACKEND_URL}")
     try:
         bot.run(DISCORD_TOKEN)
     except Exception as e:

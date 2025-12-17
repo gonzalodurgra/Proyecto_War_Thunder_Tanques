@@ -74,7 +74,7 @@ CMD curl -f http://localhost:${PORT:-10000}/ || exit 1
 # ====================================================================
 
 # Comando para iniciar el servidor uvicorn
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+CMD ["python", "launcher.py"]
 
 
 # EXPLICACIÓN:
