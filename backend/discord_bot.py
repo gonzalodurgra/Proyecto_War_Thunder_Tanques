@@ -146,6 +146,50 @@ def obtener_top_tanques(tanques: List[Dict], caracteristica: str, limite: int = 
     )
     return tanques_ordenados[:limite]
 
+def obtener_armamentos(tanque):
+    """
+    Devuelve un dict con:
+    {
+        "Armamento principal": {...}
+        o
+        "Setup 1": {...},
+        "Setup 2": {...}
+    }
+    """
+    if "armamento" in tanque:
+        return {"Armamento principal": tanque["armamento"]}
+
+    setups = {}
+    for key, value in tanque.items():
+        if key.startswith("setup_"):
+            setups[key.replace("_", " ").title()] = value
+
+    return setups
+
+def formatear_armamento(armas):
+    texto = ""
+
+    for arma, datos in armas.items():
+        texto += f"▶️ **{arma}**\n"
+
+        for mun in datos.get("municiones", []):
+            texto += f"• *{mun['nombre']}* ({mun['tipo']})\n"
+
+            if mun["penetracion_mm"]:
+                pen = " / ".join(map(str, mun["penetracion_mm"]))
+                texto += f"  ↳ Pen: {pen} mm\n"
+
+            if mun["velocidad_bala"]:
+                texto += f"  ↳ Vel: {mun['velocidad_bala']} m/s\n"
+
+            if mun["masa_explosivo"]:
+                texto += f"  ↳ Explosivo: {mun['masa_explosivo']} g\n"
+
+        texto += "\n"
+
+    return texto[:1024]  # límite Discord
+
+
 # ====================================================================
 # PASO 5: Eventos del bot
 # ====================================================================
@@ -260,20 +304,20 @@ async def tanque(ctx, *, nombre: str):
     # Crear embed con información del tanque
     embed = discord.Embed(
         title=f"🎮 {tanque['nombre']}",
-        description=f"**Nación:** {tanque['nacion']} | **Rating:** {tanque['rating_arcade']}",
+        description=f"**Nación:** {tanque['nacion']} | **Rating:** {tanque['rating_arcade']}/{tanque['rating_realista']}",
         color=discord.Color.green()
     )
     
     # Información general
     embed.add_field(
         name="ℹ️ General",
-        value=f"**Rol:** {tanque['rol']}\n**Tripulación:** {tanque['tripulacion']}\n**Peso:** {tanque['peso']}t",
+        value=f"**Rol:** {tanque['rol']}\n**Tripulación:** {tanque['tripulacion']}\n**Peso:** {tanque['peso']}t\n**Visibilidad:** {tanque['visibilidad']}%",
         inline=True
     )
     
     # Blindaje
     embed.add_field(
-        name="🛡️ Blindaje",
+        name="🛡️ Blindajes frontales",
         value=f"**Chasis:** {tanque['blindaje_chasis']}mm\n**Torreta:** {tanque['blindaje_torreta']}mm",
         inline=True
     )
@@ -281,14 +325,14 @@ async def tanque(ctx, *, nombre: str):
     # Movilidad
     embed.add_field(
         name="🏎️ Movilidad",
-        value=f"**Velocidad:** {tanque['velocidad_adelante_arcade']}km/h\n**Potencia/Peso:** {tanque['relacion_potencia_peso']}hp/t",
+        value=f"**Velocidad:** {tanque['velocidad_adelante_arcade']}/{tanque['velocidad_adelante_realista']}km/h\n**Marcha atrás:** {tanque['velocidad_atras_arcade']}/{tanque['velocidad_atras_realista']}km/h\n**Potencia/Peso:** {tanque['relacion_potencia_peso']}/{tanque['relacion_potencia_peso_realista']}hp/t",
         inline=True
     )
     
     # Armamento
     embed.add_field(
         name="🔫 Armamento",
-        value=f"**Recarga:** {tanque['recarga']}s\n**Cadencia:** {tanque['cadencia']:.1f} disp/min\n**Munición:** {tanque['municion_total']}",
+        value=f"**Recarga:** {tanque['recarga']}s\n**Cadencia:** {tanque['cadencia']:.1f} disp/min\n**Munición:** {tanque['municion_total']}\n**Rotación horizontal:**{tanque['rotacion_torreta_horizontal_arcade']}/{tanque['rotacion_torreta_horizontal_realista']}º/s\n**Rotación vertical:**{tanque['rotacion_torreta_vertical_arcade']}/{tanque['rotacion_torreta_vertical_realista']}º/s",
         inline=True
     )
     
@@ -298,6 +342,18 @@ async def tanque(ctx, *, nombre: str):
         value=f"**Depresión:** {tanque['angulo_depresion']}°\n**Elevación:** {tanque['angulo_elevacion']}°",
         inline=True
     )
+    
+    armamentos = obtener_armamentos(tanque)
+
+    for nombre_setup, armas in armamentos.items():
+        embed.add_field(
+            name=f"🔫 {nombre_setup}",
+            value=formatear_armamento(armas),
+            inline=False
+        )
+        
+    embed.set_thumbnail(url=f"{BACKEND_URL}/imagenes/{tanque['imagen_local']}")
+
     
     await ctx.send(embed=embed)
 
