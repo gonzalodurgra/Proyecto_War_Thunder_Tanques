@@ -181,6 +181,9 @@ def formatear_armamento(armas):
 
             if mun["velocidad_bala"]:
                 texto += f"  ↳ Vel: {mun['velocidad_bala']} m/s\n"
+                
+            if mun["masa_total"]:
+                texto += f"  ↳ Masa: {mun['masa_total']} g\n"
 
             if mun["masa_explosivo"]:
                 texto += f"  ↳ Explosivo: {mun['masa_explosivo']} g\n"
@@ -311,35 +314,35 @@ async def tanque(ctx, *, nombre: str):
     # Información general
     embed.add_field(
         name="ℹ️ General",
-        value=f"**Rol:** {tanque['rol']}\n**Tripulación:** {tanque['tripulacion']}\n**Peso:** {tanque['peso']}t\n**Visibilidad:** {tanque['visibilidad']}%",
+        value=f"**Rol:** {tanque['rol']}\n**Tripulación:** {tanque['tripulacion']}\n**Peso:** {tanque['peso']} t\n**Visibilidad:** {tanque['visibilidad']} %",
         inline=True
     )
     
     # Blindaje
     embed.add_field(
         name="🛡️ Blindajes frontales",
-        value=f"**Chasis:** {tanque['blindaje_chasis']}mm\n**Torreta:** {tanque['blindaje_torreta']}mm",
+        value=f"**Chasis:** {tanque['blindaje_chasis']} mm\n**Torreta:** {tanque['blindaje_torreta']} mm",
         inline=True
     )
     
     # Movilidad
     embed.add_field(
         name="🏎️ Movilidad",
-        value=f"**Velocidad:** {tanque['velocidad_adelante_arcade']}/{tanque['velocidad_adelante_realista']}km/h\n**Marcha atrás:** {tanque['velocidad_atras_arcade']}/{tanque['velocidad_atras_realista']}km/h\n**Potencia/Peso:** {tanque['relacion_potencia_peso']}/{tanque['relacion_potencia_peso_realista']}hp/t",
+        value=f"**Velocidad:** {tanque['velocidad_adelante_arcade']}/{tanque['velocidad_adelante_realista']} km/h\n**Marcha atrás:** {tanque['velocidad_atras_arcade']}/{tanque['velocidad_atras_realista']} km/h\n**Potencia/Peso:** {tanque['relacion_potencia_peso']}/{tanque['relacion_potencia_peso_realista']} hp/t",
         inline=True
     )
     
     # Armamento
     embed.add_field(
         name="🔫 Armamento",
-        value=f"**Recarga:** {tanque['recarga']}s\n**Cadencia:** {tanque['cadencia']:.1f} disp/min\n**Munición:** {tanque['municion_total']}\n**Rotación horizontal:**{tanque['rotacion_torreta_horizontal_arcade']}/{tanque['rotacion_torreta_horizontal_realista']}º/s\n**Rotación vertical:**{tanque['rotacion_torreta_vertical_arcade']}/{tanque['rotacion_torreta_vertical_realista']}º/s",
+        value=f"**Recarga:** {tanque['recarga']} s\n**Cadencia:** {tanque['cadencia']:.1f} disp/min\n**Munición:** {tanque['municion_total']}\n**Rotación horizontal:** {tanque['rotacion_torreta_horizontal_arcade']}/{tanque['rotacion_torreta_horizontal_realista']} º/s\n**Rotación vertical:** {tanque['rotacion_torreta_vertical_arcade']}/{tanque['rotacion_torreta_vertical_realista']} º/s",
         inline=True
     )
     
     # Ángulos
     embed.add_field(
         name="📐 Ángulos",
-        value=f"**Depresión:** {tanque['angulo_depresion']}°\n**Elevación:** {tanque['angulo_elevacion']}°",
+        value=f"**Depresión:** {tanque['angulo_depresion']} °\n**Elevación:** {tanque['angulo_elevacion']} °",
         inline=True
     )
     
@@ -354,7 +357,6 @@ async def tanque(ctx, *, nombre: str):
         
     embed.set_thumbnail(url=f"{BACKEND_URL}/imagenes/{tanque['imagen_local']}")
 
-    
     await ctx.send(embed=embed)
 
 # -------------------- COMANDO: !comparar --------------------
