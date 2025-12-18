@@ -104,6 +104,11 @@ async def root():
         "cors_enabled": True,
         "allowed_origins": len(allowed_origins)
     }
+    
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 
 # Paso 5: Crear un nuevo tanque (POST)
 @app.post("/tanques/", response_model=dict, status_code=201)
