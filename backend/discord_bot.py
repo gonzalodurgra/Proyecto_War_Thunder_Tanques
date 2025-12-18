@@ -57,7 +57,11 @@ class WarThunderAPI:
         self.session: aiohttp.ClientSession | None = None
 
     async def start(self):
-        timeout = aiohttp.ClientTimeout(total=15)
+        timeout = aiohttp.ClientTimeout(
+            total=None,
+            sock_connect=8,
+            sock_read=8
+        )
         self.session = aiohttp.ClientSession(timeout=timeout)
 
     async def close(self):
@@ -72,12 +76,13 @@ class WarThunderAPI:
 
         for attempt in range(retries):
             try:
-                async with self.session.get(url) as resp:
-                    if resp.status == 200:
-                        return await resp.json()
-            except Exception:
+                async with asyncio.timeout(12):
+                    async with self.session.get(url) as resp:
+                        if resp.status == 200:
+                            return await resp.json()
+            except (asyncio.TimeoutError, aiohttp.ClientError):
                 if attempt < retries - 1:
-                    await asyncio.sleep(4)
+                    await asyncio.sleep(3)
 
         return None
 
@@ -309,7 +314,18 @@ async def stats(ctx, rango_br: str = None, modo: str = 'realista'):
     await ctx.send('📊 Calculando estadísticas...')
     
     # PASO 1: Obtener todos los tanques de la API
-    tanques = await api.obtener_todos_tanques()
+    try:
+        tanques = await asyncio.wait_for(
+            api.obtener_todos_tanques(),
+            timeout=20
+        )
+    except asyncio.TimeoutError:
+        await ctx.send(
+            "⏳ El servidor está tardando demasiado en responder.\n"
+            "Inténtalo de nuevo en unos segundos."
+        )
+        return
+
     
     if not tanques:
         await ctx.send('❌ No se pudieron obtener los tanques.')
