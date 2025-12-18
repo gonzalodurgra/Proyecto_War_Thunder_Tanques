@@ -95,7 +95,7 @@ def contar_por_nacion(tanques):
     return naciones
 
 def filtrar_por_br(tanques, br_min, br_max, modo):
-    campo_br = "br_realista" if modo == "realista" else "br_arcade"
+    campo_br = "rating_realista" if modo == "realista" else "rating_arcade"
 
     return [
         t for t in tanques
