@@ -314,7 +314,6 @@ async def ping(ctx):
 
 # -------------------- COMANDO: !stats --------------------
 
-@bot.command(name='stats')
 @bot.command(name="stats")
 async def stats(ctx, rango_br: str = None, modo: str = "realista"):
     await ctx.send("📊 Calculando estadísticas...")
