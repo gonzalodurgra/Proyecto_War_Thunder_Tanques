@@ -419,7 +419,7 @@ async def eliminar_tanque(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
     
-@app.get("/")
+@app.get("/stats")
 async def obtener_stats(
     br_min: Optional[float] = Query(None, ge=0),
     br_max: Optional[float] = Query(None, ge=0),
