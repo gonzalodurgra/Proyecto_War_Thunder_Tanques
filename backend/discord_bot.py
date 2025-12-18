@@ -22,6 +22,7 @@ import os
 from dotenv import load_dotenv
 from typing import List, Dict, Optional
 import aiohttp
+import asyncio
 
 # ====================================================================
 # PASO 1: Cargar variables de entorno
@@ -51,55 +52,58 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 # PASO 3: Clase para manejar peticiones a la API
 # ====================================================================
 class WarThunderAPI:
-    """
-    Clase que maneja todas las comunicaciones con la API de War Thunder.
-    """
-    
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip('/')
-    
-    async def obtener_todos_tanques(self) -> List[Dict]:
-        """Obtiene todos los tanques de la API."""
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'{self.base_url}/tanques/') as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    print(f"❌ Error al obtener tanques: {response.status}")
-                    return []
-    
-    async def obtener_tanque_por_id(self, tanque_id: str) -> Optional[Dict]:
-        """Obtiene un tanque específico por ID."""
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'{self.base_url}/tanques/{tanque_id}') as response:
-                if response.status == 200:
-                    return await response.json()
-                return None
-    
-    async def buscar_tanque_por_nombre(self, nombre: str) -> Optional[Dict]:
-        """Busca un tanque por nombre (coincidencia parcial)."""
-        tanques = await self.obtener_todos_tanques()
-        nombre_lower = nombre.lower()
-        
-        # Búsqueda exacta primero
-        for tanque in tanques:
-            if tanque['nombre'].lower() == nombre_lower:
-                return tanque
-        
-        # Búsqueda parcial
-        for tanque in tanques:
-            if nombre_lower in tanque['nombre'].lower():
-                return tanque
-        
+        self.session: aiohttp.ClientSession | None = None
+
+    async def start(self):
+        timeout = aiohttp.ClientTimeout(total=15)
+        self.session = aiohttp.ClientSession(timeout=timeout)
+
+    async def close(self):
+        if self.session:
+            await self.session.close()
+
+    async def _get(self, endpoint: str, retries: int = 3):
+        if not self.session:
+            raise RuntimeError("API session not started")
+
+        url = f"{self.base_url}{endpoint}"
+
+        for attempt in range(retries):
+            try:
+                async with self.session.get(url) as resp:
+                    if resp.status == 200:
+                        return await resp.json()
+            except Exception:
+                if attempt < retries - 1:
+                    await asyncio.sleep(4)
+
         return None
-    
-    async def obtener_tanques_por_nacion(self, nacion: str) -> List[Dict]:
-        """Obtiene todos los tanques de una nación."""
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'{self.base_url}/tanques/nacion/{nacion}') as response:
-                if response.status == 200:
-                    return await response.json()
-                return []
+
+    async def obtener_todos_tanques(self):
+        return await self._get("/tanques/") or []
+
+    async def obtener_tanque_por_id(self, tanque_id: str):
+        return await self._get(f"/tanques/{tanque_id}")
+
+    async def obtener_tanques_por_nacion(self, nacion: str):
+        return await self._get(f"/tanques/nacion/{nacion}") or []
+
+    async def buscar_tanque_por_nombre(self, nombre: str):
+        tanques = await self.obtener_todos_tanques()
+        nombre = nombre.lower()
+
+        for t in tanques:
+            if t["nombre"].lower() == nombre:
+                return t
+
+        for t in tanques:
+            if nombre in t["nombre"].lower():
+                return t
+
+        return None
+
 
 # Instancia de la API
 api = WarThunderAPI(BACKEND_URL)
@@ -199,16 +203,18 @@ def formatear_armamento(armas):
 
 @bot.event
 async def on_ready():
-    """Se ejecuta cuando el bot está listo."""
     print(f'✅ Bot conectado como {bot.user}')
-    print(f'📊 Servidores: {len(bot.guilds)}')
-    
-    # Sincronizar comandos slash
+    await api.start()
+
     try:
         synced = await bot.tree.sync()
-        print(f'🔄 {len(synced)} comandos slash sincronizados')
+        print(f'🔄 {len(synced)} comandos sincronizados')
     except Exception as e:
         print(f'❌ Error al sincronizar comandos: {e}')
+        
+@bot.event
+async def on_close():
+    await api.close()
 
 @bot.event
 async def on_message(message):
@@ -335,7 +341,7 @@ async def tanque(ctx, *, nombre: str):
     # Armamento
     embed.add_field(
         name="🔫 Armamento",
-        value=f"**Recarga:** {tanque['recarga']} s\n**Cadencia:** {tanque['cadencia']:.1f} disp/min\n**Munición:** {tanque['municion_total']}\n**Rotación horizontal:** {tanque['rotacion_torreta_horizontal_arcade']}/{tanque['rotacion_torreta_horizontal_realista']} º/s\n**Rotación vertical:** {tanque['rotacion_torreta_vertical_arcade']}/{tanque['rotacion_torreta_vertical_realista']} º/s",
+        value=f"**Recarga:** {tanque['recarga']} s\n**Tamaño del cargador** {tanque['cargador']}\n**Cadencia:** {tanque['cadencia']:.1f} disp/min\n**Munición:** {tanque['municion_total']}\n**Rotación horizontal:** {tanque['rotacion_torreta_horizontal_arcade']}/{tanque['rotacion_torreta_horizontal_realista']} º/s\n**Rotación vertical:** {tanque['rotacion_torreta_vertical_arcade']}/{tanque['rotacion_torreta_vertical_realista']} º/s",
         inline=True
     )
     
