@@ -363,11 +363,11 @@ async def stats(ctx, rango_br: str = None, modo: str = 'realista'):
     media_blindaje_chasis = calcular_media_caracteristica(tanques, 'blindaje_chasis')
     media_blindaje_torreta = calcular_media_caracteristica(tanques, 'blindaje_torreta')
     if modo.lower() == "realista":
-        media_velocidad = calcular_media_caracteristica(tanques, 'velocidad_adelante_arcade')
-        media_potencia = calcular_media_caracteristica(tanques, 'relacion_potencia_peso')
-    else:
         media_velocidad = calcular_media_caracteristica(tanques, 'velocidad_adelante_realista')
         media_potencia = calcular_media_caracteristica(tanques, 'relacion_potencia_peso_realista')
+    else:
+        media_velocidad = calcular_media_caracteristica(tanques, 'velocidad_adelante_arcade')
+        media_potencia = calcular_media_caracteristica(tanques, 'relacion_potencia_peso_arcade')
     
     # NUEVO: Calcular media de BR
     campo_br = 'br_realista' if modo == 'realista' else 'br_arcade'
