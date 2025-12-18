@@ -16,6 +16,9 @@ import shutil
 from pending_changes_routes import router as pending_changes_router
 from pending_changes_routes import crear_cambio_pendiente
 from contextlib import asynccontextmanager
+from fastapi import APIRouter, Query
+from typing import Optional
+from statistics import mean
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -79,6 +82,28 @@ IMAGENES_DIR.mkdir(exist_ok=True)
 
 # Paso 2: Obtener la colección de tanques
 tanks_collection = get_tanks_collection()
+
+def media(tanques, campo):
+    valores = [t[campo] for t in tanques if isinstance(t.get(campo), (int, float))]
+    return round(sum(valores) / len(valores), 2) if valores else 0
+
+
+def contar_por_nacion(tanques):
+    naciones = {}
+    for t in tanques:
+        naciones[t["nacion"]] = naciones.get(t["nacion"], 0) + 1
+    return naciones
+
+def filtrar_por_br(tanques, br_min, br_max, modo):
+    campo_br = "br_realista" if modo == "realista" else "br_arcade"
+
+    return [
+        t for t in tanques
+        if campo_br in t
+        and (br_min is None or t[campo_br] >= br_min)
+        and (br_max is None or t[campo_br] <= br_max)
+    ]
+
 
 # Paso 3: Evento que se ejecuta al iniciar la aplicación
 #@app.on_event("startup")
@@ -393,6 +418,34 @@ async def eliminar_tanque(
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
+    
+@app.get("/")
+async def obtener_stats(
+    br_min: Optional[float] = Query(None, ge=0),
+    br_max: Optional[float] = Query(None, ge=0),
+    modo: str = Query("realista", regex="^(realista|arcade)$")
+):
+    tanques = await obtener_tanques()  # Mongo o lo que uses
+
+    if br_min is not None or br_max is not None:
+        tanques = filtrar_por_br(tanques, br_min, br_max, modo)
+
+    if not tanques:
+        return {
+            "total": 0,
+            "mensaje": "No hay tanques en ese rango"
+        }
+
+    return {
+        "total": len(tanques),
+        "media_br": round(mean(t["br_realista" if modo == "realista" else "br_arcade"] for t in tanques), 2),
+        "naciones": contar_por_nacion(tanques),
+        "blindaje_chasis": media(tanques, "blindaje_chasis"),
+        "blindaje_torreta": media(tanques, "blindaje_torreta"),
+        "velocidad": media(tanques, f"velocidad_adelante_{modo}"),
+        "potencia_peso": media(tanques, f"relacion_potencia_peso_{modo}")
+    }
+
 
 # Para ejecutar la aplicación, usa en la terminal:
 # uvicorn main:app --reload

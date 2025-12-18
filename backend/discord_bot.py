@@ -108,6 +108,18 @@ class WarThunderAPI:
                 return t
 
         return None
+    
+    async def obtener_stats(self, br_min=None, br_max=None, modo="realista"):
+        params = {"modo": modo}
+        if br_min is not None:
+            params["br_min"] = br_min
+        if br_max is not None:
+            params["br_max"] = br_max
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{self.base_url}/stats", params=params) as r:
+                return await r.json()
+
 
 
 # Instancia de la API
@@ -301,121 +313,31 @@ async def ping(ctx):
     await ctx.send(f'🏓 Pong! Latencia: {round(bot.latency * 1000)}ms')
 
 # -------------------- COMANDO: !stats --------------------
+
 @bot.command(name='stats')
-async def stats(ctx, rango_br: str = None, modo: str = 'realista'):
-    """
-    Muestra estadísticas generales de todos los tanques.
-    
-    Uso: 
-    - !stats                    (todos los tanques)
-    - !stats 3-5                (tanques BR 3.0 a 5.0 en realista)
-    - !stats 3-5 arcade         (tanques BR 3.0 a 5.0 en arcade)
-    """
-    await ctx.send('📊 Calculando estadísticas...')
-    
-    # PASO 1: Obtener todos los tanques de la API
-    try:
-        tanques = await asyncio.wait_for(
-            api.obtener_todos_tanques(),
-            timeout=20
-        )
-    except asyncio.TimeoutError:
-        await ctx.send(
-            "⏳ El servidor está tardando demasiado en responder.\n"
-            "Inténtalo de nuevo en unos segundos."
-        )
+@bot.command(name="stats")
+async def stats(ctx, rango_br: str = None, modo: str = "realista"):
+    await ctx.send("📊 Calculando estadísticas...")
+
+    br_min, br_max = parsear_rango_br(rango_br) if rango_br else (None, None)
+    data = await api.obtener_stats(br_min, br_max, modo)
+
+    if data["total"] == 0:
+        await ctx.send("❌ No hay tanques en ese rango")
         return
 
-    
-    if not tanques:
-        await ctx.send('❌ No se pudieron obtener los tanques.')
-        return
-    
-    # PASO 2: Filtrar por BR si se especificó un rango
-    br_min, br_max = None, None
-    if rango_br:
-        # Convertir el texto "3-5" a números
-        br_min, br_max = parsear_rango_br(rango_br)
-        
-        if br_min is None:
-            await ctx.send('❌ Rango de BR inválido. Usa formato: `3-5` o `3.0-5.7`')
-            return
-        
-        # Filtrar los tanques según el rango de BR
-        tanques = filtrar_por_br(tanques, br_min, br_max, modo)
-        
-        if not tanques:
-            await ctx.send(f'❌ No hay tanques en el rango BR {br_min}-{br_max} ({modo})')
-            return
-    
-    # PASO 3: Calcular estadísticas
-    total = len(tanques)
-    
-    # Contar tanques por nación
-    naciones = {}
-    for tanque in tanques:
-        nacion = tanque.get('nacion', 'Desconocida')
-        # Si la nación ya está en el diccionario, sumar 1
-        # Si no está, inicializar en 0 y sumar 1
-        naciones[nacion] = naciones.get(nacion, 0) + 1
-    
-    # Calcular medias de características
-    media_blindaje_chasis = calcular_media_caracteristica(tanques, 'blindaje_chasis')
-    media_blindaje_torreta = calcular_media_caracteristica(tanques, 'blindaje_torreta')
-    if modo.lower() == "realista":
-        media_velocidad = calcular_media_caracteristica(tanques, 'velocidad_adelante_realista')
-        media_potencia = calcular_media_caracteristica(tanques, 'relacion_potencia_peso_realista')
-    else:
-        media_velocidad = calcular_media_caracteristica(tanques, 'velocidad_adelante_arcade')
-        media_potencia = calcular_media_caracteristica(tanques, 'relacion_potencia_peso_arcade')
-    
-    # NUEVO: Calcular media de BR
-    campo_br = 'br_realista' if modo == 'realista' else 'br_arcade'
-    media_br = calcular_media_caracteristica(tanques, campo_br)
-    
-    # PASO 4: Crear embed con los resultados
-    titulo = "📊 Estadísticas Generales - War Thunder"
-    if rango_br:
-        titulo += f" (BR {br_min}-{br_max} {modo})"
-    
     embed = discord.Embed(
-        title=titulo,
-        description=f"Análisis de {total} tanques",
+        title="📊 Estadísticas War Thunder",
+        description=f"Tanques analizados: {data['total']}",
         color=discord.Color.blue()
     )
-    
-    # Agregar información del BR promedio
-    embed.add_field(
-        name="⭐ Battle Rating",
-        value=f"Media: {media_br}\nModo: {modo.title()}",
-        inline=True
-    )
-    
-    # Agregar campos de blindaje
-    embed.add_field(
-        name="🛡️ Blindaje Promedio",
-        value=f"Chasis: {media_blindaje_chasis}mm\nTorreta: {media_blindaje_torreta}mm",
-        inline=True
-    )
-    
-    # Agregar campos de movilidad
-    embed.add_field(
-        name="🏎️ Movilidad Promedio",
-        value=f"Velocidad: {media_velocidad}km/h\nPotencia/Peso: {media_potencia}hp/t",
-        inline=True
-    )
-    
-    # Top 3 naciones con más tanques
-    top_naciones = sorted(naciones.items(), key=lambda x: x[1], reverse=True)[:3]
-    naciones_texto = '\n'.join([f"{nacion}: {cantidad}" for nacion, cantidad in top_naciones])
-    
-    embed.add_field(
-        name="🌍 Top Naciones",
-        value=naciones_texto,
-        inline=False
-    )
-    
+
+    embed.add_field(name="⭐ BR Medio", value=data["media_br"])
+    embed.add_field(name="🛡 Blindaje Torreta", value=data["blindaje_torreta"])
+    embed.add_field(name="🏎 Velocidad", value=data["velocidad"])
+
     await ctx.send(embed=embed)
+
 
 # -------------------- COMANDO: !tanque --------------------
 @bot.command(name='tanque')
