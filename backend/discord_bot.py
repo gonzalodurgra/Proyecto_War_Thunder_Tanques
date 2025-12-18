@@ -721,11 +721,11 @@ async def ayuda(ctx):
     
     comandos = [
         ("!ping", "Verifica que el bot esté funcionando"),
-        ("!stats <rating_minimo> <rating_maximo> <modo>", "Muestra estadísticas generales de todos los tanques"),
+        ("!stats <rating_minimo>-<rating_maximo> <modo>", "Muestra estadísticas generales de todos los tanques"),
         ("!tanque <nombre>", "Busca información detallada de un tanque"),
         ("!comparar <tanque1> <tanque2>", "Compara dos tanques lado a lado"),
-        ("!nacion <nombre> [rating_minimo] [rating_maximo] [modo]", "Muestra estadísticas de una nación"),
-        ("!top [caracteristica] [limite] [rating_minimo] [rating_maximo] [modo]", "Muestra los mejores tanques"),
+        ("!nacion <nombre> [rating_minimo]-[rating_maximo] [modo]", "Muestra estadísticas de una nación"),
+        ("!top [caracteristica] [limite] [rating_minimo]-[rating_maximo] [modo]", "Muestra los mejores tanques"),
         ("!ayuda", "Muestra este mensaje de ayuda")
     ]
     
