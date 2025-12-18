@@ -438,7 +438,6 @@ async def obtener_stats(
 
     return {
         "total": len(tanques),
-        "media_br": round(mean(t["br_realista" if modo == "realista" else "br_arcade"] for t in tanques), 2),
         "naciones": contar_por_nacion(tanques),
         "blindaje_chasis": media(tanques, "blindaje_chasis"),
         "blindaje_torreta": media(tanques, "blindaje_torreta"),
