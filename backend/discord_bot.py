@@ -524,7 +524,7 @@ async def nacion_stats(ctx, nombre_nacion: str, rango_br: str = None, modo: str 
     )
     embed.add_field(
         name="🏎 Velocidad", 
-        value=f"{data['velocidad']}km/h",
+        value=f"{data['velocidad_adelante']}km/h",
         inline=True
     )
     embed.add_field(

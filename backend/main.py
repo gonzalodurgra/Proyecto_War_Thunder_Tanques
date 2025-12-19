@@ -473,7 +473,7 @@ async def obtener_stats(
         "rotacion_vertical": round(media(tanques, f"rotacion_torreta_vertical_{modo}"), 2),
     }
     
-@app.get("/stats/nacion")
+@app.get("/stats/{nacion}")
 async def obtener_stats_nacion(
     nacion: str,
     br_min: Optional[float] = Query(None, ge=0),
