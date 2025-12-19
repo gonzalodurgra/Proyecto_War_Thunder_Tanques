@@ -458,10 +458,19 @@ async def obtener_stats(
     return {
         "total": len(tanques),
         "naciones": contar_por_nacion(tanques),
-        "blindaje_chasis": media(tanques, "blindaje_chasis"),
-        "blindaje_torreta": media(tanques, "blindaje_torreta"),
-        "velocidad": media(tanques, f"velocidad_adelante_{modo}"),
-        "potencia_peso": media(tanques, campo_potencia)
+        "blindaje_chasis": round(media(tanques, "blindaje_chasis")),
+        "blindaje_torreta": round(media(tanques, "blindaje_torreta")),
+        "velocidad_adelante": round(media(tanques, f"velocidad_adelante_{modo}")),
+        "velocidad_atras": round(media(tanques, f"velocidad_atras_{modo}")),
+        "depresion": round(media(tanques, "angulo_depresion")),
+        "elevacion": round(media(tanques, "angulo_elevacion")),
+        "recarga": round(media(tanques, "recarga"), 2),
+        "cadencia": round(media(tanques, "cadencia"), 2),
+        "potencia_peso": round(media(tanques, campo_potencia), 2),
+        "tripulacion": round(media(tanques, "tripulacion")),
+        "visibilidad": round(media(tanques, "visibilidad")),
+        "rotacion_horizontal": round(media(tanques, f"rotacion_torreta_horizontal_{modo}"), 2),
+        "rotacion_vertical": round(media(tanques, f"rotacion_torreta_vertical_{modo}"), 2),
     }
 
 

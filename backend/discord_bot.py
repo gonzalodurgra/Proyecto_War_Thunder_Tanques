@@ -331,8 +331,10 @@ async def stats(ctx, rango_br: str = None, modo: str = "realista"):
         color=discord.Color.blue()
     )
 
-    embed.add_field(name="🛡 Blindaje Torreta", value=data["blindaje_torreta"])
-    embed.add_field(name="🏎 Velocidad", value=data[f"velocidad"])
+    embed.add_field(name="🛡 Blindajes y supervivencia", value=f'{data["blindaje_chasis"]}-{data["blindaje_torreta"]} mm ({data["tripulacion"]} personas y {data["visibilidad"]} %)')
+    embed.add_field(name="🏎 Movilidad", value=f'{data["velocidad_adelante"]}/{data["velocidad_atras"]} km/h ({data["potencia_peso"]} hp/t)')
+    embed.add_field(name="📐 Ángulos", value=f'{data["elevacion"]}/-{data["depresion"]} º')
+    embed.add_field(name="🔫 Armamento", value=f'{data["recarga"]} s\n{data["cadencia"]} rpm\n{data["rotacion_horizontal"]}/{data["rotacion_vertical"]} º/s')
 
     await ctx.send(embed=embed)
 
