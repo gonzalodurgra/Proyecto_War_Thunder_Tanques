@@ -100,8 +100,8 @@ def filtrar_por_br(tanques, br_min, br_max, modo):
     return [
         t for t in tanques
         if campo_br in t
-        and (br_min is None or t[campo_br] >= br_min)
-        and (br_max is None or t[campo_br] <= br_max)
+        and (br_min is None or float(t[campo_br]) >= br_min)
+        and (br_max is None or float(t[campo_br]) <= br_max)
     ]
 
 
@@ -435,14 +435,14 @@ async def obtener_stats(
             "total": 0,
             "mensaje": "No hay tanques en ese rango"
         }
-
+    campo_potencia = "relacion_potencia_peso_realista" if modo == "realista" else "relacion_potencia_peso"
     return {
         "total": len(tanques),
         "naciones": contar_por_nacion(tanques),
         "blindaje_chasis": media(tanques, "blindaje_chasis"),
         "blindaje_torreta": media(tanques, "blindaje_torreta"),
         "velocidad": media(tanques, f"velocidad_adelante_{modo}"),
-        "potencia_peso": media(tanques, f"relacion_potencia_peso_{modo}")
+        "potencia_peso": media(tanques, campo_potencia)
     }
 
 
