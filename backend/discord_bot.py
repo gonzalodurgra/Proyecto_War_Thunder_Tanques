@@ -148,7 +148,7 @@ class WarThunderAPI:
             params["br_max"] = br_max
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"{self.base_url}/stats/top", params=params) as r:
+            async with session.get(f"{self.base_url}/top", params=params) as r:
                 return await r.json()
 
 
