@@ -472,6 +472,126 @@ async def obtener_stats(
         "rotacion_horizontal": round(media(tanques, f"rotacion_torreta_horizontal_{modo}"), 2),
         "rotacion_vertical": round(media(tanques, f"rotacion_torreta_vertical_{modo}"), 2),
     }
+    
+@app.get("/stats/nacion")
+async def obtener_stats_nacion(
+    nacion: str,
+    br_min: Optional[float] = Query(None, ge=0),
+    br_max: Optional[float] = Query(None, ge=0),
+    modo: str = Query("realista", regex="^(realista|arcade)$")
+):
+    """
+    Obtiene estadísticas de tanques de una nación específica.
+    
+    Parámetros:
+    - nacion: Nombre de la nación (USA, Germany, USSR, etc.)
+    - br_min: Battle Rating mínimo (opcional)
+    - br_max: Battle Rating máximo (opcional)
+    - modo: realista o arcade (por defecto: realista)
+    """
+    # PASO 1: Obtener todos los tanques
+    tanques = await obtener_tanques()
+    
+    # PASO 2: Filtrar por nación
+    tanques = [t for t in tanques if t.get("nacion", "").lower() == nacion.lower()]
+    
+    # PASO 3: Filtrar por BR si se especificó
+    if br_min is not None or br_max is not None:
+        tanques = filtrar_por_br(tanques, br_min, br_max, modo)
+    
+    # PASO 4: Si no hay tanques, devolver mensaje
+    if not tanques:
+        return {
+            "total": 0,
+            "mensaje": f"No hay tanques de {nacion} en ese rango"
+        }
+    
+    # PASO 5: Calcular el campo correcto según el modo
+    campo_potencia = "relacion_potencia_peso_realista" if modo == "realista" else "relacion_potencia_peso"
+    
+    # PASO 6: Calcular y devolver estadísticas
+    return {
+        "total": len(tanques),
+        "naciones": contar_por_nacion(tanques),
+        "blindaje_chasis": round(media(tanques, "blindaje_chasis")),
+        "blindaje_torreta": round(media(tanques, "blindaje_torreta")),
+        "velocidad_adelante": round(media(tanques, f"velocidad_adelante_{modo}")),
+        "velocidad_atras": round(media(tanques, f"velocidad_atras_{modo}")),
+        "depresion": round(media(tanques, "angulo_depresion")),
+        "elevacion": round(media(tanques, "angulo_elevacion")),
+        "recarga": round(media(tanques, "recarga"), 2),
+        "cadencia": round(media(tanques, "cadencia"), 2),
+        "potencia_peso": round(media(tanques, campo_potencia), 2),
+        "tripulacion": round(media(tanques, "tripulacion")),
+        "visibilidad": round(media(tanques, "visibilidad")),
+        "rotacion_horizontal": round(media(tanques, f"rotacion_torreta_horizontal_{modo}"), 2),
+        "rotacion_vertical": round(media(tanques, f"rotacion_torreta_vertical_{modo}"), 2),
+    }
+
+
+@app.get("/top")
+async def obtener_top(
+    caracteristica: str,
+    limite: int = Query(5, ge=1, le=50),
+    br_min: Optional[float] = Query(None, ge=0),
+    br_max: Optional[float] = Query(None, ge=0),
+    modo: str = Query("realista", regex="^(realista|arcade)$")
+):
+    """
+    Obtiene el top de tanques según una característica.
+    
+    Parámetros:
+    - caracteristica: Campo a ordenar (blindaje_torreta, velocidad_adelante_realista, etc.)
+    - limite: Número de tanques a devolver (1-50, por defecto: 5)
+    - br_min: Battle Rating mínimo (opcional)
+    - br_max: Battle Rating máximo (opcional)
+    - modo: realista o arcade (por defecto: realista)
+    """
+    # PASO 1: Obtener todos los tanques
+    tanques = await obtener_tanques()
+    
+    # PASO 2: Filtrar por BR si se especificó
+    if br_min is not None or br_max is not None:
+        tanques = filtrar_por_br(tanques, br_min, br_max, modo)
+    
+    # PASO 3: Filtrar tanques que tienen la característica
+    tanques_con_valor = []
+    for t in tanques:
+        valor = t.get(caracteristica)
+        
+        # Solo incluir si el valor es un número válido
+        if isinstance(valor, (int, float)):
+            tanques_con_valor.append(t)
+        elif isinstance(valor, str):
+            try:
+                float(valor)  # Intentar convertir
+                tanques_con_valor.append(t)
+            except (ValueError, TypeError):
+                continue
+    
+    # PASO 4: Si no hay tanques con esa característica
+    if not tanques_con_valor:
+        return {
+            "tanques": [],
+            "mensaje": f"No hay tanques con datos de {caracteristica}"
+        }
+    
+    # PASO 5: Ordenar de mayor a menor
+    tanques_ordenados = sorted(
+        tanques_con_valor,
+        key=lambda t: float(t.get(caracteristica, 0)),
+        reverse=True
+    )
+    
+    # PASO 6: Tomar solo los primeros 'limite' tanques
+    top_tanques = tanques_ordenados[:limite]
+    
+    # PASO 7: Devolver el resultado
+    return {
+        "tanques": top_tanques,
+        "total": len(top_tanques),
+        "caracteristica": caracteristica
+    }
 
 
 # Para ejecutar la aplicación, usa en la terminal:

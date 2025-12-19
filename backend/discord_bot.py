@@ -405,7 +405,7 @@ async def tanque(ctx, *, nombre: str):
             inline=False
         )
         
-    embed.set_thumbnail(url=f"{BACKEND_URL}/imagenes/{tanque['imagen_local']}")
+    embed.set_thumbnail(url=f"{BACKEND_URL}/{tanque['imagen_local']}")
 
     await ctx.send(embed=embed)
 
@@ -466,154 +466,124 @@ async def comparar(ctx, tanque1: str, tanque2: str):
     await ctx.send(embed=embed)
 
 # -------------------- COMANDO: !nacion --------------------
-@bot.command(name='nacion')
-async def nacion(ctx, nombre_nacion: str, rango_br: str = None, modo: str = 'realista'):
+@bot.command(name="nacion")
+async def nacion_stats(ctx, nombre_nacion: str, rango_br: str = None, modo: str = "realista"):
     """
-    Muestra estadísticas de una nación específica.
+    Muestra estadísticas de tanques de una nación.
     
-    Uso: 
-    - !nacion USA                   (todos los tanques USA)
-    - !nacion USA 3-5               (tanques USA BR 3.0-5.0 realista)
-    - !nacion Germany 5-7 arcade    (tanques Germany BR 5.0-7.0 arcade)
+    Ejemplos de uso:
+    !nacion USA
+    !nacion Germany 3-5
+    !nacion USSR 5-7 arcade
     """
-    await ctx.send(f'🌍 Obteniendo datos de **{nombre_nacion}**...')
+    # PASO 1: Enviar mensaje de "cargando"
+    await ctx.send(f"🌍 Obteniendo datos de **{nombre_nacion}**...")
     
-    # PASO 1: Obtener tanques de la nación
-    tanques = await api.obtener_tanques_por_nacion(nombre_nacion)
-    
-    if not tanques:
-        await ctx.send(f'❌ No se encontraron tanques de: **{nombre_nacion}**')
-        return
-    
-    # PASO 2: Filtrar por BR si se especificó
+    # PASO 2: Parsear el rango de BR si existe
     br_min, br_max = None, None
     if rango_br:
         br_min, br_max = parsear_rango_br(rango_br)
         
+        # Validar que el rango sea válido
         if br_min is None:
-            await ctx.send('❌ Rango de BR inválido. Usa formato: `3-5` o `3.0-5.7`')
-            return
-        
-        tanques = filtrar_por_br(tanques, br_min, br_max, modo)
-        
-        if not tanques:
-            await ctx.send(f'❌ No hay tanques de {nombre_nacion} en BR {br_min}-{br_max} ({modo})')
+            await ctx.send("❌ Rango de BR inválido. Usa formato: `3-5` o `3.0-5.7`")
             return
     
-    # PASO 3: Calcular estadísticas
-    total = len(tanques)
-    stats_blindaje = calcular_estadisticas_completas(tanques, 'blindaje_torreta')
-    if modo == "realista":
-        stats_velocidad = calcular_estadisticas_completas(tanques, 'velocidad_adelante_realista')
-    else:
-        stats_velocidad = calcular_estadisticas_completas(tanques, 'velocidad_adelante_arcade')
+    # PASO 3: Llamar a la API para obtener estadísticas
+    data = await api.obtener_stats_nacion(nombre_nacion, br_min, br_max, modo)
     
-    # NUEVO: Calcular estadísticas de BR
-    campo_br = 'rating_realista' if modo == 'realista' else 'rating_arcade'
-    stats_br = calcular_estadisticas_completas(tanques, campo_br)
+    # PASO 4: Verificar si hay tanques
+    if data["total"] == 0:
+        if rango_br:
+            await ctx.send(f"❌ No hay tanques de **{nombre_nacion}** en BR {br_min}-{br_max} ({modo})")
+        else:
+            await ctx.send(f"❌ No se encontraron tanques de: **{nombre_nacion}**")
+        return
     
-    # Top 3 tanques por blindaje y velocidad
-    top_blindaje = obtener_top_tanques(tanques, 'blindaje_torreta', 3)
-    if modo == "realista":
-        top_velocidad = obtener_top_tanques(tanques, 'velocidad_adelante_realista', 3)
-    else:
-        top_velocidad = obtener_top_tanques(tanques, 'velocidad_adelante_arcade', 3)
-    
-    # PASO 4: Crear embed
+    # PASO 5: Crear el embed (mensaje bonito de Discord)
     titulo = f"🌍 Estadísticas de {nombre_nacion}"
     if rango_br:
         titulo += f" (BR {br_min}-{br_max} {modo})"
     
     embed = discord.Embed(
         title=titulo,
-        description=f"Análisis de {total} tanques",
+        description=f"Análisis de {data['total']} tanques",
         color=discord.Color.purple()
     )
     
-    # Mostrar rango de BR
+    # PASO 6: Agregar campos de estadísticas
     embed.add_field(
-        name="⭐ Battle Rating",
-        value=f"**Media:** {stats_br['media']}\n**Min:** {stats_br['min']}\n**Max:** {stats_br['max']}",
+        name="🛡 Blindaje Chasis", 
+        value=f"{data['blindaje_chasis']}mm",
+        inline=True
+    )
+    embed.add_field(
+        name="🛡 Blindaje Torreta", 
+        value=f"{data['blindaje_torreta']}mm",
+        inline=True
+    )
+    embed.add_field(
+        name="🏎 Velocidad", 
+        value=f"{data['velocidad']}km/h",
+        inline=True
+    )
+    embed.add_field(
+        name="⚡ Potencia/Peso", 
+        value=f"{data['potencia_peso']}HP/t",
         inline=True
     )
     
-    # Mostrar estadísticas de blindaje
-    embed.add_field(
-        name="🛡️ Blindaje (Torreta)",
-        value=f"**Media:** {stats_blindaje['media']}mm\n**Min:** {stats_blindaje['min']}mm\n**Max:** {stats_blindaje['max']}mm",
-        inline=True
-    )
-    
-    # Mostrar estadísticas de velocidad
-    embed.add_field(
-        name="🏎️ Velocidad",
-        value=f"**Media:** {stats_velocidad['media']}km/h\n**Min:** {stats_velocidad['min']}km/h\n**Max:** {stats_velocidad['max']}km/h",
-        inline=True
-    )
-    
-    # Top tanques por blindaje (ahora incluye BR)
-    top_b_texto = '\n'.join([
-        f"{i+1}. {t['nombre']} ({t['blindaje_torreta']}mm) [BR {t.get(campo_br, '?')}]" 
-        for i, t in enumerate(top_blindaje)
-    ])
-    
-    embed.add_field(
-        name="🏆 Top Blindaje",
-        value=top_b_texto,
-        inline=False
-    )
-    
+    # PASO 7: Enviar el embed
     await ctx.send(embed=embed)
 
 
 # ===============================================
-# COMANDO: !top (MODIFICADO CON BR)
+# COMANDO: !top
+# Muestra los mejores tanques según una característica
 # ===============================================
 
-@bot.command(name='top')
-async def top(ctx, caracteristica: str = 'blindaje_torreta', limite: int = 5, 
-              rango_br: str = None, modo: str = 'realista'):
+@bot.command(name="top")
+async def top_tanques(ctx, caracteristica: str = "blindaje_torreta", limite: int = 5, 
+                      rango_br: str = None, modo: str = "realista"):
     """
-    Muestra el top de tanques según una característica.
+    Muestra el ranking de tanques según una característica.
     
-    Uso: 
-    - !top blindaje_torreta 10
-    - !top velocidad_adelante_arcade 5 3-5
-    - !top blindaje_chasis 10 5-7 arcade
+    Ejemplos de uso:
+    !top blindaje_torreta 10
+    !top velocidad_adelante_realista 5 3-5
+    !top blindaje_chasis 10 5-7 arcade
     """
-    await ctx.send(f'🏆 Calculando top {limite} en **{caracteristica}**...')
-    
-    # PASO 1: Obtener todos los tanques
-    tanques = await api.obtener_todos_tanques()
-    
-    if not tanques:
-        await ctx.send('❌ No se pudieron obtener los tanques.')
+    # PASO 1: Validar que el límite sea razonable
+    if limite < 1 or limite > 50:
+        await ctx.send("❌ El límite debe estar entre 1 y 50")
         return
     
-    # PASO 2: Filtrar por BR si se especificó
+    # PASO 2: Enviar mensaje de "cargando"
+    await ctx.send(f"🏆 Calculando top {limite} en **{caracteristica}**...")
+    
+    # PASO 3: Parsear el rango de BR si existe
     br_min, br_max = None, None
     if rango_br:
         br_min, br_max = parsear_rango_br(rango_br)
         
+        # Validar que el rango sea válido
         if br_min is None:
-            await ctx.send('❌ Rango de BR inválido. Usa formato: `3-5` o `3.0-5.7`')
-            return
-        
-        tanques = filtrar_por_br(tanques, br_min, br_max, modo)
-        
-        if not tanques:
-            await ctx.send(f'❌ No hay tanques en BR {br_min}-{br_max} ({modo})')
+            await ctx.send("❌ Rango de BR inválido. Usa formato: `3-5` o `3.0-5.7`")
             return
     
-    # PASO 3: Obtener el top de tanques
-    top = obtener_top_tanques(tanques, caracteristica, limite)
+    # PASO 4: Llamar a la API para obtener el top de tanques
+    data = await api.obtener_top_tanques(caracteristica, limite, br_min, br_max, modo)
     
-    if not top:
-        await ctx.send(f'❌ No se encontraron datos para: **{caracteristica}**')
+    # PASO 5: Verificar si hay resultados
+    if not data["tanques"]:
+        if rango_br:
+            await ctx.send(f"❌ No hay tanques en BR {br_min}-{br_max} ({modo})")
+        else:
+            await ctx.send(f"❌ No se encontraron datos para: **{caracteristica}**")
         return
     
-    # PASO 4: Crear embed
-    titulo = f"🏆 Top {limite} - {caracteristica.replace('_', ' ').title()}"
+    # PASO 6: Crear el embed
+    titulo = f"🏆 Top {len(data['tanques'])} - {caracteristica.replace('_', ' ').title()}"
     if rango_br:
         titulo += f" (BR {br_min}-{br_max} {modo})"
     
@@ -622,29 +592,42 @@ async def top(ctx, caracteristica: str = 'blindaje_torreta', limite: int = 5,
         color=discord.Color.gold()
     )
     
-    # Construir la descripción con cada tanque
-    campo_br = 'rating_realista' if modo == 'realista' else 'rating_arcade'
+    # PASO 7: Construir la lista de tanques
+    campo_br = "rating_realista" if modo == "realista" else "rating_arcade"
     descripcion = ""
     
-    for i, tanque in enumerate(top, 1):
+    for i, tanque in enumerate(data["tanques"], 1):
         # Obtener el valor de la característica
         valor = tanque.get(caracteristica, 0)
         if isinstance(valor, float):
             valor = round(valor, 2)
         
         # Obtener el BR del tanque
-        br = tanque.get(campo_br, '?')
-        if isinstance(br, float):
-            br = round(br, 1)
+        br = tanque.get(campo_br, "?")
+        try:
+            if isinstance(br, str):
+                br = round(float(br), 1)
+            elif isinstance(br, float):
+                br = round(br, 1)
+        except (ValueError, TypeError):
+            br = "?"
         
         # Asignar medalla según posición
-        medalla = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else "🏅"
+        if i == 1:
+            medalla = "🥇"
+        elif i == 2:
+            medalla = "🥈"
+        elif i == 3:
+            medalla = "🥉"
+        else:
+            medalla = "🏅"
         
-        # Agregar línea a la descripción
-        descripcion += f"{medalla} **{i}.** {tanque['nombre']} - `{valor}` [BR {br}]\n"
+        # Agregar línea con información del tanque
+        descripcion += f"{medalla} **{i}.** {tanque['nombre']} - `{valor}` [BR {br}] ({tanque['nacion']})\n"
     
     embed.description = descripcion
     
+    # PASO 8: Enviar el embed
     await ctx.send(embed=embed)
 
 # -------------------- COMANDO: !ayuda --------------------
