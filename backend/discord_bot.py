@@ -331,9 +331,8 @@ async def stats(ctx, rango_br: str = None, modo: str = "realista"):
         color=discord.Color.blue()
     )
 
-    embed.add_field(name="⭐ BR Medio", value=data["media_br"])
     embed.add_field(name="🛡 Blindaje Torreta", value=data["blindaje_torreta"])
-    embed.add_field(name="🏎 Velocidad", value=data["velocidad"])
+    embed.add_field(name="🏎 Velocidad", value=data[f"velocidad_adelante_{modo}"])
 
     await ctx.send(embed=embed)
 
