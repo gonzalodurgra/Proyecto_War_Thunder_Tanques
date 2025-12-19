@@ -96,13 +96,32 @@ def contar_por_nacion(tanques):
 
 def filtrar_por_br(tanques, br_min, br_max, modo):
     campo_br = "rating_realista" if modo == "realista" else "rating_arcade"
-
-    return [
-        t for t in tanques
-        if campo_br in t
-        and (br_min is None or float(t[campo_br]) >= br_min)
-        and (br_max is None or float(t[campo_br]) <= br_max)
-    ]
+    
+    tanques_filtrados = []
+    
+    for t in tanques:
+        # Verificar que el campo existe
+        if campo_br not in t:
+            continue
+        
+        try:
+            # Intentar convertir a float
+            rating = float(t[campo_br])
+            
+            # Verificar los rangos
+            if br_min is not None and rating < br_min:
+                continue
+            if br_max is not None and rating > br_max:
+                continue
+            
+            # Si pasó todas las verificaciones, agregarlo
+            tanques_filtrados.append(t)
+            
+        except (ValueError, TypeError):
+            # Si no se puede convertir a float, ignorar este tanque
+            continue
+    
+    return tanques_filtrados
 
 
 # Paso 3: Evento que se ejecuta al iniciar la aplicación
