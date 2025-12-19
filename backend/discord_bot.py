@@ -119,6 +119,39 @@ class WarThunderAPI:
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{self.base_url}/stats", params=params) as r:
                 return await r.json()
+            
+    async def obtener_stats_nacion(self, nacion, br_min=None, br_max=None, modo="realista"):
+        params = {
+            "nacion": nacion,
+            "modo": modo
+        }
+
+        if br_min is not None:
+            params["br_min"] = br_min
+        if br_max is not None:
+            params["br_max"] = br_max
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{self.base_url}/stats/nacion", params=params) as r:
+                return await r.json()
+            
+    async def obtener_top_tanques(self, caracteristica, limite, br_min=None, br_max=None, modo="realista"):
+        params = {
+            "caracteristica": caracteristica,
+            "limite": limite,
+            "modo": modo
+        }
+
+        if br_min is not None:
+            params["br_min"] = br_min
+        if br_max is not None:
+            params["br_max"] = br_max
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{self.base_url}/stats/top", params=params) as r:
+                return await r.json()
+
+
 
 
 
@@ -480,17 +513,8 @@ async def nacion_stats(ctx, nombre_nacion: str, rango_br: str = None, modo: str 
     await ctx.send(f"🌍 Obteniendo datos de **{nombre_nacion}**...")
     
     # PASO 2: Parsear el rango de BR si existe
-    br_min, br_max = None, None
-    if rango_br:
-        br_min, br_max = parsear_rango_br(rango_br)
-        
-        # Validar que el rango sea válido
-        if br_min is None:
-            await ctx.send("❌ Rango de BR inválido. Usa formato: `3-5` o `3.0-5.7`")
-            return
-    
-    # PASO 3: Llamar a la API para obtener estadísticas
-    data = await api.obtener_stats_nacion(nombre_nacion, br_min, br_max, modo)
+    br_min, br_max = parsear_rango_br(rango_br) if rango_br else (None, None)
+    data = await api.obte
     
     # PASO 4: Verificar si hay tanques
     if data["total"] == 0:
@@ -564,7 +588,11 @@ async def top_tanques(ctx, caracteristica: str = "blindaje_torreta", limite: int
     # PASO 3: Parsear el rango de BR si existe
     br_min, br_max = None, None
     if rango_br:
-        br_min, br_max = parsear_rango_br(rango_br)
+        if rango_br in ("realista", "arcade"):
+            modo = rango_br
+            rango_br = None
+        else:
+            br_min, br_max = parsear_rango_br(rango_br)
         
         # Validar que el rango sea válido
         if br_min is None:
