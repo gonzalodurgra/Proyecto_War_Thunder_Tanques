@@ -473,7 +473,7 @@ async def obtener_stats(
         "rotacion_vertical": round(media(tanques, f"rotacion_torreta_vertical_{modo}"), 2),
     }
     
-@app.get("/stats/{nacion}")
+@app.get("/stats/nacion")
 async def obtener_stats_nacion(
     nacion: str,
     br_min: Optional[float] = Query(None, ge=0),
@@ -489,11 +489,8 @@ async def obtener_stats_nacion(
     - br_max: Battle Rating máximo (opcional)
     - modo: realista o arcade (por defecto: realista)
     """
-    # PASO 1: Obtener todos los tanques
-    tanques = await obtener_tanques()
-    
-    # PASO 2: Filtrar por nación
-    tanques = [t for t in tanques if t.get("nacion", "").lower() == nacion.lower()]
+    # PASO 1: Obtener todos los tanques de la nación
+    tanques = await obtener_tanques_por_nacion(nacion)
     
     # PASO 3: Filtrar por BR si se especificó
     if br_min is not None or br_max is not None:
