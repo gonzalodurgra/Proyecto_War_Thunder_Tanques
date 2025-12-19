@@ -514,7 +514,7 @@ async def nacion_stats(ctx, nombre_nacion: str, rango_br: str = None, modo: str 
     
     # PASO 2: Parsear el rango de BR si existe
     br_min, br_max = parsear_rango_br(rango_br) if rango_br else (None, None)
-    data = await api.obte
+    data = await api.obtener_stats_nacion(nombre_nacion, br_min, br_max, modo)
     
     # PASO 4: Verificar si hay tanques
     if data["total"] == 0:
