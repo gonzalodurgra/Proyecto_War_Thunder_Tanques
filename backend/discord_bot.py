@@ -151,10 +151,6 @@ class WarThunderAPI:
             async with session.get(f"{self.base_url}/top", params=params) as r:
                 return await r.json()
 
-
-
-
-
 # Instancia de la API
 api = WarThunderAPI(BACKEND_URL)
 
@@ -282,7 +278,6 @@ def filtrar_por_br(tanques, br_min=None, br_max=None, modo='realista'):
             tanques_filtrados.append(tanque)
     
     return tanques_filtrados
-
 
 def parsear_rango_br(texto_br):
     """
@@ -536,30 +531,13 @@ async def nacion_stats(ctx, nombre_nacion: str, rango_br: str = None, modo: str 
     )
     
     # PASO 6: Agregar campos de estadísticas
-    embed.add_field(
-        name="🛡 Blindaje Chasis", 
-        value=f"{data['blindaje_chasis']}mm",
-        inline=True
-    )
-    embed.add_field(
-        name="🛡 Blindaje Torreta", 
-        value=f"{data['blindaje_torreta']}mm",
-        inline=True
-    )
-    embed.add_field(
-        name="🏎 Velocidad", 
-        value=f"{data['velocidad_adelante']}km/h",
-        inline=True
-    )
-    embed.add_field(
-        name="⚡ Potencia/Peso", 
-        value=f"{data['potencia_peso']}HP/t",
-        inline=True
-    )
+    embed.add_field(name="🛡 Blindajes y supervivencia", value=f'{data["blindaje_chasis"]}-{data["blindaje_torreta"]} mm ({data["tripulacion"]} personas y {data["visibilidad"]} %)')
+    embed.add_field(name="🏎 Movilidad", value=f'{data["velocidad_adelante"]}/{data["velocidad_atras"]} km/h ({data["potencia_peso"]} hp/t)')
+    embed.add_field(name="📐 Ángulos", value=f'{data["elevacion"]}/-{data["depresion"]} º')
+    embed.add_field(name="🔫 Armamento", value=f'{data["recarga"]} s\n{data["cadencia"]} rpm\n{data["rotacion_horizontal"]}/{data["rotacion_vertical"]} º/s')
     
     # PASO 7: Enviar el embed
     await ctx.send(embed=embed)
-
 
 # ===============================================
 # COMANDO: !top
