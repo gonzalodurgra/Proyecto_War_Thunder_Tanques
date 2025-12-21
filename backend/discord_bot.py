@@ -216,6 +216,75 @@ def obtener_armamentos(tanque):
 
     return setups
 
+def obtener_penetracion_maxima(tanque):
+    """
+    Obtiene la munición con mayor penetración a 0m de un tanque.
+    
+    Parámetros:
+    - tanque: diccionario con datos del tanque
+    
+    Retorna: diccionario con información de la mejor munición
+    """
+    mejor_municion = {
+        "penetracion_0m": 0,
+        "penetraciones_completas": [],
+        "nombre_municion": "N/A",
+        "tipo_municion": "N/A"
+    }
+    
+    # CASO 1: Tanque con campo "armamento"
+    if "armamento" in tanque:
+        armamento = tanque["armamento"]
+        
+        # Recorrer cada arma del tanque
+        for nombre_arma, datos_arma in armamento.items():
+            municiones = datos_arma.get("municiones", [])
+            
+            # Recorrer cada munición del arma
+            for municion in municiones:
+                penetracion = municion.get("penetracion_mm", [])
+                
+                # Si tiene datos de penetración
+                if penetracion and len(penetracion) > 0:
+                    penetracion_0m = penetracion[0]  # Primer valor = 0 metros
+                    
+                    # Si esta munición es mejor que la guardada
+                    if penetracion_0m > mejor_municion["penetracion_0m"]:
+                        mejor_municion = {
+                            "penetracion_0m": penetracion_0m,
+                            "penetraciones_completas": penetracion,
+                            "nombre_municion": municion.get("nombre", "N/A"),
+                            "tipo_municion": municion.get("tipo", "N/A")
+                        }
+    
+    # CASO 2: Tanque con "setup_1", "setup_2", etc.
+    else:
+        # Buscar todos los setups del tanque
+        for key in tanque.keys():
+            if key.startswith("setup_"):
+                setup = tanque[key]
+                
+                # Recorrer cada arma del setup
+                for nombre_arma, datos_arma in setup.items():
+                    municiones = datos_arma.get("municiones", [])
+                    
+                    # Recorrer cada munición
+                    for municion in municiones:
+                        penetracion = municion.get("penetracion_mm", [])
+                        
+                        if penetracion and len(penetracion) > 0:
+                            penetracion_0m = penetracion[0]
+                            
+                            if penetracion_0m > mejor_municion["penetracion_0m"]:
+                                mejor_municion = {
+                                    "penetracion_0m": penetracion_0m,
+                                    "penetraciones_completas": penetracion,
+                                    "nombre_municion": municion.get("nombre", "N/A"),
+                                    "tipo_municion": municion.get("tipo", "N/A")
+                                }
+    
+    return mejor_municion
+
 def formatear_armamento(armas):
     texto = ""
 
@@ -362,7 +431,7 @@ async def stats(ctx, rango_br: str = None, modo: str = "realista"):
     embed.add_field(name="🛡 Blindajes y supervivencia", value=f'{data["blindaje_chasis"]}-{data["blindaje_torreta"]} mm ({data["tripulacion"]} personas y {data["visibilidad"]} %)')
     embed.add_field(name="🏎 Movilidad", value=f'{data["velocidad_adelante"]}/{data["velocidad_atras"]} km/h ({data["potencia_peso"]} hp/t)')
     embed.add_field(name="📐 Ángulos", value=f'{data["elevacion"]}/-{data["depresion"]} º')
-    embed.add_field(name="🔫 Armamento", value=f'{data["recarga"]} s\n{data["cadencia"]} rpm\n{data["rotacion_horizontal"]}/{data["rotacion_vertical"]} º/s')
+    embed.add_field(name="🔫 Armamento", value=f'{data["recarga"]} s\n{data["cadencia"]} rpm\n{data["rotacion_horizontal"]}/{data["rotacion_vertical"]} º/s\n{data["penetracion"]} mm')
 
     await ctx.send(embed=embed)
 
@@ -456,6 +525,9 @@ async def comparar(ctx, tanque1: str, tanque2: str):
         await ctx.send(f'❌ No se encontró: **{tanque2}**')
         return
     
+    pen_t1 = obtener_penetracion_maxima(t1)
+    pen_t2 = obtener_penetracion_maxima(t2)
+    
     # Crear embed de comparación
     embed = discord.Embed(
         title="⚖️ Comparación de Tanques",
@@ -489,6 +561,65 @@ async def comparar(ctx, tanque1: str, tanque2: str):
             name=nombre,
             value=f"{mejor} {valor1}{unidad}\n{peor} {valor2}{unidad}",
             inline=True
+        )
+        
+        # ===== COMPARAR PENETRACIÓN =====
+    
+    # PASO 7: Obtener datos de penetración
+    pen1_0m = pen_t1["penetracion_0m"]
+    pen2_0m = pen_t2["penetracion_0m"]
+    
+    pens1_completas = pen_t1["penetraciones_completas"]
+    pens2_completas = pen_t2["penetraciones_completas"]
+    
+    municion1 = pen_t1["nombre_municion"]
+    tipo1 = pen_t1["tipo_municion"]
+    
+    municion2 = pen_t2["nombre_municion"]
+    tipo2 = pen_t2["tipo_municion"]
+    
+    # PASO 8: Determinar cuál tiene mejor penetración a 0m
+    if pen1_0m > pen2_0m:
+        indicador1 = '🟢'
+        indicador2 = '🔴'
+    elif pen1_0m < pen2_0m:
+        indicador1 = '🔴'
+        indicador2 = '🟢'
+    else:
+        indicador1 = '🟡'
+        indicador2 = '🟡'
+    
+    # PASO 9: Formatear las penetraciones (versión compacta)
+    distancias = ["0m", "100m", "500m", "1km", "1.5km", "2km"]
+    
+    # Crear texto para tanque 1 (solo si hay datos)
+    if len(pens1_completas) >= 4:
+        pens1_texto = f"`{distancias[0]}: {pens1_completas[0]}mm` | `{distancias[2]}: {pens1_completas[2]}mm` | `{distancias[3]}: {pens1_completas[3]}mm`"
+    elif len(pens1_completas) > 0:
+        pens1_texto = f"`{distancias[0]}: {pens1_completas[0]}mm`"
+    else:
+        pens1_texto = "Sin datos"
+    
+    # Crear texto para tanque 2
+    if len(pens2_completas) >= 4:
+        pens2_texto = f"`{distancias[0]}: {pens2_completas[0]}mm` | `{distancias[2]}: {pens2_completas[2]}mm` | `{distancias[3]}: {pens2_completas[3]}mm`"
+    elif len(pens2_completas) > 0:
+        pens2_texto = f"`{distancias[0]}: {pens2_completas[0]}mm`"
+    else:
+        pens2_texto = "Sin datos"
+    
+    # PASO 10: Agregar campo de penetración
+    # Solo mostrar si al menos uno tiene datos
+    if pen1_0m > 0 or pen2_0m > 0:
+        embed.add_field(
+            name="🎯 Penetración (0m / 500m / 1km)",
+            value=(
+                f"{indicador1} **{t1['nombre']}:** {municion1} ({tipo1})\n"
+                f"{pens1_texto}\n\n"
+                f"{indicador2} **{t2['nombre']}:** {municion2} ({tipo2})\n"
+                f"{pens2_texto}"
+            ),
+            inline=False  # Ocupa toda la línea
         )
     
     await ctx.send(embed=embed)
@@ -534,7 +665,7 @@ async def nacion_stats(ctx, nombre_nacion: str, rango_br: str = None, modo: str 
     embed.add_field(name="🛡 Blindajes y supervivencia", value=f'{data["blindaje_chasis"]}-{data["blindaje_torreta"]} mm ({data["tripulacion"]} personas y {data["visibilidad"]} %)')
     embed.add_field(name="🏎 Movilidad", value=f'{data["velocidad_adelante"]}/{data["velocidad_atras"]} km/h ({data["potencia_peso"]} hp/t)')
     embed.add_field(name="📐 Ángulos", value=f'{data["elevacion"]}/-{data["depresion"]} º')
-    embed.add_field(name="🔫 Armamento", value=f'{data["recarga"]} s\n{data["cadencia"]} rpm\n{data["rotacion_horizontal"]}/{data["rotacion_vertical"]} º/s')
+    embed.add_field(name="🔫 Armamento", value=f'{data["recarga"]} s\n{data["cadencia"]} rpm\n{data["rotacion_horizontal"]}/{data["rotacion_vertical"]} º/s\n{data["penetracion"]} mm')
     
     # PASO 7: Enviar el embed
     await ctx.send(embed=embed)
@@ -588,53 +719,122 @@ async def top_tanques(ctx, caracteristica: str = "blindaje_torreta", limite: int
             await ctx.send(f"❌ No se encontraron datos para: **{caracteristica}**")
         return
     
-    # PASO 6: Crear el embed
-    titulo = f"🏆 Top {len(data['tanques'])} - {caracteristica.replace('_', ' ').title()}"
-    if rango_br:
-        titulo += f" (BR {br_min}-{br_max} {modo})"
+    # ===== NUEVA LÓGICA: DETECTAR SI ES PENETRACIÓN =====
+    es_penetracion = data.get("es_penetracion", False)
     
-    embed = discord.Embed(
-        title=titulo,
-        color=discord.Color.gold()
-    )
-    
-    # PASO 7: Construir la lista de tanques
-    campo_br = "rating_realista" if modo == "realista" else "rating_arcade"
-    descripcion = ""
-    
-    for i, tanque in enumerate(data["tanques"], 1):
-        # Obtener el valor de la característica
-        valor = tanque.get(caracteristica, 0)
-        if isinstance(valor, float):
-            valor = round(valor, 2)
+    if es_penetracion:
+        # FORMATO ESPECIAL PARA PENETRACIÓN
         
-        # Obtener el BR del tanque
-        br = tanque.get(campo_br, "?")
-        try:
-            if isinstance(br, str):
-                br = round(float(br), 1)
-            elif isinstance(br, float):
-                br = round(br, 1)
-        except (ValueError, TypeError):
-            br = "?"
+        # PASO 6a: Crear el embed para penetración
+        titulo = f"🎯 Top {len(data['tanques'])} - Penetración"
+        if rango_br:
+            titulo += f" (BR {br_min}-{br_max} {modo})"
         
-        # Asignar medalla según posición
-        if i == 1:
-            medalla = "🥇"
-        elif i == 2:
-            medalla = "🥈"
-        elif i == 3:
-            medalla = "🥉"
-        else:
-            medalla = "🏅"
+        embed = discord.Embed(
+            title=titulo,
+            color=discord.Color.red()
+        )
         
-        # Agregar línea con información del tanque
-        descripcion += f"{medalla} **{i}.** {tanque['nombre']} - `{valor}` [BR {br}] ({tanque['nacion']})\n"
-    
-    embed.description = descripcion
-    
-    # PASO 8: Enviar el embed
-    await ctx.send(embed=embed)
+        # PASO 7a: Construir la lista de tanques con penetraciones completas
+        campo_br = "rating_realista" if modo == "realista" else "rating_arcade"
+        
+        for i, tanque in enumerate(data["tanques"], 1):
+            # Asignar medalla según posición
+            if i == 1:
+                medalla = "🥇"
+            elif i == 2:
+                medalla = "🥈"
+            elif i == 3:
+                medalla = "🥉"
+            else:
+                medalla = "🎯"
+            
+            # Obtener el BR del tanque
+            br = tanque.get(campo_br, "?")
+            try:
+                if isinstance(br, str):
+                    br = round(float(br), 1)
+                elif isinstance(br, float):
+                    br = round(br, 1)
+            except (ValueError, TypeError):
+                br = "?"
+            
+            # Obtener penetraciones completas
+            pens = tanque["penetraciones_completas"]
+            
+            # Formatear las penetraciones con las distancias
+            distancias = ["0m", "100m", "500m", "1km", "1.5km", "2km"]
+            penetraciones_texto = ""
+            
+            # Crear texto de penetraciones (solo hasta donde haya datos)
+            for j, pen in enumerate(pens):
+                if j < len(distancias):
+                    penetraciones_texto += f"`{distancias[j]}: {pen}mm` "
+            
+            # Crear el campo del tanque
+            nombre_campo = f"{medalla} {i}. {tanque['nombre']}"
+            valor_campo = (
+                f"**Munición:** {tanque['nombre_municion']} ({tanque['tipo_municion']})\n"
+                f"**Penetración:** {penetraciones_texto}\n"
+                f"**BR:** {br} | **Nación:** {tanque['nacion']}"
+            )
+            
+            embed.add_field(
+                name=nombre_campo,
+                value=valor_campo,
+                inline=False  # Cada tanque en su propia línea
+            )
+        
+        # PASO 8a: Enviar el embed
+        await ctx.send(embed=embed)
+    else: 
+        # PASO 6: Crear el embed
+        titulo = f"🏆 Top {len(data['tanques'])} - {caracteristica.replace('_', ' ').title()}"
+        if rango_br:
+            titulo += f" (BR {br_min}-{br_max} {modo})"
+        
+        embed = discord.Embed(
+            title=titulo,
+            color=discord.Color.gold()
+        )
+        
+        # PASO 7: Construir la lista de tanques
+        campo_br = "rating_realista" if modo == "realista" else "rating_arcade"
+        descripcion = ""
+        
+        for i, tanque in enumerate(data["tanques"], 1):
+            # Obtener el valor de la característica
+            valor = tanque.get(caracteristica, 0)
+            if isinstance(valor, float):
+                valor = round(valor, 2)
+            
+            # Obtener el BR del tanque
+            br = tanque.get(campo_br, "?")
+            try:
+                if isinstance(br, str):
+                    br = round(float(br), 1)
+                elif isinstance(br, float):
+                    br = round(br, 1)
+            except (ValueError, TypeError):
+                br = "?"
+            
+            # Asignar medalla según posición
+            if i == 1:
+                medalla = "🥇"
+            elif i == 2:
+                medalla = "🥈"
+            elif i == 3:
+                medalla = "🥉"
+            else:
+                medalla = "🏅"
+            
+            # Agregar línea con información del tanque
+            descripcion += f"{medalla} **{i}.** {tanque['nombre']} - `{valor}` [BR {br}] ({tanque['nacion']})\n"
+        
+        embed.description = descripcion
+        
+        # PASO 8: Enviar el embed
+        await ctx.send(embed=embed)
 
 # -------------------- COMANDO: !ayuda --------------------
 @bot.command(name='ayuda')

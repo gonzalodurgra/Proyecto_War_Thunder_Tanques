@@ -123,6 +123,142 @@ def filtrar_por_br(tanques, br_min, br_max, modo):
     
     return tanques_filtrados
 
+def extraer_penetraciones(tanque):
+    """
+    Extrae todas las penetraciones a 0m de un tanque.
+    Maneja tanto 'armamento' como 'setup_1/setup_2'.
+    
+    Retorna: lista de números (penetraciones en mm)
+    """
+    penetraciones = []
+    
+    # CASO 1: El tanque tiene campo "armamento"
+    if "armamento" in tanque:
+        armamento = tanque["armamento"]
+        
+        # Recorrer cada arma (ej: "37 mm M5 cannon")
+        for nombre_arma, datos_arma in armamento.items():
+            municiones = datos_arma.get("municiones", [])
+            
+            # Recorrer cada munición
+            for municion in municiones:
+                penetracion = municion.get("penetracion_mm", [])
+                
+                # Si hay datos de penetración, tomar el primero [0]
+                if penetracion and len(penetracion) > 0:
+                    penetraciones.append(penetracion[0])
+    
+    # CASO 2: El tanque tiene "setup_1", "setup_2", etc.
+    else:
+        # Buscar todos los setups (setup_1, setup_2, ...)
+        for key in tanque.keys():
+            if key.startswith("setup_"):
+                setup = tanque[key]
+                
+                # Recorrer cada arma en el setup
+                for nombre_arma, datos_arma in setup.items():
+                    municiones = datos_arma.get("municiones", [])
+                    
+                    # Recorrer cada munición
+                    for municion in municiones:
+                        penetracion = municion.get("penetracion_mm", [])
+                        
+                        if penetracion and len(penetracion) > 0:
+                            penetraciones.append(penetracion[0])
+    
+    return penetraciones
+
+def media_penetracion(tanques):
+    """
+    Calcula la media de penetración a 0m de todos los tanques.
+    
+    Parámetros:
+    - tanques: lista de diccionarios (tanques)
+    
+    Retorna: promedio de penetración (float)
+    """
+    todas_penetraciones = []
+    
+    # Extraer penetraciones de cada tanque
+    for tanque in tanques:
+        penetraciones = extraer_penetraciones(tanque)
+        todas_penetraciones.extend(penetraciones)  # Agregar todas a la lista
+    
+    # Si no hay datos, retornar 0
+    if not todas_penetraciones:
+        return 0
+    
+    # Calcular promedio
+    return sum(todas_penetraciones) / len(todas_penetraciones)
+
+def obtener_penetracion_maxima(tanque):
+    """
+    Obtiene la munición con mayor penetración a 0m de un tanque.
+    
+    Parámetros:
+    - tanque: diccionario con datos del tanque
+    
+    Retorna: diccionario con información de la mejor munición
+    """
+    mejor_municion = {
+        "penetracion_0m": 0,
+        "penetraciones_completas": [],
+        "nombre_municion": "N/A",
+        "tipo_municion": "N/A"
+    }
+    
+    # CASO 1: Tanque con campo "armamento"
+    if "armamento" in tanque:
+        armamento = tanque["armamento"]
+        
+        # Recorrer cada arma del tanque
+        for nombre_arma, datos_arma in armamento.items():
+            municiones = datos_arma.get("municiones", [])
+            
+            # Recorrer cada munición del arma
+            for municion in municiones:
+                penetracion = municion.get("penetracion_mm", [])
+                
+                # Si tiene datos de penetración
+                if penetracion and len(penetracion) > 0:
+                    penetracion_0m = penetracion[0]  # Primer valor = 0 metros
+                    
+                    # Si esta munición es mejor que la guardada
+                    if penetracion_0m > mejor_municion["penetracion_0m"]:
+                        mejor_municion = {
+                            "penetracion_0m": penetracion_0m,
+                            "penetraciones_completas": penetracion,
+                            "nombre_municion": municion.get("nombre", "N/A"),
+                            "tipo_municion": municion.get("tipo", "N/A")
+                        }
+    
+    # CASO 2: Tanque con "setup_1", "setup_2", etc.
+    else:
+        # Buscar todos los setups del tanque
+        for key in tanque.keys():
+            if key.startswith("setup_"):
+                setup = tanque[key]
+                
+                # Recorrer cada arma del setup
+                for nombre_arma, datos_arma in setup.items():
+                    municiones = datos_arma.get("municiones", [])
+                    
+                    # Recorrer cada munición
+                    for municion in municiones:
+                        penetracion = municion.get("penetracion_mm", [])
+                        
+                        if penetracion and len(penetracion) > 0:
+                            penetracion_0m = penetracion[0]
+                            
+                            if penetracion_0m > mejor_municion["penetracion_0m"]:
+                                mejor_municion = {
+                                    "penetracion_0m": penetracion_0m,
+                                    "penetraciones_completas": penetracion,
+                                    "nombre_municion": municion.get("nombre", "N/A"),
+                                    "tipo_municion": municion.get("tipo", "N/A")
+                                }
+    
+    return mejor_municion
 
 # Paso 3: Evento que se ejecuta al iniciar la aplicación
 #@app.on_event("startup")
@@ -471,6 +607,7 @@ async def obtener_stats(
         "visibilidad": round(media(tanques, "visibilidad")),
         "rotacion_horizontal": round(media(tanques, f"rotacion_torreta_horizontal_{modo}"), 2),
         "rotacion_vertical": round(media(tanques, f"rotacion_torreta_vertical_{modo}"), 2),
+        "penetracion": round(media_penetracion(tanques))
     }
     
 @app.get("/stats/nacion")
@@ -523,6 +660,7 @@ async def obtener_stats_nacion(
         "visibilidad": round(media(tanques, "visibilidad")),
         "rotacion_horizontal": round(media(tanques, f"rotacion_torreta_horizontal_{modo}"), 2),
         "rotacion_vertical": round(media(tanques, f"rotacion_torreta_vertical_{modo}"), 2),
+        "penetracion": round(media_penetracion(tanques))
     }
 
 
@@ -550,45 +688,94 @@ async def obtener_top(
     # PASO 2: Filtrar por BR si se especificó
     if br_min is not None or br_max is not None:
         tanques = filtrar_por_br(tanques, br_min, br_max, modo)
-    
-    # PASO 3: Filtrar tanques que tienen la característica
-    tanques_con_valor = []
-    for t in tanques:
-        valor = t.get(caracteristica)
         
-        # Solo incluir si el valor es un número válido
-        if isinstance(valor, (int, float)):
-            tanques_con_valor.append(t)
-        elif isinstance(valor, str):
-            try:
-                float(valor)  # Intentar convertir
-                tanques_con_valor.append(t)
-            except (ValueError, TypeError):
-                continue
-    
-    # PASO 4: Si no hay tanques con esa característica
-    if not tanques_con_valor:
+        # ===== NUEVA LÓGICA PARA PENETRACIÓN =====
+    if caracteristica == "penetracion":
+        # PASO 3a: Procesar tanques para obtener penetraciones
+        tanques_con_penetracion = []
+        
+        for tanque in tanques:
+            mejor_municion = obtener_penetracion_maxima(tanque)
+            
+            # Solo incluir tanques que tengan munición
+            if mejor_municion["penetracion_0m"] > 0:
+                # Crear objeto combinando datos del tanque + munición
+                tanque_procesado = {
+                    "nombre": tanque.get("nombre", "Desconocido"),
+                    "nacion": tanque.get("nacion", "Desconocido"),
+                    "rating_realista": tanque.get("rating_realista", "?"),
+                    "rating_arcade": tanque.get("rating_arcade", "?"),
+                    "penetracion": mejor_municion["penetracion_0m"],  # Para ordenar
+                    "penetracion_0m": mejor_municion["penetracion_0m"],
+                    "penetraciones_completas": mejor_municion["penetraciones_completas"],
+                    "nombre_municion": mejor_municion["nombre_municion"],
+                    "tipo_municion": mejor_municion["tipo_municion"]
+                }
+                tanques_con_penetracion.append(tanque_procesado)
+        
+        # PASO 4a: Verificar si hay resultados
+        if not tanques_con_penetracion:
+            return {
+                "tanques": [],
+                "mensaje": "No hay tanques con datos de penetración"
+            }
+        
+        # PASO 5a: Ordenar por penetración a 0m (mayor a menor)
+        tanques_ordenados = sorted(
+            tanques_con_penetracion,
+            key=lambda t: t["penetracion_0m"],
+            reverse=True
+        )
+        
+        # PASO 6a: Tomar solo los primeros 'limite'
+        top_tanques = tanques_ordenados[:limite]
+        
+        # PASO 7a: Devolver resultado
         return {
-            "tanques": [],
-            "mensaje": f"No hay tanques con datos de {caracteristica}"
+            "tanques": top_tanques,
+            "total": len(top_tanques),
+            "caracteristica": "penetracion",
+            "es_penetracion": True  # Bandera para el bot
         }
-    
-    # PASO 5: Ordenar de mayor a menor
-    tanques_ordenados = sorted(
-        tanques_con_valor,
-        key=lambda t: float(t.get(caracteristica, 0)),
-        reverse=True
-    )
-    
-    # PASO 6: Tomar solo los primeros 'limite' tanques
-    top_tanques = tanques_ordenados[:limite]
-    
-    # PASO 7: Devolver el resultado
-    return {
-        "tanques": top_tanques,
-        "total": len(top_tanques),
-        "caracteristica": caracteristica
-    }
+    else:
+        # PASO 3: Filtrar tanques que tienen la característica
+        tanques_con_valor = []
+        for t in tanques:
+            valor = t.get(caracteristica)
+            
+            # Solo incluir si el valor es un número válido
+            if isinstance(valor, (int, float)):
+                tanques_con_valor.append(t)
+            elif isinstance(valor, str):
+                try:
+                    float(valor)  # Intentar convertir
+                    tanques_con_valor.append(t)
+                except (ValueError, TypeError):
+                    continue
+        
+        # PASO 4: Si no hay tanques con esa característica
+        if not tanques_con_valor:
+            return {
+                "tanques": [],
+                "mensaje": f"No hay tanques con datos de {caracteristica}"
+            }
+        
+        # PASO 5: Ordenar de mayor a menor
+        tanques_ordenados = sorted(
+            tanques_con_valor,
+            key=lambda t: float(t.get(caracteristica, 0)),
+            reverse=True
+        )
+        
+        # PASO 6: Tomar solo los primeros 'limite' tanques
+        top_tanques = tanques_ordenados[:limite]
+        
+        # PASO 7: Devolver el resultado
+        return {
+            "tanques": top_tanques,
+            "total": len(top_tanques),
+            "caracteristica": caracteristica
+        }
 
 
 # Para ejecutar la aplicación, usa en la terminal:
