@@ -559,7 +559,7 @@ async def comparar(ctx, tanque1: str, tanque2: str):
         
         embed.add_field(
             name=nombre,
-            value=f"{mejor} {valor1}{unidad}\n{peor} {valor2}{unidad}",
+            value=f"{mejor} {round(valor1, 1)}{unidad}\n{peor} {round(valor2, 1)}{unidad}",
             inline=True
         )
         
