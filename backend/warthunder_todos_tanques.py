@@ -207,10 +207,10 @@ def fetch_data(pagina):
     datos["nacion"] = coger_texto(pagina, ".game-unit_card-info .text-truncate")
     
     rating_locator = pagina.locator(".game-unit_br-item", has_text="AB").locator(".value")
-    datos["rating_arcade"] = limpiar_texto(rating_locator.first.inner_text()) if rating_locator.count() > 0 else None
+    datos["rating_arcade"] = float(limpiar_texto(rating_locator.first.inner_text())) if rating_locator.count() > 0 else None
     
     rating_locator = pagina.locator(".game-unit_br-item", has_text="RB").locator(".value")
-    datos["rating_realista"] = limpiar_texto(rating_locator.first.inner_text()) if rating_locator.count() > 0 else None
+    datos["rating_realista"] = float(limpiar_texto(rating_locator.first.inner_text())) if rating_locator.count() > 0 else None
     
     # === CARACTERÍSTICAS ===
     datos["tripulacion"] = int(coger_texto(pagina, ".game-unit_chars-line:has(.game-unit_chars-header:has-text('Crew')) .game-unit_chars-value").replace("persons", "").strip())
