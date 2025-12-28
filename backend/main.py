@@ -392,7 +392,7 @@ async def upload_tank_image(file: UploadFile = File(...)):
         )
 
 # Paso 6: Obtener todos los tanques (GET)
-@app.get("/tanques/", response_model=List[dict])
+@app.get("/tanques/", response_model=List[Tanque])  # ← Cambiar dict por Tanque
 async def obtener_tanques():
     """
     Obtiene todos los tanques de la base de datos.
@@ -404,21 +404,24 @@ async def obtener_tanques():
     tanques = []
     
     # Buscar todos los documentos en la colección
-    for tanque in tanks_collection.find().sort([("rating_realista", 1), ("nacion", 1)]):
-        # Convertir ObjectId a string para que sea serializable
-        tanque["_id"] = str(tanque["_id"])
-        tanques.append(tanque)
+    for tanque_dict in tanks_collection.find().sort([("rating_realista", 1), ("nacion", 1)]):
+        # Convertir ObjectId a string
+        tanque_dict["_id"] = str(tanque_dict["_id"])
+        
+        # Crear un objeto Tanque (aquí se aplica el validador)
+        tanque_obj = Tanque(**tanque_dict)
+        tanques.append(tanque_obj)
     
     return tanques
 
 # Paso 7: Obtener un tanque específico por ID (GET)
-@app.get("/tanques/{id}", response_model=dict)
+@app.get("/tanques/{id}", response_model=Tanque)
 async def obtener_tanque_por_id(id: str):
     """
-    Obtiene un tanque específico por su nombre.
+    Obtiene un tanque específico por su ID.
     
     Args:
-        tanque_id: Id del tanque en MongoDB
+        id: Id del tanque en MongoDB
         
     Returns:
         Información del tanque
@@ -429,27 +432,35 @@ async def obtener_tanque_por_id(id: str):
             raise HTTPException(status_code=400, detail="ID de MongoDB inválido")
 
         # Buscar el tanque por _id (ObjectId, no string)
-        tanque = tanks_collection.find_one({"_id": ObjectId(id)})
+        tanque_dict = tanks_collection.find_one({"_id": ObjectId(id)})
 
-        if tanque is None:
+        if tanque_dict is None:
             raise HTTPException(status_code=404, detail="Tanque no encontrado")
 
-        # Convertir ObjectId a string para devolverlo
-        tanque["_id"] = str(tanque["_id"])
-        return tanque
+        # Convertir ObjectId a string
+        tanque_dict["_id"] = str(tanque_dict["_id"])
+        
+        # Crear objeto Tanque (aquí se aplica el validador que convierte Decimal128)
+        tanque_obj = Tanque(**tanque_dict)
+        
+        return tanque_obj
 
+    except HTTPException:
+        # Re-lanzar las excepciones HTTP sin modificar
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error al obtener tanque: {str(e)}")
 
+
 # Paso 8: Obtener tanques por nación (GET)
-@app.get("/tanques/nacion/{nacion}", response_model=List[dict])
+@app.get("/tanques/nacion/{nacion}", response_model=List[Tanque])
 async def obtener_tanques_por_nacion(nacion: str):
     """
     Obtiene todos los tanques de una nación específica.
     Ejemplo: http://localhost:8000/tanques/nacion/Great Britain
     
     Args:
-        nacion: Id de la nación
+        nacion: Nombre de la nación
         
     Returns:
         Lista de tanques de esa nación
@@ -457,9 +468,13 @@ async def obtener_tanques_por_nacion(nacion: str):
     tanques = []
     
     # Buscar tanques de la nación especificada
-    for tanque in tanks_collection.find({"nacion": nacion}):
-        tanque["_id"] = str(tanque["_id"])
-        tanques.append(tanque)
+    for tanque_dict in tanks_collection.find({"nacion": nacion}):
+        # Convertir ObjectId a string
+        tanque_dict["_id"] = str(tanque_dict["_id"])
+        
+        # Crear objeto Tanque (aquí se aplica el validador)
+        tanque_obj = Tanque(**tanque_dict)
+        tanques.append(tanque_obj)
     
     if not tanques:
         raise HTTPException(
