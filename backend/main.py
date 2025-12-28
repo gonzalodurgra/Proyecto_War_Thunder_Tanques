@@ -404,7 +404,7 @@ async def obtener_tanques():
     tanques = []
     
     # Buscar todos los documentos en la colección
-    for tanque in tanks_collection.find().sort([("rating", -1), ("nacion", 1)]):
+    for tanque in tanks_collection.find().sort([("rating_realista", 1), ("nacion", 1)]):
         # Convertir ObjectId a string para que sea serializable
         tanque["_id"] = str(tanque["_id"])
         tanques.append(tanque)
