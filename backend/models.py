@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from bson.decimal128 import Decimal128
 from typing import Optional, List, Dict
 
 # Paso 1: Definir el modelo para las municiones
@@ -56,6 +57,13 @@ class Tanque(BaseModel):
     rotacion_torreta_vertical_realista: float
     setup_1: Dict[str, Arma]  # Diccionario con las armas del setup 1
     setup_2: Dict[str, Arma]  # Diccionario con las armas del setup 2
+    @field_validator('rating_arcade', 'rating_realista', mode='before')
+    @classmethod
+    def convertir_decimal128_a_float(cls, valor):
+        """Convierte Decimal128 de MongoDB a float"""
+        if isinstance(valor, Decimal128):
+            return float(valor.to_decimal())
+        return valor
 
 # Paso 4: Modelo para respuestas (incluye el ID de MongoDB)
 class TanqueDB(Tanque):
