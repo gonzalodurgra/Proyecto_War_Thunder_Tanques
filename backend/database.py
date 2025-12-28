@@ -41,7 +41,7 @@ def get_tanks_collection():
     """
     Devuelve la colección 'tanks' de la base de datos.
     """
-    return database["tanks"].find().sort([("rating", -1), ("nacion", 1)])
+    return database["tanks"].find().sort([("rating", -1), ("nacion", 1)]).to_list()
 
 def get_users_collection():
     """
