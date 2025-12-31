@@ -19,6 +19,25 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, Query
 from typing import Optional
 from statistics import mean
+from bson.decimal128 import Decimal128
+
+def convertir_decimal128_recursivo(dato):
+    """
+    Convierte todos los Decimal128 a float de forma recursiva.
+    Funciona con diccionarios, listas y valores individuales.
+    """
+    if isinstance(dato, Decimal128):
+        # Convertir Decimal128 a float
+        return float(dato.to_decimal())
+    elif isinstance(dato, dict):
+        # Si es un diccionario, convertir cada valor
+        return {clave: convertir_decimal128_recursivo(valor) for clave, valor in dato.items()}
+    elif isinstance(dato, list):
+        # Si es una lista, convertir cada elemento
+        return [convertir_decimal128_recursivo(elemento) for elemento in dato]
+    else:
+        # Si es otro tipo, dejarlo como está
+        return dato
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -392,7 +411,7 @@ async def upload_tank_image(file: UploadFile = File(...)):
         )
 
 # Paso 6: Obtener todos los tanques (GET)
-@app.get("/tanques/", response_model=List[Tanque])  # ← Cambiar dict por Tanque
+@app.get("/tanques/", response_model=List[dict])  # ← Cambiar de nuevo a dict
 async def obtener_tanques():
     """
     Obtiene todos los tanques de la base de datos.
@@ -408,14 +427,15 @@ async def obtener_tanques():
         # Convertir ObjectId a string
         tanque_dict["_id"] = str(tanque_dict["_id"])
         
-        # Crear un objeto Tanque (aquí se aplica el validador)
-        tanque_obj = Tanque(**tanque_dict)
-        tanques.append(tanque_obj)
+        # Convertir todos los Decimal128 a float (recursivamente)
+        tanque_dict = convertir_decimal128_recursivo(tanque_dict)
+        
+        tanques.append(tanque_dict)
     
     return tanques
 
 # Paso 7: Obtener un tanque específico por ID (GET)
-@app.get("/tanques/{id}", response_model=Tanque)
+@app.get("/tanques/{id}", response_model=dict)
 async def obtener_tanque_por_id(id: str):
     """
     Obtiene un tanque específico por su ID.
@@ -440,10 +460,10 @@ async def obtener_tanque_por_id(id: str):
         # Convertir ObjectId a string
         tanque_dict["_id"] = str(tanque_dict["_id"])
         
-        # Crear objeto Tanque (aquí se aplica el validador que convierte Decimal128)
-        tanque_obj = Tanque(**tanque_dict)
+        # Convertir todos los Decimal128 a float (recursivamente)
+        tanque_dict = convertir_decimal128_recursivo(tanque_dict)
         
-        return tanque_obj
+        return tanque_dict
 
     except HTTPException:
         # Re-lanzar las excepciones HTTP sin modificar
@@ -453,7 +473,7 @@ async def obtener_tanque_por_id(id: str):
 
 
 # Paso 8: Obtener tanques por nación (GET)
-@app.get("/tanques/nacion/{nacion}", response_model=List[Tanque])
+@app.get("/tanques/nacion/{nacion}", response_model=dict)
 async def obtener_tanques_por_nacion(nacion: str):
     """
     Obtiene todos los tanques de una nación específica.
@@ -472,9 +492,10 @@ async def obtener_tanques_por_nacion(nacion: str):
         # Convertir ObjectId a string
         tanque_dict["_id"] = str(tanque_dict["_id"])
         
-        # Crear objeto Tanque (aquí se aplica el validador)
-        tanque_obj = Tanque(**tanque_dict)
-        tanques.append(tanque_obj)
+        # Convertir todos los Decimal128 a float (recursivamente)
+        tanque_dict = convertir_decimal128_recursivo(tanque_dict)
+        
+        tanques.append(tanque_dict)
     
     if not tanques:
         raise HTTPException(
