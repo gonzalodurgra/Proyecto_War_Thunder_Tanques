@@ -162,7 +162,7 @@
             <!-- Información básica -->
             <div class="tanque-info">
               <p><strong>Rol:</strong> {{ tanque.rol }}</p>
-              <p><strong>Rating</strong> {{ tanque.rating_arcade.toFixed(1) }}/{{ tanque.rating_realista?.toFixed(1) }}</p>
+              <p><strong>Rating</strong> {{ tanque.rating_arcade?.toFixed(1) }}/{{ tanque.rating_realista?.toFixed(1) }}</p>
               <p><strong>Peso:</strong> {{ tanque.peso }} t</p>
               <p><strong>Velocidad:</strong> {{ tanque.velocidad_adelante_arcade }}/{{tanque.velocidad_adelante_realista}} km/h</p>
             </div>
@@ -271,7 +271,7 @@
       <div class="rating-section">
         <div class="rating-badge">
           <span class="badge-rating">
-            ⭐ Rating: {{ tanqueSeleccionado.rating_arcade.toFixed(1) }}
+            ⭐ Rating: {{ tanqueSeleccionado.rating_arcade?.toFixed(1) }}
             @if (tanqueSeleccionado.rating_realista) {
               / {{ tanqueSeleccionado.rating_realista.toFixed(1) }}
             }
