@@ -32,8 +32,8 @@ class Tanque(BaseModel):
     nombre: str
     rol: str
     nacion: str
-    rating_arcade: float
-    rating_realista: float
+    rating_arcade: float | None
+    rating_realista: float | None
     tripulacion: int
     visibilidad: int
     peso: float
