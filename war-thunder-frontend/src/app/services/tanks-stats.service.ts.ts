@@ -52,7 +52,7 @@ export interface RangosEstadisticas {
 
 // Interfaz para estadísticas agrupadas por rating
 export interface EstadisticasPorRating {
-  rating: string;
+  rating: number;
   rangos: RangosEstadisticas;
   cantidad_tanques: number;
 }
@@ -64,10 +64,10 @@ export class TanksStatsService {
 
   // Variables para almacenar los rangos calculados
   private rangosGlobales: RangosEstadisticas | null = null;
-  private rangosPorRating: Map<string, RangosEstadisticas> = new Map();
+  private rangosPorRating: Map<number, RangosEstadisticas> = new Map();
 
   // NUEVO: Variables para almacenar rangos de penetración por rating
-  private rangosPenetracionPorRating: Map<string, RangoEstadistica> = new Map();
+  private rangosPenetracionPorRating: Map<number, RangoEstadistica> = new Map();
 
   constructor() { }
 
@@ -235,7 +235,7 @@ export class TanksStatsService {
   obtenerColor(
     nombreEstadistica: keyof RangosEstadisticas,
     valor: number,
-    rating: string | null = null,
+    rating: number | null = null,
     invertir: boolean = false
   ): string {
     
@@ -348,7 +348,7 @@ export class TanksStatsService {
   obtenerPercentil(
     nombreEstadistica: keyof RangosEstadisticas,
     valor: number,
-    rating: string | null = null
+    rating: number | null = null
   ): number {
     
     let rango: RangoEstadistica | undefined;
@@ -389,7 +389,7 @@ export class TanksStatsService {
     this.rangosPenetracionPorRating.clear();
     
     // Obtener ratings únicos
-    const ratingsUnicos = new Set<string>();
+    const ratingsUnicos = new Set<number>();
     tanques.forEach(tanque => {
       const rating = modo === 'rating_arcade' ? tanque.rating_arcade : tanque.rating_realista;
       if (rating) ratingsUnicos.add(rating);
@@ -455,7 +455,7 @@ export class TanksStatsService {
   obtenerColorPenetracion(
     penetracionMm: number, 
     todosLosTanques: Tanque[],
-    rating: string | null = null
+    rating: number | null = null
   ): string {
     
     let stats: RangoEstadistica | undefined;
@@ -526,7 +526,7 @@ export class TanksStatsService {
   
   obtenerPercentilPenetracion(
     penetracionMm: number,
-    rating: string | null = null
+    rating: number | null = null
   ): number {
     
     let stats: RangoEstadistica | undefined;
