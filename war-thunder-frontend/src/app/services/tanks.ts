@@ -29,7 +29,7 @@ export interface Tanque {
   rol: string;
   imagen_local: string;
   nacion: string;
-  rating_arcade: number;
+  rating_arcade?: number;
   rating_realista?: number;
   tripulacion: number;
   visibilidad: number;

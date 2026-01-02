@@ -609,11 +609,6 @@
                         [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
                         {{ municion.penetracion_mm[0] }}mm
                       </span>
-                      @if (mostrarEstadisticasAvanzadas) {
-                        <span class="percentil-badge-small">
-                          {{ formatearPercentil(obtenerPercentilPenetracion(municion.penetracion_mm[0])) }}
-                        </span>
-                      }
                     </li>
                     <li>
                       <span class="distancia">100m:</span>
