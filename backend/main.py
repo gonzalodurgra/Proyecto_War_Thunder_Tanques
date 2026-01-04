@@ -38,12 +38,26 @@ def convertir_decimal128_recursivo(dato):
     else:
         # Si es otro tipo, dejarlo como está
         return dato
+    
+# Paso 3: Evento que se ejecuta al iniciar la aplicación
+#@app.on_event("startup")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Esta función se ejecuta cuando la aplicación inicia.
+    Verifica que la conexión a MongoDB funcione.
+    """
+    print("Iniciando aplicación...")
+    verificar_conexion()
+    yield
+    print("Deteniendo aplicación.")
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
     title="API de Tanques War Thunder",
     description="API para gestionar información de tanques del juego War Thunder",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 FRONTEND_URL = os.getenv(
@@ -279,17 +293,6 @@ def obtener_penetracion_maxima(tanque):
     
     return mejor_municion
 
-# Paso 3: Evento que se ejecuta al iniciar la aplicación
-#@app.on_event("startup")
-@asynccontextmanager
-async def lifespan():
-    """
-    Esta función se ejecuta cuando la aplicación inicia.
-    Verifica que la conexión a MongoDB funcione.
-    """
-    print("Iniciando aplicación...")
-    verificar_conexion()
-
 # Paso 4: Ruta principal (raíz)
 @app.get("/")
 async def root():
@@ -306,7 +309,11 @@ async def root():
     
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    try:
+        verificar_conexion()
+        return {"status": "ok", "db": "connected"}
+    except Exception:
+        return {"status": "degraded", "db": "error"}
 
 
 # Paso 5: Crear un nuevo tanque (POST)
