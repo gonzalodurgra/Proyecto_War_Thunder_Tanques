@@ -307,7 +307,7 @@ async def root():
         "allowed_origins": len(allowed_origins)
     }
     
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
     try:
         verificar_conexion()
