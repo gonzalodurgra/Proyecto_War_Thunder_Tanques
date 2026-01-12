@@ -1959,12 +1959,12 @@ h1 {
 }
 
 /* Grid de detalles mejorado */
-.detalles-grid {
+/* .detalles-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   margin: 25px 0;
-}
+} */
 
 /* Animación sutil al abrir el modal */
 @keyframes fadeInScale {
@@ -2008,9 +2008,9 @@ h1 {
     max-height: 85vh;
   }
 
-  .detalles-grid {
+  /* .detalles-grid {
     grid-template-columns: 1fr;
-  }
+  } */
 
   .penetracion-lista-coloreada {
     grid-template-columns: repeat(2, 1fr);
