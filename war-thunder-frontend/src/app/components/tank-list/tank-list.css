@@ -627,7 +627,7 @@ h1 {
 /* ================================================================== */
 .detalles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(375px, 1fr));
   gap: 20px;
   margin-top: 20px;
 }
@@ -1919,7 +1919,7 @@ h1 {
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 10px;
 }
 
