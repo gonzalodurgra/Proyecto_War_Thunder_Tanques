@@ -68,6 +68,8 @@ export class TankListComponent implements OnInit {
   // ====================================================================
   modoActual: string = 'rating_arcade'; // Por defecto Arcade
 
+  modoOscuro: boolean = false
+
   // ====================================================================
   // PASO 2: Inyectar el servicio en el constructor
   // ====================================================================
@@ -82,6 +84,7 @@ export class TankListComponent implements OnInit {
   ngOnInit(): void {
     // EXPLICACIÓN: ngOnInit se ejecuta cuando el componente se carga
     // Es el lugar ideal para cargar los datos iniciales
+    this.cargarPreferenciaTema();
     this.cargarTanques();
     this.cargarNaciones();
     if(!this.authService.isLoggedIn()){
@@ -579,4 +582,73 @@ export class TankListComponent implements OnInit {
     return this.obtenerColorPorPercentil(100 - percentil);
   }
 
+  /**
+   * Carga la preferencia de tema guardada en localStorage
+   */
+  cargarPreferenciaTema(): void {
+    // EXPLICACIÓN: localStorage permite guardar datos en el navegador
+    // que persisten incluso después de cerrar la página
+    
+    const temaGuardado = localStorage.getItem('tema');
+    
+    if (temaGuardado === 'oscuro') {
+      this.modoOscuro = true;
+      this.aplicarModoOscuro();
+    } else {
+      this.modoOscuro = false;
+      this.aplicarModoClaro();
+    }
+  }
+
+  /**
+   * Alterna entre modo claro y oscuro
+   */
+  toggleModoOscuro(): void {
+    // EXPLICACIÓN: Este método se ejecuta cuando el usuario hace clic
+    // en el botón de modo oscuro
+    
+    this.modoOscuro = !this.modoOscuro;
+    
+    if (this.modoOscuro) {
+      this.aplicarModoOscuro();
+      // Guardar preferencia
+      localStorage.setItem('tema', 'oscuro');
+    } else {
+      this.aplicarModoClaro();
+      // Guardar preferencia
+      localStorage.setItem('tema', 'claro');
+    }
+  }
+
+  /**
+   * Aplica el modo oscuro al documento
+   */
+  aplicarModoOscuro(): void {
+    // EXPLICACIÓN: Agregamos la clase 'dark-mode' al body
+    // Esto activa las variables CSS del tema oscuro
+    
+    document.body.classList.add('dark-mode');
+  }
+
+  /**
+   * Aplica el modo claro al documento
+   */
+  aplicarModoClaro(): void {
+    // EXPLICACIÓN: Removemos la clase 'dark-mode' del body
+    // Esto vuelve a las variables CSS del tema claro
+    
+    document.body.classList.remove('dark-mode');
+  }
+
+  // ====================================================================
+  // PASO 4: OPCIONAL - Limpiar al destruir el componente
+  // ====================================================================
+  
+  ngOnDestroy(): void {
+    // EXPLICACIÓN: Este método se ejecuta cuando el componente se destruye
+    // Es una buena práctica limpiar las modificaciones al DOM
+    
+    // Si quieres mantener el tema en otras páginas, comenta esta línea:
+    // document.body.classList.remove('dark-mode');
+  }
 }

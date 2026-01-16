@@ -9,7 +9,15 @@
       <span class="title-short">🎮 War Thunder DB</span>
       <span class="title-mobile">🎮 WT Tanques</span>
     </h1>
-    
+    <!-- ⭐ NUEVO: Botón de modo oscuro -->
+    <button class="btn-theme-toggle" (click)="toggleModoOscuro()" [title]="modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+      @if(!modoOscuro){
+        <span>🌙</span>
+      }
+      @else {
+        <span>☀️</span>
+      }
+    </button>
     <div class="user-section">
       @if (isAuthenticated) {
         <!-- Usuario autenticado -->
