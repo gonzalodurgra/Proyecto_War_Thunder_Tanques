@@ -413,7 +413,7 @@ h1 {
 
 .tanque-header h3 {
   margin: 0;
-  color: #333;
+  color: var(--text-primary);
   font-size: 1.2rem;
 }
 
@@ -437,7 +437,7 @@ h1 {
 
 .tanque-info p {
   margin: 8px 0;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .tanque-info strong {
@@ -509,7 +509,7 @@ h1 {
   grid-column: 1 / -1;
   text-align: center;
   padding: 40px;
-  color: #999;
+  color: var(--text-tertiary);
   font-size: 1.1rem;
 }
 
@@ -550,7 +550,7 @@ h1 {
 
 .detalle-seccion p {
   margin: 8px 0;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .detalle-seccion strong {
@@ -573,7 +573,7 @@ h1 {
 }
 
 .setup-seccion h4 {
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 15px;
   margin-bottom: 10px;
 }
