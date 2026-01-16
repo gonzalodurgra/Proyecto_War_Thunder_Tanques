@@ -1882,7 +1882,7 @@ h1 {
 .setup-seccion {
   margin-top: 30px;
   padding: 25px;
-  background: linear-gradient(135deg, #f9fafb 0%, var(--bg-primary), 100%);
+  background: linear-gradient(135deg, var(--bg-ammo) 0%, var(--bg-primary), 100%);
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -1917,7 +1917,7 @@ h1 {
 
 /* Munición detalle */
 .municion-detalle {
-  background-color: #f9fafb;
+  background-color: var(--bg-ammo);
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 8px;

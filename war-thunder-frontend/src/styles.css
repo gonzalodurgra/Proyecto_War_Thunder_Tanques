@@ -15,6 +15,7 @@
   --bg-card: #ffffff;
   --bg-header: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --bg-input: #ffffff;
+  --bg-ammo: #f9fafb;
   
   --text-primary: #333333;
   --text-secondary: #666666;
@@ -43,6 +44,7 @@ body.dark-mode {
   --bg-card: #2d2d2d;
   --bg-header: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
   --bg-input: #2d2d2d;
+  --bg-ammo: #111827;
   
   --text-primary: #e5e5e5;
   --text-secondary: #b0b0b0;
