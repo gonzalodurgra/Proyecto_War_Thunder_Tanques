@@ -678,8 +678,8 @@ h1 {
 .detalle-seccion {
   background: var(--bg-tertiary);
   padding: 20px;
-  border-radius: 8px;
-  border-left: 4px solid #4CAF50;
+  /* border-radius: 8px;
+  border-left: 4px solid #4CAF50; */
   transition: all 0.3s;
 }
 
@@ -1850,8 +1850,8 @@ h1 {
 
 /* Secciones de detalle mejoradas */
 .detalle-seccion {
-  background-color: #f9fafb;
-  padding: 20px;
+  /* background-color: #f9fafb;
+  padding: 20px; */
   border-radius: 12px;
   border-left: 4px solid #6366f1;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -1899,7 +1899,7 @@ h1 {
 
 /* Arma detalle */
 .arma-detalle {
-  background-color: white;
+  background-color: var(--bg-primary);
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 10px;
