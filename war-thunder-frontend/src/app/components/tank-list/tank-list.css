@@ -1859,7 +1859,7 @@ h1 {
 
 .detalle-seccion h3 {
   margin-top: 0;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 1.3rem;
   margin-bottom: 15px;
   padding-bottom: 10px;
@@ -1873,7 +1873,7 @@ h1 {
 }
 
 .detalle-seccion strong {
-  color: #1f2937;
+  color: var(--text-secondary);
   min-width: 180px;
   display: inline-block;
 }
@@ -1890,7 +1890,7 @@ h1 {
 
 .setup-seccion h3 {
   margin-top: 0;
-  color: #1f2937;
+  color: var(--text-secondary);
   font-size: 1.4rem;
   margin-bottom: 20px;
   padding-bottom: 12px;
@@ -1941,7 +1941,7 @@ h1 {
 }
 
 .municion-header strong {
-  color: #1f2937;
+  color: var(--text-secondary);
   font-size: 1.05rem;
 }
 
