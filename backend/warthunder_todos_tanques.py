@@ -3,6 +3,7 @@ import time
 from playwright.sync_api import sync_playwright
 import os
 import requests
+from pathlib import Path
 
 def limpiar_texto(texto):
     """Limpia saltos de línea y espacios extraños del texto"""
@@ -17,13 +18,16 @@ def descargar_imagen(url_img, nombre_tanque):
     """Descarga la imagen JPG del tanque en carpeta /imagenes."""
     if not url_img:
         return None
+    
+    BASE_DIR = Path(__file__).resolve().parent
+    IMAGENES = BASE_DIR / "imagenes"
 
     # Crear carpeta si no existe
-    os.makedirs("imagenes", exist_ok=True)
+    os.makedirs(IMAGENES, exist_ok=True)
 
     # Quitar caracteres raros del nombre para convertirlo a archivo
     nombre_archivo = nombre_tanque.replace(" ", "_").replace("/", "_").replace("\"", "") + ".jpg"
-    ruta_archivo = f"imagenes/{nombre_archivo}"
+    ruta_archivo: Path = IMAGENES / nombre_archivo
 
     try:
         # Descargar
@@ -31,7 +35,8 @@ def descargar_imagen(url_img, nombre_tanque):
         if r.status_code == 200:
             with open(ruta_archivo, "wb") as f:
                 f.write(r.content)
-            return ruta_archivo
+                print(str(ruta_archivo.relative_to(Path(__file__).resolve().parent)))
+            return str(ruta_archivo.relative_to(Path(__file__).resolve().parent)).replace("\\", "/")
         else:
             print(f"Error descargando {url_img}: {r.status_code}")
             return None
@@ -393,10 +398,12 @@ def fetch_all_tanks():
 
 
 if __name__ == "__main__":
+    BASE_DIR = Path(__file__).resolve().parent
+    TANQUES_JSON = BASE_DIR / "tanques.json"
     print("Iniciando scraping de War Thunder Wiki...\n")
     all_data = fetch_all_tanks()
     
-    with open("tanques.json", "w", encoding="utf-8") as f:
+    with open(TANQUES_JSON, "w", encoding="utf-8") as f:
         json.dump(all_data, f, indent=4, ensure_ascii=False)
     
     print(f"\n Datos guardados: {len(all_data)} tanques procesados")

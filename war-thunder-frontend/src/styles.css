@@ -38,31 +38,37 @@
 
 /* Tema oscuro */
 body.dark-mode {
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2a2a2a;
-  --bg-tertiary: #333333;
-  --bg-card: #2d2d2d;
-  --bg-header: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-  --bg-input: #2d2d2d;
-  --bg-ammo: #111827;
+  /* Fondos principales - Tonos suaves de gris oscuro */
+  --bg-primary: #1e1e2e;      /* Fondo principal con toque azulado */
+  --bg-secondary: #252538;    /* Fondo secundario ligeramente más claro */
+  --bg-tertiary: #2d2d44;     /* Fondo terciario con más contraste */
+  --bg-card: #262637;         /* Tarjetas con ligero tinte morado */
+  --bg-header: linear-gradient(135deg, #5b6ee1 0%, #7c3aed 100%); /* Degradado vibrante */
+  --bg-input: #2a2a3e;        /* Inputs con toque azulado */
+  --bg-ammo: #1a1a28;         /* Fondo para municiones más oscuro */
   
-  --text-primary: #e5e5e5;
-  --text-secondary: #b0b0b0;
-  --text-tertiary: #888888;
-  --text-white: #ffffff;
-  --text-label: #b0b0b0;
+  /* Textos - Colores más cálidos y legibles */
+  --text-primary: #e4e4f0;    /* Texto principal ligeramente azulado */
+  --text-secondary: #a8a8c0;  /* Texto secundario con tinte lavanda */
+  --text-tertiary: #8585a0;   /* Texto terciario más sutil */
+  --text-white: #ffffff;      /* Blanco puro para contrastes */
+  --text-label: #b0b0cc;      /* Labels con tinte morado claro */
   
-  --border-color: #444;
-  --border-color-light: #555;
+  /* Bordes - Más sutiles y con toque de color */
+  --border-color: #3a3a52;    /* Borde principal con azul oscuro */
+  --border-color-light: #44445a; /* Borde claro más visible */
   
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.4);
-  --shadow-lg: 0 8px 20px rgba(0,0,0,0.5);
+  /* Sombras - Más profundas para mejor separación */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
   
-  --btn-disabled-bg: #3a3a3a;
-  --btn-disabled-text: #666666;
+  /* Botones deshabilitados */
+  --btn-disabled-bg: #2f2f42;
+  --btn-disabled-text: #6a6a80;
   
-  --modal-overlay: rgba(0,0,0,0.8);
+  /* Overlay del modal más oscuro */
+  --modal-overlay: rgba(10,10,20,0.85);
 }
 /* ================================================================== */
 /* ANIMACIONES GLOBALES */
