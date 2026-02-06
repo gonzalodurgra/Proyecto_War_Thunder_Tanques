@@ -918,9 +918,10 @@ h1 {
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   border-radius: 8px;
   margin-bottom: 20px;
+  color: var(--text-secondary);
 }
 
 .results-count {
@@ -1941,7 +1942,7 @@ h1 {
 }
 
 .penetracion-lista-coloreada li {
-  background-color: white;
+  background-color: var(--bg-tertiary);
   padding: 10px 12px;
   border-radius: 6px;
   display: flex;
@@ -1959,7 +1960,7 @@ h1 {
 
 .distancia {
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
