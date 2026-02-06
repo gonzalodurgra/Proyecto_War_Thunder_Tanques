@@ -938,7 +938,7 @@ h1 {
   gap: 8px;
   margin: 30px 0;
   padding: 20px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex-wrap: wrap;
@@ -947,8 +947,8 @@ h1 {
 /* Botones de paginación base */
 .pagination-btn {
   padding: 10px 15px;
-  border: 2px solid #dee2e6;
-  background: white;
+  border: 2px solid var(--text-secondary);
+  background: var(--bg-ammo);
   color: #495057;
   border-radius: 8px;
   cursor: pointer;
