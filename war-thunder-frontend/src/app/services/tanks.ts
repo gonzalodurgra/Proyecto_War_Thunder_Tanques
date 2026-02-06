@@ -210,10 +210,10 @@ export class TanksService {
       'Israel': 'Israel'
     },
     rol: {
-      'Light Tank': 'Tanque Ligero',
-      'Medium Tank': 'Tanque Medio',
-      'Heavy Tank': 'Tanque Pesado',
-      'Tank Destroyer': 'Cazatanques',
+      'Light tank': 'Tanque Ligero',
+      'Medium tank': 'Tanque Medio',
+      'Heavy tank': 'Tanque Pesado',
+      'Tank destroyer': 'Destructor de Tanques',
       'SPAA': 'Antiaéreo Autopropulsado'
     }
   };
