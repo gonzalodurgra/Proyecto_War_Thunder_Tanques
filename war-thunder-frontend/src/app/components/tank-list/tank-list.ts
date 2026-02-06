@@ -457,13 +457,13 @@ export class TankListComponent implements OnInit {
   obtenerColorNacion(nacion: string): string {
     // EXPLICACIÓN: Devuelve una clase CSS según la nación
     const colores: { [key: string]: string } = {
-      'Great Britain': 'bg-red-500',
-      'Germany': 'bg-gray-700',
-      'USSR': 'bg-red-700',
-      'USA': 'bg-blue-600',
-      'Japan': 'bg-red-600',
-      'France': 'bg-blue-500',
-      'Italy': 'bg-green-600',
+      'Gran Bretaña': 'bg-red-500',
+      'Alemania': 'bg-gray-700',
+      'URSS': 'bg-red-700',
+      'Estados Unidos': 'bg-blue-600',
+      'Japón': 'bg-red-600',
+      'Francia': 'bg-blue-500',
+      'Italia': 'bg-green-600',
     };
     
     return colores[nacion] || 'bg-gray-500';

@@ -201,7 +201,7 @@ export class TanksService {
       'USA': 'Estados Unidos',
       'Germany': 'Alemania',
       'USSR': 'URSS',
-      'Britain': 'Gran Bretaña',
+      'Great Britain': 'Gran Bretaña',
       'Japan': 'Japón',
       'China': 'China',
       'Italy': 'Italia',
