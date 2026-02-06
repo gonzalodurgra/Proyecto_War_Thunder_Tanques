@@ -540,15 +540,6 @@ h1 {
   margin-bottom: 15px;
 }
 
-.detalle-seccion p {
-  margin: 8px 0;
-  color: var(--text-secondary);
-}
-
-.detalle-seccion strong {
-  color: var(--text-primary);
-}
-
 /* ================================================================== */
 /* SETUP DE ARMAS */
 /* ================================================================== */
@@ -684,15 +675,6 @@ h1 {
   color: #4CAF50;
   font-size: 1.2rem;
   margin-bottom: 10px;
-}
-
-.detalle-seccion p {
-  margin: 6px 0;
-  color: #555;
-}
-
-.detalle-seccion strong {
-  color: var(--text-primary);
 }
 
 /* ================================================================== */
@@ -1861,7 +1843,7 @@ h1 {
 .detalle-seccion p {
   margin: 12px 0;
   line-height: 1.8;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .detalle-seccion strong {

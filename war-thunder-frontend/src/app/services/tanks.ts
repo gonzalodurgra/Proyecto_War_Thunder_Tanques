@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs';
+import * as aq from 'arquero';
 
 // ====================================================================
 // PASO 1: Definir las interfaces (tipos de datos)
@@ -88,12 +89,7 @@ export class TanksService {
   // ====================================================================
   obtenerTodosLosTanques(): Observable<Tanque[]> {
     return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/`).pipe(
-      map(tanques =>
-        tanques.map(tanque => ({
-          ...tanque,
-          imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`
-        }))
-      )
+      map(tanques => tanques.map(tanque => this.traducirNombres(tanque)))
     );
   }
 
@@ -102,10 +98,9 @@ export class TanksService {
   // ====================================================================
   obtenerTanquePorId(id: string): Observable<Tanque> {
     return this.http.get<Tanque>(`${this.apiUrl}/tanques/${id}`).pipe(
-      map(tanque => ({
-        ...tanque,
-        imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`
-      }))
+      map(tanque => (
+        this.traducirNombres(tanque)
+      ))
     );
   }
 
@@ -116,10 +111,9 @@ export class TanksService {
     const nacionCodificada = encodeURIComponent(nacion);
     return this.http.get<Tanque[]>(`${this.apiUrl}/tanques/nacion/${nacionCodificada}`).pipe(
       map(tanques =>
-        tanques.map(tanque => ({
-          ...tanque,
-          imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`
-        }))
+        tanques.map(tanque => (
+          this.traducirNombres(tanque)
+        ))
       )
     );
   }
@@ -199,4 +193,37 @@ export class TanksService {
       })
     };
   }
+
+  private traducirNombres(tanque: Tanque): Tanque {
+  // Diccionarios de traducción
+  const traducciones = {
+    nacion: {
+      'USA': 'Estados Unidos',
+      'Germany': 'Alemania',
+      'USSR': 'URSS',
+      'Britain': 'Gran Bretaña',
+      'Japan': 'Japón',
+      'China': 'China',
+      'Italy': 'Italia',
+      'France': 'Francia',
+      'Sweden': 'Suecia',
+      'Israel': 'Israel'
+    },
+    rol: {
+      'Light Tank': 'Tanque Ligero',
+      'Medium Tank': 'Tanque Medio',
+      'Heavy Tank': 'Tanque Pesado',
+      'Tank Destroyer': 'Cazatanques',
+      'SPAA': 'Antiaéreo Autopropulsado'
+    }
+  };
+
+  // Retornar el tanque traducido
+  return {
+    ...tanque,
+    imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`,
+    nacion: traducciones.nacion[tanque.nacion as keyof typeof traducciones.nacion] || tanque.nacion,
+    rol: traducciones.rol[tanque.rol as keyof typeof traducciones.rol] || tanque.rol
+  };
+}
 }
