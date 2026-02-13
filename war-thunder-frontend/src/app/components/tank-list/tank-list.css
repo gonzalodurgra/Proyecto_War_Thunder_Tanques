@@ -927,6 +927,7 @@ h1 {
 .results-count {
   margin: 0;
   font-weight: 600;
+  color: var(--text-primary);
   font-size: 1rem;
 }
 
