@@ -1,5 +1,5 @@
 <div class="container">
-  
+
   <!-- ================================================================ -->
   <!-- HEADER CON AUTENTICACIÓN -->
   <!-- ================================================================ -->
@@ -10,58 +10,59 @@
       <span class="title-mobile">🎮 WT Tanques</span>
     </h1>
     <!-- ⭐ NUEVO: Botón de modo oscuro -->
-    <button class="btn-theme-toggle" (click)="toggleModoOscuro()" [title]="modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+    <button class="btn-theme-toggle" (click)="toggleModoOscuro()"
+      [title]="modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
       @if(!modoOscuro){
-        <span>🌙</span>
+      <span>🌙</span>
       }
       @else {
-        <span>☀️</span>
+      <span>☀️</span>
       }
     </button>
     <div class="user-section">
       @if (isAuthenticated) {
-        <!-- Usuario autenticado -->
-        <div class="user-menu">
-          <button class="user-button" (click)="toggleMenuUsuario()">
-            <span class="user-icon">👤</span>
-            <span class="username">{{ currentUsername }}</span>
-            <span class="dropdown-icon">▼</span>
-          </button>
-          
-          @if (mostrarMenuUsuario) {
-            <div class="dropdown-menu">
-              <div class="user-info">
-                <p><strong>{{ currentUsername }}</strong></p>
-                <p class="user-role">
-                  @if (isAdmin) {
-                    <span class="badge-admin">👑 Administrador</span>
-                  } @else {
-                    <span>📝 Editor</span>
-                  }
-                </p>
-              </div>
-              
+      <!-- Usuario autenticado -->
+      <div class="user-menu">
+        <button class="user-button" (click)="toggleMenuUsuario()">
+          <span class="user-icon">👤</span>
+          <span class="username">{{ currentUsername }}</span>
+          <span class="dropdown-icon">▼</span>
+        </button>
+
+        @if (mostrarMenuUsuario) {
+        <div class="dropdown-menu">
+          <div class="user-info">
+            <p><strong>{{ currentUsername }}</strong></p>
+            <p class="user-role">
               @if (isAdmin) {
-                <button class="dropdown-item" (click)="irAPanelAdmin()">
-                  🛡️ Panel de Admin
-                </button>
+              <span class="badge-admin">👑 Administrador</span>
+              } @else {
+              <span>📝 Editor</span>
               }
-              
-              <button class="dropdown-item logout" (click)="logout()">
-                🚪 Cerrar Sesión
-              </button>
-            </div>
+            </p>
+          </div>
+
+          @if (isAdmin) {
+          <button class="dropdown-item" (click)="irAPanelAdmin()">
+            🛡️ Panel de Admin
+          </button>
           }
-        </div>
-      } @else {
-        <!-- Usuario no autenticado -->
-        <div class="guest-section">
-          <span class="guest-badge">👁️ Modo Lectura</span>
-          <button class="btn-login-header" (click)="irALogin()">
-            <span class="btn-text-full">Iniciar Sesión</span>
-            <span class="btn-text-short">Login</span>
+
+          <button class="dropdown-item logout" (click)="logout()">
+            🚪 Cerrar Sesión
           </button>
         </div>
+        }
+      </div>
+      } @else {
+      <!-- Usuario no autenticado -->
+      <div class="guest-section">
+        <span class="guest-badge">👁️ Modo Lectura</span>
+        <button class="btn-login-header" (click)="irALogin()">
+          <span class="btn-text-full">Iniciar Sesión</span>
+          <span class="btn-text-short">Login</span>
+        </button>
+      </div>
       }
     </div>
   </div>
@@ -72,39 +73,32 @@
   <div class="filtros-container">
     <div class="filtros-header">
       <h2>Filtros</h2>
-      
-      @if (isAuthenticated) {
-        <div class="header-actions">
-          <button (click)="irASimuladorIA()" class="btn-ai-simulator">
-            🤖 Simulador IA
-          </button>
-          <button (click)="crearNuevoTanque()" class="btn-crear-nuevo">
-            ➕ Crear Nuevo Tanque
-          </button>
-        </div>
-      }
+
+      <div class="header-actions">
+        <button (click)="irASimuladorIA()" class="btn-ai-simulator">
+          🤖 Simulador IA
+        </button>
+        @if (isAuthenticated) {
+        <button (click)="crearNuevoTanque()" class="btn-crear-nuevo">
+          ➕ Crear Nuevo Tanque
+        </button>
+        }
+      </div>
     </div>
-    
+
     <div class="filtro">
       <label for="filtroNacion">Nación:</label>
-      <select 
-        id="filtroNacion" 
-        [(ngModel)]="filtroNacion" 
-        (change)="filtrarPorNacion()">
+      <select id="filtroNacion" [(ngModel)]="filtroNacion" (change)="filtrarPorNacion()">
         <option value="">Todas las naciones</option>
         @for (nacion of naciones; track nacion) {
-          <option [value]="nacion">{{ nacion }}</option>
+        <option [value]="nacion">{{ nacion }}</option>
         }
       </select>
     </div>
 
     <div class="filtro">
       <label for="filtroBusqueda">Buscar:</label>
-      <input 
-        type="text" 
-        id="filtroBusqueda" 
-        [(ngModel)]="filtroBusqueda"
-        (input)="aplicarFiltroBusqueda()"
+      <input type="text" id="filtroBusqueda" [(ngModel)]="filtroBusqueda" (input)="aplicarFiltroBusqueda()"
         placeholder="Nombre del tanque...">
     </div>
 
@@ -121,187 +115,161 @@
   <!-- INFORMACIÓN DE PAGINACIÓN -->
   <!-- ================================================================ -->
   @if (!cargando && tanquesFiltrados.length > 0) {
-    <div class="pagination-info">
-      <p class="results-count">
-        📊 Mostrando {{ getRangoTanques() }}
-      </p>
-    </div>
+  <div class="pagination-info">
+    <p class="results-count">
+      📊 Mostrando {{ getRangoTanques() }}
+    </p>
+  </div>
   }
 
   <!-- ================================================================ -->
   <!-- ESTADO DE CARGA -->
   <!-- ================================================================ -->
   @if (cargando) {
-    <div class="mensaje-cargando">
-      <p>⏳ Cargando tanques...</p>
-    </div>
+  <div class="mensaje-cargando">
+    <p>⏳ Cargando tanques...</p>
+  </div>
   }
 
   <!-- ================================================================ -->
   <!-- MENSAJE DE ERROR -->
   <!-- ================================================================ -->
   @if (error) {
-    <div class="mensaje-error">
-      <p>❌ {{ error }}</p>
-    </div>
+  <div class="mensaje-error">
+    <p>❌ {{ error }}</p>
+  </div>
   }
 
   <!-- ================================================================ -->
   <!-- GRID DE TANQUES -->
   <!-- ================================================================ -->
   @if (!cargando && !error) {
-    <div class="tanques-grid">
-      @if (tanquesPaginados.length === 0) {
-        <div class="sin-resultados">
-          <p>No se encontraron tanques con los filtros aplicados</p>
-        </div>
-      } @else {
-        @for (tanque of tanquesPaginados; track tanque._id) {
-          <div class="tanque-card" (click)="seleccionarTanque(tanque)">
-            
-            <!-- Header con nombre y nación -->
-            <div class="tanque-header">
-              <h3>{{ tanque.nombre }}</h3>
-              <span class="nacion-badge" [ngClass]="obtenerColorNacion(tanque.nacion)">
-                {{ tanque.nacion }}
-              </span>
-            </div>
-
-            <!-- Imagen del tanque -->
-            @if (tanque.imagen_local) {
-              <img [src]="tanque.imagen_local" [alt]="tanque.nombre">
-            }
-            
-            <!-- Información básica -->
-            <div class="tanque-info">
-              <p><strong>Rol:</strong> {{ tanque.rol }}</p>
-              <p><strong>Rating</strong> {{ tanque.rating_arcade?.toFixed(1) }}/{{ tanque.rating_realista?.toFixed(1) }}</p>
-              <p><strong>Peso:</strong> {{ tanque.peso }} t</p>
-              <p><strong>Velocidad:</strong> {{ tanque.velocidad_adelante_arcade }}/{{tanque.velocidad_adelante_realista}} km/h</p>
-            </div>
-
-            <!-- Botones de acción -->
-            <div class="tanque-acciones">
-              <button 
-                (click)="seleccionarTanque(tanque); $event.stopPropagation()" 
-                class="btn-ver">
-                👁️ Ver
-              </button>
-              
-              @if (isAuthenticated) {
-                <button 
-                  (click)="editarTanque(tanque!); $event.stopPropagation()" 
-                  class="btn-editar">
-                  ✏️ Editar
-                </button>
-                <button 
-                  (click)="eliminarTanque(tanque._id!); $event.stopPropagation()" 
-                  class="btn-eliminar">
-                  🗑️
-                </button>
-              } @else {
-                <button 
-                  class="btn-disabled"
-                  disabled
-                  title="Inicia sesión para editar">
-                  🔒 Editar
-                </button>
-              }
-            </div>
-          </div>
-        }
-      }
+  <div class="tanques-grid">
+    @if (tanquesPaginados.length === 0) {
+    <div class="sin-resultados">
+      <p>No se encontraron tanques con los filtros aplicados</p>
     </div>
+    } @else {
+    @for (tanque of tanquesPaginados; track tanque._id) {
+    <div class="tanque-card" (click)="seleccionarTanque(tanque)">
+
+      <!-- Header con nombre y nación -->
+      <div class="tanque-header">
+        <h3>{{ tanque.nombre }}</h3>
+        <span class="nacion-badge" [ngClass]="obtenerColorNacion(tanque.nacion)">
+          {{ tanque.nacion }}
+        </span>
+      </div>
+
+      <!-- Imagen del tanque -->
+      @if (tanque.imagen_local) {
+      <img [src]="tanque.imagen_local" [alt]="tanque.nombre">
+      }
+
+      <!-- Información básica -->
+      <div class="tanque-info">
+        <p><strong>Rol:</strong> {{ tanque.rol }}</p>
+        <p><strong>Rating</strong> {{ tanque.rating_arcade?.toFixed(1) }}/{{ tanque.rating_realista?.toFixed(1) }}</p>
+        <p><strong>Peso:</strong> {{ tanque.peso }} t</p>
+        <p><strong>Velocidad:</strong> {{ tanque.velocidad_adelante_arcade }}/{{tanque.velocidad_adelante_realista}}
+          km/h</p>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="tanque-acciones">
+        <button (click)="seleccionarTanque(tanque); $event.stopPropagation()" class="btn-ver">
+          👁️ Ver
+        </button>
+
+        @if (isAuthenticated) {
+        <button (click)="editarTanque(tanque!); $event.stopPropagation()" class="btn-editar">
+          ✏️ Editar
+        </button>
+        <button (click)="eliminarTanque(tanque._id!); $event.stopPropagation()" class="btn-eliminar">
+          🗑️
+        </button>
+        } @else {
+        <button class="btn-disabled" disabled title="Inicia sesión para editar">
+          🔒 Editar
+        </button>
+        }
+      </div>
+    </div>
+    }
+    }
+  </div>
   }
 
   <!-- ================================================================ -->
   <!-- CONTROLES DE PAGINACIÓN -->
   <!-- ================================================================ -->
   @if (!cargando && tanquesFiltrados.length > tanquesPorPagina) {
-    <div class="pagination-container">
-      
-      <button 
-        class="pagination-btn pagination-btn-nav"
-        (click)="primeraPagina()"
-        [disabled]="paginaActual === 1"
-        title="Primera página">
-        ⏮️
+  <div class="pagination-container">
+
+    <button class="pagination-btn pagination-btn-nav" (click)="primeraPagina()" [disabled]="paginaActual === 1"
+      title="Primera página">
+      ⏮️
+    </button>
+
+    <button class="pagination-btn pagination-btn-nav" (click)="paginaAnterior()" [disabled]="paginaActual === 1"
+      title="Página anterior">
+      ◀️
+    </button>
+
+    <div class="pagination-numbers">
+      @for (pagina of paginasVisibles; track pagina) {
+      <button class="pagination-btn pagination-btn-number" [class.active]="pagina === paginaActual"
+        (click)="irAPagina(pagina)">
+        {{ pagina }}
       </button>
-      
-      <button 
-        class="pagination-btn pagination-btn-nav"
-        (click)="paginaAnterior()"
-        [disabled]="paginaActual === 1"
-        title="Página anterior">
-        ◀️
-      </button>
-      
-      <div class="pagination-numbers">
-        @for (pagina of paginasVisibles; track pagina) {
-          <button 
-            class="pagination-btn pagination-btn-number"
-            [class.active]="pagina === paginaActual"
-            (click)="irAPagina(pagina)">
-            {{ pagina }}
-          </button>
-        }
-      </div>
-      
-      <button 
-        class="pagination-btn pagination-btn-nav"
-        (click)="paginaSiguiente()"
-        [disabled]="paginaActual === totalPaginas"
-        title="Página siguiente">
-        ▶️
-      </button>
-      
-      <button 
-        class="pagination-btn pagination-btn-nav"
-        (click)="ultimaPagina()"
-        [disabled]="paginaActual === totalPaginas"
-        title="Última página">
-        ⏭️
-      </button>
-      
+      }
     </div>
-    
-    <div class="pagination-details">
-      <p>Página {{ paginaActual }} de {{ totalPaginas }}</p>
-    </div>
+
+    <button class="pagination-btn pagination-btn-nav" (click)="paginaSiguiente()"
+      [disabled]="paginaActual === totalPaginas" title="Página siguiente">
+      ▶️
+    </button>
+
+    <button class="pagination-btn pagination-btn-nav" (click)="ultimaPagina()"
+      [disabled]="paginaActual === totalPaginas" title="Última página">
+      ⏭️
+    </button>
+
+  </div>
+
+  <div class="pagination-details">
+    <p>Página {{ paginaActual }} de {{ totalPaginas }}</p>
+  </div>
   }
-<!-- ================================================================ -->
-<!-- MODAL DE DETALLES DEL TANQUE CON ESTADÍSTICAS COLOREADAS -->
-<!-- ================================================================ -->
-@if (tanqueSeleccionado) {
+  <!-- ================================================================ -->
+  <!-- MODAL DE DETALLES DEL TANQUE CON ESTADÍSTICAS COLOREADAS -->
+  <!-- ================================================================ -->
+  @if (tanqueSeleccionado) {
   <div class="modal-overlay" (click)="cerrarDetalles()">
     <div class="modal-contenido modal-ampliado" (click)="$event.stopPropagation()">
-      
+
       <button class="btn-cerrar" (click)="cerrarDetalles()">✕</button>
 
       <h2>{{ tanqueSeleccionado.nombre }}</h2>
-      
+
       <!-- Badge del rating con color y selector de modo -->
       <div class="rating-section">
         <div class="rating-badge">
           <span class="badge-rating">
             ⭐ Rating: {{ tanqueSeleccionado.rating_arcade?.toFixed(1) }}
             @if (tanqueSeleccionado.rating_realista) {
-              / {{ tanqueSeleccionado.rating_realista.toFixed(1) }}
+            / {{ tanqueSeleccionado.rating_realista.toFixed(1) }}
             }
           </span>
         </div>
 
         <!-- Selector de modo de juego -->
         <div class="modo-selector">
-          <button 
-            class="btn-modo"
-            [class.active]="modoActual === 'rating_arcade'"
+          <button class="btn-modo" [class.active]="modoActual === 'rating_arcade'"
             (click)="cambiarModo('rating_arcade')">
             🎮 Arcade
           </button>
-          <button 
-            class="btn-modo"
-            [class.active]="modoActual === 'rating_realista'"
+          <button class="btn-modo" [class.active]="modoActual === 'rating_realista'"
             (click)="cambiarModo('rating_realista')">
             🎯 Realista
           </button>
@@ -310,9 +278,7 @@
 
       <!-- Toggle para estadísticas avanzadas -->
       <div class="stats-toggle">
-        <button 
-          class="btn-toggle-stats" 
-          (click)="toggleEstadisticasAvanzadas()">
+        <button class="btn-toggle-stats" (click)="toggleEstadisticasAvanzadas()">
           {{ mostrarEstadisticasAvanzadas ? '📊 Ocultar' : '📊 Mostrar' }} Estadísticas Comparativas
         </button>
       </div>
@@ -325,33 +291,39 @@
           <h3>ℹ️ Información General</h3>
           <p><strong>Nación:</strong> {{ tanqueSeleccionado.nacion }}</p>
           <p><strong>Rol:</strong> {{ tanqueSeleccionado.rol }}</p>
-          
+
           <!-- Tripulación con color y percentil -->
           <p>
-            <strong>Tripulación:</strong> 
-            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['tripulacion_arcade'] : coloresTanque['tripulacion_realista']" class="stat-colored">
+            <strong>Tripulación:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['tripulacion_arcade'] : coloresTanque['tripulacion_realista']"
+              class="stat-colored">
               {{ tanqueSeleccionado.tripulacion }}
             </span>
             @if (mostrarEstadisticasAvanzadas) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'tripulacion', tanqueSeleccionado.tripulacion)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'tripulacion', tanqueSeleccionado.tripulacion))
+              }}
+            </span>
             }
           </p>
-          
+
           <!-- Visibilidad con color (menor es mejor) -->
           <p>
-            <strong>Visibilidad:</strong> 
-            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['visibilidad_arcade'] : coloresTanque['visibilidad_realista']" class="stat-colored">
+            <strong>Visibilidad:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['visibilidad_arcade'] : coloresTanque['visibilidad_realista']"
+              class="stat-colored">
               {{ tanqueSeleccionado.visibilidad }}%
             </span>
             @if (mostrarEstadisticasAvanzadas) {
-              <span class="percentil-badge good">
-                {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'visibilidad', tanqueSeleccionado.visibilidad)) }}
-              </span>
+            <span class="percentil-badge good">
+              {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'visibilidad',
+              tanqueSeleccionado.visibilidad)) }}
+            </span>
             }
           </p>
-          
+
           <p><strong>Peso:</strong> {{ tanqueSeleccionado.peso }} t</p>
         </div>
 
@@ -360,30 +332,36 @@
         <!-- ================================================================ -->
         <div class="detalle-seccion">
           <h3>🛡️ Blindaje</h3>
-          
+
           <!-- Blindaje chasis con color -->
           <p>
-            <strong>Blindaje chasis:</strong> 
-            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_chasis_arcade']: coloresTanque['blindaje_chasis_realista']" class="stat-colored">
+            <strong>Blindaje chasis:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_chasis_arcade']: coloresTanque['blindaje_chasis_realista']"
+              class="stat-colored">
               {{ tanqueSeleccionado.blindaje_chasis }} mm
             </span>
             @if (mostrarEstadisticasAvanzadas) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_chasis', tanqueSeleccionado.blindaje_chasis)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_chasis',
+              tanqueSeleccionado.blindaje_chasis)) }}
+            </span>
             }
           </p>
-          
+
           <!-- Blindaje torreta con color -->
           <p>
-            <strong>Blindaje torreta:</strong> 
-            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_torreta_arcade']: coloresTanque['blindaje_torreta_realista']" class="stat-colored">
+            <strong>Blindaje torreta:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_torreta_arcade']: coloresTanque['blindaje_torreta_realista']"
+              class="stat-colored">
               {{ tanqueSeleccionado.blindaje_torreta }} mm
             </span>
             @if (mostrarEstadisticasAvanzadas) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_torreta', tanqueSeleccionado.blindaje_torreta)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_torreta',
+              tanqueSeleccionado.blindaje_torreta)) }}
+            </span>
             }
           </p>
         </div>
@@ -393,79 +371,85 @@
         <!-- ================================================================ -->
         <div class="detalle-seccion">
           <h3>🏃 Movilidad</h3>
-          
+
           <!-- Velocidad adelante con color -->
           <p>
             <strong>Velocidad adelante:</strong>
             @if (modoActual == "rating_arcade") {
-              <span [style.color]="coloresTanque['velocidad_adelante_arcade']" class="stat-colored">
-                {{ tanqueSeleccionado.velocidad_adelante_arcade }} km/h
-              </span>
-            } 
+            <span [style.color]="coloresTanque['velocidad_adelante_arcade']" class="stat-colored">
+              {{ tanqueSeleccionado.velocidad_adelante_arcade }} km/h
+            </span>
+            }
             @if (modoActual == "rating_realista") {
-              <span [style.color]="coloresTanque['velocidad_adelante_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.velocidad_adelante_realista }} km/h
-              </span>
+            <span [style.color]="coloresTanque['velocidad_adelante_realista']" class="stat-colored">
+              {{ tanqueSeleccionado.velocidad_adelante_realista }} km/h
+            </span>
             }
             @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade") {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_adelante_arcade', tanqueSeleccionado.velocidad_adelante_arcade)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_adelante_arcade',
+              tanqueSeleccionado.velocidad_adelante_arcade)) }}
+            </span>
             }
             @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_adelante_realista', tanqueSeleccionado.velocidad_adelante_realista)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_adelante_realista',
+              tanqueSeleccionado.velocidad_adelante_realista)) }}
+            </span>
             }
           </p>
-          
+
           <!-- Velocidad atrás con color -->
           <p>
-            <strong>Velocidad atrás:</strong> 
+            <strong>Velocidad atrás:</strong>
             @if (modoActual == "rating_arcade") {
-              <span [style.color]="coloresTanque['velocidad_atras_arcade']" class="stat-colored">
-                {{ tanqueSeleccionado.velocidad_atras_arcade }} km/h
-              </span>
-            } 
+            <span [style.color]="coloresTanque['velocidad_atras_arcade']" class="stat-colored">
+              {{ tanqueSeleccionado.velocidad_atras_arcade }} km/h
+            </span>
+            }
             @if (modoActual == "rating_realista") {
-              <span [style.color]="coloresTanque['velocidad_atras_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.velocidad_atras_realista }} km/h
-              </span>
+            <span [style.color]="coloresTanque['velocidad_atras_realista']" class="stat-colored">
+              {{ tanqueSeleccionado.velocidad_atras_realista }} km/h
+            </span>
             }
             @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade" ) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_atras_arcade', tanqueSeleccionado.velocidad_atras_arcade)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_atras_arcade',
+              tanqueSeleccionado.velocidad_atras_arcade)) }}
+            </span>
             }
             @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_atras_realista', tanqueSeleccionado.velocidad_atras_realista)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'velocidad_atras_realista',
+              tanqueSeleccionado.velocidad_atras_realista)) }}
+            </span>
             }
           </p>
-          
+
           <!-- Relación potencia/peso con color -->
           <p>
-            <strong>Relación potencia-peso:</strong> 
+            <strong>Relación potencia-peso:</strong>
             @if (modoActual == "rating_arcade") {
-              <span [style.color]="coloresTanque['potencia_peso_arcade']" class="stat-colored">
-                {{ tanqueSeleccionado.relacion_potencia_peso }} hp/t
-              </span>
-            } 
+            <span [style.color]="coloresTanque['potencia_peso_arcade']" class="stat-colored">
+              {{ tanqueSeleccionado.relacion_potencia_peso }} hp/t
+            </span>
+            }
             @if (modoActual == "rating_realista") {
-              <span [style.color]="coloresTanque['potencia_peso_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.relacion_potencia_peso_realista }} hp/t
-              </span>
+            <span [style.color]="coloresTanque['potencia_peso_realista']" class="stat-colored">
+              {{ tanqueSeleccionado.relacion_potencia_peso_realista }} hp/t
+            </span>
             }
             @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade") {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'relacion_potencia_peso', tanqueSeleccionado.relacion_potencia_peso)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'relacion_potencia_peso',
+              tanqueSeleccionado.relacion_potencia_peso)) }}
+            </span>
             }
             @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'relacion_potencia_peso_realista', tanqueSeleccionado.relacion_potencia_peso_realista)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'relacion_potencia_peso_realista',
+              tanqueSeleccionado.relacion_potencia_peso_realista)) }}
+            </span>
             }
           </p>
         </div>
@@ -475,126 +459,141 @@
         <!-- ================================================================ -->
         <div class="detalle-seccion">
           <h3>🔫 Armamento</h3>
-          
+
           <!-- Recarga con color (menor es mejor) -->
           @if (tanqueSeleccionado.recarga) {
-            <p>
-              <strong>Recarga:</strong> 
-              <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['recarga_arcade']: coloresTanque['recarga_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.recarga }}s
-              </span>
-              @if (mostrarEstadisticasAvanzadas) {
-                <span class="percentil-badge good">
-                  {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'recarga', tanqueSeleccionado.recarga)) }}
-                </span>
-              }
-            </p>
+          <p>
+            <strong>Recarga:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['recarga_arcade']: coloresTanque['recarga_realista']"
+              class="stat-colored">
+              {{ tanqueSeleccionado.recarga }}s
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+            <span class="percentil-badge good">
+              {{ formatearPercentil(100 - obtenerPercentil(tanqueSeleccionado, 'recarga', tanqueSeleccionado.recarga))
+              }}
+            </span>
+            }
+          </p>
           }
-          
+
           <!-- Cadencia con color -->
           @if (tanqueSeleccionado.cadencia) {
-            <p>
-              <strong>Cadencia:</strong> 
-              <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['cadencia_arcade']: coloresTanque['cadencia_realista']" class="stat-colored">
-                {{ tanqueSeleccionado.cadencia.toFixed(1) }} rpm
-              </span>
-              @if (mostrarEstadisticasAvanzadas) {
-                <span class="percentil-badge">
-                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'cadencia', tanqueSeleccionado.cadencia)) }}
-                </span>
-              }
-            </p>
+          <p>
+            <strong>Cadencia:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['cadencia_arcade']: coloresTanque['cadencia_realista']"
+              class="stat-colored">
+              {{ tanqueSeleccionado.cadencia.toFixed(1) }} rpm
+            </span>
+            @if (mostrarEstadisticasAvanzadas) {
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'cadencia', tanqueSeleccionado.cadencia)) }}
+            </span>
+            }
+          </p>
           }
           <!-- Cadencia con color -->
           @if (tanqueSeleccionado.cargador > 1) {
-            <p>
-              <strong>Cargador:</strong> 
-              <span>
-                {{ tanqueSeleccionado.cargador }}
-              </span>
-            </p>
+          <p>
+            <strong>Cargador:</strong>
+            <span>
+              {{ tanqueSeleccionado.cargador }}
+            </span>
+          </p>
           }
           <p><strong>Munición total:</strong> {{ tanqueSeleccionado.municion_total }}</p>
-          
+
           <!-- Depresión con color -->
           <p>
-            <strong>Depresión:</strong> 
-            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['depresion_arcade']: coloresTanque['depresion_realista']" class="stat-colored">
+            <strong>Depresión:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['depresion_arcade']: coloresTanque['depresion_realista']"
+              class="stat-colored">
               {{ tanqueSeleccionado.angulo_depresion }}°
             </span>
             @if (mostrarEstadisticasAvanzadas) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_depresion', tanqueSeleccionado.angulo_depresion)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_depresion',
+              tanqueSeleccionado.angulo_depresion)) }}
+            </span>
             }
           </p>
-          
+
           <!-- Elevación con color -->
           <p>
-            <strong>Elevación:</strong> 
-            <span [style.color]="modoActual === 'rating_arcade' ? coloresTanque['elevacion_arcade']: coloresTanque['elevacion_realista']" class="stat-colored">
+            <strong>Elevación:</strong>
+            <span
+              [style.color]="modoActual === 'rating_arcade' ? coloresTanque['elevacion_arcade']: coloresTanque['elevacion_realista']"
+              class="stat-colored">
               {{ tanqueSeleccionado.angulo_elevacion }}°
             </span>
             @if (mostrarEstadisticasAvanzadas) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_elevacion', tanqueSeleccionado.angulo_elevacion)) }}
-              </span>
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'angulo_elevacion',
+              tanqueSeleccionado.angulo_elevacion)) }}
+            </span>
             }
           </p>
-          
+
           <!-- Rotación horizontal con color -->
           @if (tanqueSeleccionado.rotacion_torreta_horizontal_arcade) {
-            <p>
-              <strong>Rotación horizontal:</strong> 
-              @if (modoActual == "rating_arcade") {
-                <span [style.color]="coloresTanque['rotacion_horizontal_arcade']" class="stat-colored">
-                  {{ tanqueSeleccionado.rotacion_torreta_horizontal_arcade }} º/s
-                </span>
-              } 
-              @if (modoActual == "rating_realista") {
-                <span [style.color]="coloresTanque['rotacion_horizontal_realista']" class="stat-colored">
-                  {{ tanqueSeleccionado.rotacion_torreta_horizontal_realista }} º/s
-                </span>
-              }
-              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade" ) {
-                <span class="percentil-badge">
-                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_horizontal_arcade', tanqueSeleccionado.rotacion_torreta_horizontal_arcade)) }}
-                </span>
-              }
-              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
-              <span class="percentil-badge">
-                {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_horizontal_realista', tanqueSeleccionado.rotacion_torreta_horizontal_realista)) }}
-              </span>
+          <p>
+            <strong>Rotación horizontal:</strong>
+            @if (modoActual == "rating_arcade") {
+            <span [style.color]="coloresTanque['rotacion_horizontal_arcade']" class="stat-colored">
+              {{ tanqueSeleccionado.rotacion_torreta_horizontal_arcade }} º/s
+            </span>
             }
-            </p>
+            @if (modoActual == "rating_realista") {
+            <span [style.color]="coloresTanque['rotacion_horizontal_realista']" class="stat-colored">
+              {{ tanqueSeleccionado.rotacion_torreta_horizontal_realista }} º/s
+            </span>
+            }
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade" ) {
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_horizontal_arcade',
+              tanqueSeleccionado.rotacion_torreta_horizontal_arcade)) }}
+            </span>
+            }
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_horizontal_realista',
+              tanqueSeleccionado.rotacion_torreta_horizontal_realista)) }}
+            </span>
+            }
+          </p>
           }
-          
+
           <!-- Rotación vertical con color -->
           @if (tanqueSeleccionado.rotacion_torreta_vertical_arcade) {
-            <p>
-              <strong>Rotación vertical:</strong> 
-              @if (modoActual == "rating_arcade") {
-                <span [style.color]="coloresTanque['rotacion_vertical_arcade']" class="stat-colored">
-                  {{ tanqueSeleccionado.rotacion_torreta_vertical_arcade }} º/s
-                </span>
-              } 
-              @if (modoActual == "rating_realista") {
-                <span [style.color]="coloresTanque['rotacion_vertical_realista']" class="stat-colored">
-                  {{ tanqueSeleccionado.rotacion_torreta_vertical_realista }} º/s
-                </span>
-              }
-              
-              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade") {
-                <span class="percentil-badge">
-                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_vertical_arcade', tanqueSeleccionado.rotacion_torreta_vertical_arcade)) }}
-                </span>
-              }
-              @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
-                <span class="percentil-badge">
-                  {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_vertical_realista', tanqueSeleccionado.rotacion_torreta_vertical_realista)) }}
-                </span>
-              }
-            </p>
+          <p>
+            <strong>Rotación vertical:</strong>
+            @if (modoActual == "rating_arcade") {
+            <span [style.color]="coloresTanque['rotacion_vertical_arcade']" class="stat-colored">
+              {{ tanqueSeleccionado.rotacion_torreta_vertical_arcade }} º/s
+            </span>
+            }
+            @if (modoActual == "rating_realista") {
+            <span [style.color]="coloresTanque['rotacion_vertical_realista']" class="stat-colored">
+              {{ tanqueSeleccionado.rotacion_torreta_vertical_realista }} º/s
+            </span>
+            }
+
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_arcade") {
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_vertical_arcade',
+              tanqueSeleccionado.rotacion_torreta_vertical_arcade)) }}
+            </span>
+            }
+            @if (mostrarEstadisticasAvanzadas && modoActual == "rating_realista" ) {
+            <span class="percentil-badge">
+              {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'rotacion_torreta_vertical_realista',
+              tanqueSeleccionado.rotacion_torreta_vertical_realista)) }}
+            </span>
+            }
+          </p>
           }
         </div>
       </div>
@@ -603,219 +602,183 @@
       <!-- SECCIÓN: Setup 1 con penetraciones coloreadas -->
       <!-- ================================================================ -->
       @if (tanqueSeleccionado.setup_1) {
-        <div class="setup-seccion">
-          <h3>🔫 Setup 1</h3>
-          @for (armaKey of Object.keys(tanqueSeleccionado.setup_1); track armaKey) {
-            <div class="arma-detalle">
-              <h4>{{ armaKey }}</h4>
-              @for (municion of tanqueSeleccionado.setup_1[armaKey].municiones; track $index) {
-                <div class="municion-detalle">
-                  <p class="municion-header">
-                    <strong>{{ municion.nombre }}</strong> 
-                    <span class="municion-tipo-badge">{{ municion.tipo }}</span>
-                  </p>
-                  <ul class="penetracion-lista-coloreada">
-                    <li>
-                      <span class="distancia">0m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
-                        {{ municion.penetracion_mm[0] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">100m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
-                        {{ municion.penetracion_mm[1] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">500m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
-                        {{ municion.penetracion_mm[2] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">1000m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
-                        {{ municion.penetracion_mm[3] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">1500m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
-                        {{ municion.penetracion_mm[4] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">2000m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
-                        {{ municion.penetracion_mm[5] }}mm
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              }
-            </div>
+      <div class="setup-seccion">
+        <h3>🔫 Setup 1</h3>
+        @for (armaKey of Object.keys(tanqueSeleccionado.setup_1); track armaKey) {
+        <div class="arma-detalle">
+          <h4>{{ armaKey }}</h4>
+          @for (municion of tanqueSeleccionado.setup_1[armaKey].municiones; track $index) {
+          <div class="municion-detalle">
+            <p class="municion-header">
+              <strong>{{ municion.nombre }}</strong>
+              <span class="municion-tipo-badge">{{ municion.tipo }}</span>
+            </p>
+            <ul class="penetracion-lista-coloreada">
+              <li>
+                <span class="distancia">0m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
+                  {{ municion.penetracion_mm[0] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">100m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
+                  {{ municion.penetracion_mm[1] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">500m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
+                  {{ municion.penetracion_mm[2] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">1000m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
+                  {{ municion.penetracion_mm[3] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">1500m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
+                  {{ municion.penetracion_mm[4] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">2000m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
+                  {{ municion.penetracion_mm[5] }}mm
+                </span>
+              </li>
+            </ul>
+          </div>
           }
         </div>
+        }
+      </div>
       }
 
       <!-- ================================================================ -->
       <!-- SECCIÓN: Setup 2 con penetraciones coloreadas -->
       <!-- ================================================================ -->
       @if (tanqueSeleccionado.setup_2) {
-        <div class="setup-seccion">
-          <h3>🔫 Setup 2</h3>
-          @for (armaKey of Object.keys(tanqueSeleccionado.setup_2); track armaKey) {
-            <div class="arma-detalle">
-              <h4>{{ armaKey }}</h4>
-              @for (municion of tanqueSeleccionado.setup_2[armaKey].municiones; track $index) {
-                <div class="municion-detalle">
-                  <p class="municion-header">
-                    <strong>{{ municion.nombre }}</strong> 
-                    <span class="municion-tipo-badge">{{ municion.tipo }}</span>
-                  </p>
-                  <ul class="penetracion-lista-coloreada">
-                    <li>
-                      <span class="distancia">0m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
-                        {{ municion.penetracion_mm[0] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">100m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
-                        {{ municion.penetracion_mm[1] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">500m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
-                        {{ municion.penetracion_mm[2] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">1000m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
-                        {{ municion.penetracion_mm[3] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">1500m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
-                        {{ municion.penetracion_mm[4] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">2000m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
-                        {{ municion.penetracion_mm[5] }}mm
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              }
-            </div>
+      <div class="setup-seccion">
+        <h3>🔫 Setup 2</h3>
+        @for (armaKey of Object.keys(tanqueSeleccionado.setup_2); track armaKey) {
+        <div class="arma-detalle">
+          <h4>{{ armaKey }}</h4>
+          @for (municion of tanqueSeleccionado.setup_2[armaKey].municiones; track $index) {
+          <div class="municion-detalle">
+            <p class="municion-header">
+              <strong>{{ municion.nombre }}</strong>
+              <span class="municion-tipo-badge">{{ municion.tipo }}</span>
+            </p>
+            <ul class="penetracion-lista-coloreada">
+              <li>
+                <span class="distancia">0m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
+                  {{ municion.penetracion_mm[0] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">100m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
+                  {{ municion.penetracion_mm[1] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">500m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
+                  {{ municion.penetracion_mm[2] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">1000m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
+                  {{ municion.penetracion_mm[3] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">1500m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
+                  {{ municion.penetracion_mm[4] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">2000m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
+                  {{ municion.penetracion_mm[5] }}mm
+                </span>
+              </li>
+            </ul>
+          </div>
           }
         </div>
+        }
+      </div>
       }
 
       <!-- ================================================================ -->
       <!-- SECCIÓN: Armamento Detallado con penetraciones coloreadas -->
       <!-- ================================================================ -->
       @if (tanqueSeleccionado.armamento) {
-        <div class="setup-seccion">
-          <h3>🔫 Armamento Detallado</h3>
-          @for (armaKey of Object.keys(tanqueSeleccionado.armamento); track armaKey) {
-            <div class="arma-detalle">
-              <h4>{{ armaKey }}</h4>
-              @for (municion of tanqueSeleccionado.armamento[armaKey].municiones; track $index) {
-                <div class="municion-detalle">
-                  <p class="municion-header">
-                    <strong>{{ municion.nombre }}</strong> 
-                    <span class="municion-tipo-badge">{{ municion.tipo }}</span>
-                  </p>
-                  <ul class="penetracion-lista-coloreada">
-                    <li>
-                      <span class="distancia">0m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
-                        {{ municion.penetracion_mm[0] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">100m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
-                        {{ municion.penetracion_mm[1] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">500m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
-                        {{ municion.penetracion_mm[2] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">1000m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
-                        {{ municion.penetracion_mm[3] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">1500m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
-                        {{ municion.penetracion_mm[4] }}mm
-                      </span>
-                    </li>
-                    <li>
-                      <span class="distancia">2000m:</span>
-                      <span 
-                        class="penetracion-valor"
-                        [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
-                        {{ municion.penetracion_mm[5] }}mm
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              }
-            </div>
+      <div class="setup-seccion">
+        <h3>🔫 Armamento Detallado</h3>
+        @for (armaKey of Object.keys(tanqueSeleccionado.armamento); track armaKey) {
+        <div class="arma-detalle">
+          <h4>{{ armaKey }}</h4>
+          @for (municion of tanqueSeleccionado.armamento[armaKey].municiones; track $index) {
+          <div class="municion-detalle">
+            <p class="municion-header">
+              <strong>{{ municion.nombre }}</strong>
+              <span class="municion-tipo-badge">{{ municion.tipo }}</span>
+            </p>
+            <ul class="penetracion-lista-coloreada">
+              <li>
+                <span class="distancia">0m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">
+                  {{ municion.penetracion_mm[0] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">100m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">
+                  {{ municion.penetracion_mm[1] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">500m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">
+                  {{ municion.penetracion_mm[2] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">1000m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">
+                  {{ municion.penetracion_mm[3] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">1500m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">
+                  {{ municion.penetracion_mm[4] }}mm
+                </span>
+              </li>
+              <li>
+                <span class="distancia">2000m:</span>
+                <span class="penetracion-valor" [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">
+                  {{ municion.penetracion_mm[5] }}mm
+                </span>
+              </li>
+            </ul>
+          </div>
           }
         </div>
+        }
+      </div>
       }
 
     </div>
   </div>
-}
+  }
 </div>
