@@ -452,6 +452,13 @@ export class TankListComponent implements OnInit {
   }
 
   // ====================================================================
+  // MÉTODO NUEVO: Ir al simulador de IA
+  // ====================================================================
+  irASimuladorIA(): void {
+    this.router.navigate(['/combate-ia']);
+  }
+
+  // ====================================================================
   // MÉTODO: Obtener color según la nación (para el UI)
   // ====================================================================
   obtenerColorNacion(nacion: string): string {

@@ -74,9 +74,14 @@
       <h2>Filtros</h2>
       
       @if (isAuthenticated) {
-        <button (click)="crearNuevoTanque()" class="btn-crear-nuevo">
-          ➕ Crear Nuevo Tanque
-        </button>
+        <div class="header-actions">
+          <button (click)="irASimuladorIA()" class="btn-ai-simulator">
+            🤖 Simulador IA
+          </button>
+          <button (click)="crearNuevoTanque()" class="btn-crear-nuevo">
+            ➕ Crear Nuevo Tanque
+          </button>
+        </div>
       }
     </div>
     

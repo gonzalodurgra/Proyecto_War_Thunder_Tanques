@@ -1,0 +1,86 @@
+<div class="combat-container">
+    <div class="header">
+        <button class="btn-back" (click)="regresar()">
+            <i class="fas fa-arrow-left"></i> Volver al Hangar
+        </button>
+        <h1><i class="fas fa-robot"></i> Simulador de Combate IA</h1>
+        <p class="subtitle">Análisis táctico impulsado por Gemini</p>
+    </div>
+
+    <div class="combat-arena">
+        <!-- Vehículo 1 -->
+        <div class="vehicle-selector card" [class.selected]="vehiculo1">
+            <div class="card-header">VEHÍCULO 1</div>
+            <div class="selector-input">
+                <input type="text" [(ngModel)]="filtro1" (focus)="mostrarLista1 = true" placeholder="Buscar vehículo..." />
+                <div class="dropdown" *ngIf="mostrarLista1 && tanquesFiltrados1.length > 0">
+                    <div *ngFor="let t of tanquesFiltrados1" (click)="seleccionarVehiculo1(t)" class="dropdown-item">
+                        {{t.nombre}}
+                    </div>
+                </div>
+            </div>
+            <div class="vehicle-info" *ngIf="vehiculo1">
+                <img [src]="vehiculo1.imagen_local" alt="V1" />
+                <h3>{{vehiculo1.nombre}}</h3>
+                <span class="badge">{{vehiculo1.nacion}} - BR {{vehiculo1.rating_realista}}</span>
+            </div>
+        </div>
+
+        <div class="vs-divider">VS</div>
+
+        <!-- Vehículo 2 -->
+        <div class="vehicle-selector card" [class.selected]="vehiculo2">
+            <div class="card-header">VEHÍCULO 2</div>
+            <div class="selector-input">
+                <input type="text" [(ngModel)]="filtro2" (focus)="mostrarLista2 = true" placeholder="Buscar vehículo..." />
+                <div class="dropdown" *ngIf="mostrarLista2 && tanquesFiltrados2.length > 0">
+                    <div *ngFor="let t of tanquesFiltrados2" (click)="seleccionarVehiculo2(t)" class="dropdown-item">
+                        {{t.nombre}}
+                    </div>
+                </div>
+            </div>
+            <div class="vehicle-info" *ngIf="vehiculo2">
+                <img [src]="vehiculo2.imagen_local" alt="V2" />
+                <h3>{{vehiculo2.nombre}}</h3>
+                <span class="badge">{{vehiculo2.nacion}} - BR {{vehiculo2.rating_realista}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="situation-container card">
+        <h3><i class="fas fa-map-marked-alt"></i> Situación de Combate</h3>
+        <textarea [(ngModel)]="situacion" placeholder="Describe la situación (distancia, terreno, ángulos...)"></textarea>
+        
+        <button class="btn-simulate" (click)="simular()" [disabled]="cargando || !vehiculo1 || !vehiculo2">
+            <span *ngIf="!cargando">INICIAR SIMULACIÓN</span>
+            <span *ngIf="cargando" class="loader"></span>
+        </button>
+        
+        <div class="error-msg" *ngIf="error">{{error}}</div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="result-container card animate-in" *ngIf="resultado">
+        <div class="winner-banner">
+            <i class="fas fa-trophy"></i>
+            <div>
+                <small>GANADOR ESTIMADO</small>
+                <h2>{{resultado.ganador}}</h2>
+            </div>
+        </div>
+
+        <div class="analysis">
+            <h4>Análisis Táctico</h4>
+            <p>{{resultado.analisis}}</p>
+        </div>
+
+        <div class="key-points">
+            <h4>Factores Determinantes</h4>
+            <ul>
+                <li *ngFor="let punto of resultado.puntos_clave">
+                    <i class="fas fa-check-circle"></i> {{punto}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

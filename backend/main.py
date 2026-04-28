@@ -4,7 +4,9 @@ from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from database import get_tanks_collection, verificar_conexion
-from models import Tanque, TanqueDB
+from models import Tanque, TanqueDB, CombateIARequest, CombateIAResponse
+import google.generativeai as genai
+import json
 from bson import ObjectId
 from auth_routes import router as auth_router
 from auth import obtener_usuario_activo_actual
@@ -66,6 +68,13 @@ FRONTEND_URL = os.getenv(
 )
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+
+# Configurar Gemini
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+else:
+    print("⚠️ ADVERTENCIA: GEMINI_API_KEY no configurada. El endpoint de IA no funcionará.")
 
 allowed_origins = [
     "http://localhost:4200",  # Desarrollo local Angular
@@ -819,6 +828,76 @@ async def obtener_top(
             "total": len(top_tanques),
             "caracteristica": caracteristica
         }
+
+@app.post("/combate-ia/", response_model=CombateIAResponse)
+async def simular_combate_ia(request: CombateIARequest):
+    """
+    Simula un combate entre dos vehículos de War Thunder usando IA Gemini.
+    """
+    if not GEMINI_API_KEY:
+        raise HTTPException(
+            status_code=500, 
+            detail="La funcionalidad de IA no está configurada (falta API Key)"
+        )
+
+    try:
+        # 1. Obtener datos de ambos vehículos
+        v1 = tanks_collection.find_one({"_id": ObjectId(request.vehiculo1_id)})
+        v2 = tanks_collection.find_one({"_id": ObjectId(request.vehiculo2_id)})
+
+        if not v1 or not v2:
+            raise HTTPException(status_code=404, detail="Uno o ambos vehículos no fueron encontrados")
+
+        # Limpiar datos para el prompt
+        v1 = convertir_decimal128_recursivo(v1)
+        v2 = convertir_decimal128_recursivo(v2)
+        v1["_id"] = str(v1["_id"])
+        v2["_id"] = str(v2["_id"])
+
+        # 2. Construir el prompt
+        prompt = f"""
+        Como experto analista militar de War Thunder, simula un enfrentamiento entre estos dos vehículos:
+
+        VEHÍCULO 1: {v1['nombre']} ({v1['nacion']})
+        - BR: {v1.get('rating_realista', 'N/A')}
+        - Blindaje (Chasis/Torreta): {v1.get('blindaje_chasis', 0)}/{v1.get('blindaje_torreta', 0)} mm
+        - Velocidad Máx: {v1.get('velocidad_adelante_realista', 0)} km/h
+        - Recarga: {v1.get('recarga', 0)} s
+        - Otros datos: {json.dumps(v1, default=str)[:1000]}...
+
+        VEHÍCULO 2: {v2['nombre']} ({v2['nacion']})
+        - BR: {v2.get('rating_realista', 'N/A')}
+        - Blindaje (Chasis/Torreta): {v2.get('blindaje_chasis', 0)}/{v2.get('blindaje_torreta', 0)} mm
+        - Velocidad Máx: {v2.get('velocidad_adelante_realista', 0)} km/h
+        - Recarga: {v2.get('recarga', 0)} s
+        - Otros datos: {json.dumps(v2, default=str)[:1000]}...
+
+        SITUACIÓN DE COMBATE:
+        {request.situacion}
+
+        Basándote en sus estadísticas reales del juego y la situación descrita, determina quién ganaría.
+        Responde estrictamente en formato JSON con la siguiente estructura:
+        {{
+            "ganador": "Nombre del vehículo ganador",
+            "analisis": "Explicación detallada del porqué basándote en estadísticas",
+            "puntos_clave": ["Punto 1", "Punto 2", "Punto 3"]
+        }}
+        """
+
+        # 3. Llamar a Gemini
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content(prompt)
+        
+        # 4. Parsear respuesta
+        # Limpiar posibles bloques de código markdown si los hay
+        texto_limpio = response.text.replace('```json', '').replace('```', '').strip()
+        resultado_ia = json.loads(texto_limpio)
+
+        return CombateIAResponse(**resultado_ia)
+
+    except Exception as e:
+        print(f"Error en combate IA: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al procesar la simulación: {str(e)}")
 
 
 # Para ejecutar la aplicación, usa en la terminal:

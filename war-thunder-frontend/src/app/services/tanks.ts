@@ -58,6 +58,18 @@ export interface Tanque {
   setup_2?: { [key: string]: Arma };
 }
 
+export interface CombateIARequest {
+  vehiculo1_id: string;
+  vehiculo2_id: string;
+  situacion: string;
+}
+
+export interface CombateIAResponse {
+  ganador: string;
+  analisis: string;
+  puntos_clave: string[];
+}
+
 const URL_IMAGENES = 'https://proyecto-war-thunder-tanques.onrender.com/';
 
 // ====================================================================
@@ -152,6 +164,13 @@ export class TanksService {
   // ====================================================================
   eliminarTanque(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/tanques/${id}`, this.getAuthHeaders());
+  }
+
+  // ====================================================================
+  // MÉTODO 6.5: Simular combate con IA (POST)
+  // ====================================================================
+  simularCombateIA(request: CombateIARequest): Observable<CombateIAResponse> {
+    return this.http.post<CombateIAResponse>(`${this.apiUrl}/combate-ia/`, request);
   }
 
   // ====================================================================

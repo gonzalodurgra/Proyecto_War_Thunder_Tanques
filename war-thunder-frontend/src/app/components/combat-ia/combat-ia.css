@@ -1,0 +1,312 @@
+.combat-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #e0e0e0;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    min-height: 100vh;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 1.1rem;
+}
+
+.card {
+    background: rgba(30, 30, 35, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.combat-arena {
+    display: grid;
+    grid-template-columns: 1fr 100px 1fr;
+    gap: 30px;
+    align-items: start;
+    margin-bottom: 40px;
+}
+
+.vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #555;
+    text-shadow: 0 0 15px rgba(255, 140, 0, 0.3);
+    height: 100%;
+}
+
+.vehicle-selector {
+    transition: all 0.3s ease;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.vehicle-selector.selected {
+    border-color: #ff8c00;
+    box-shadow: 0 0 20px rgba(255, 140, 0, 0.2);
+}
+
+.card-header {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #888;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 10px;
+}
+
+.selector-input {
+    position: relative;
+}
+
+.selector-input input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.selector-input input:focus {
+    border-color: #ff8c00;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 0 0 8px 8px;
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #333;
+    color: #ff8c00;
+}
+
+.vehicle-info {
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.vehicle-info img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+}
+
+.badge {
+    background: #ff8c00;
+    color: black;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.situation-container {
+    margin-bottom: 40px;
+}
+
+.situation-container h3 {
+    margin-bottom: 15px;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 15px;
+    color: white;
+    resize: none;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.btn-simulate {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #ff8c00, #cc0000);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-simulate:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(204, 0, 0, 0.4);
+}
+
+.btn-simulate:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.result-container {
+    border: 2px solid #ff8c00;
+    background: linear-gradient(to bottom, rgba(40, 30, 10, 0.9), rgba(20, 20, 25, 0.9));
+}
+
+.winner-banner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.winner-banner i {
+    font-size: 3rem;
+    color: #ffd700;
+}
+
+.winner-banner h2 {
+    color: #ffd700;
+    margin: 0;
+}
+
+.analysis h4, .key-points h4 {
+    color: #ff8c00;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.analysis p {
+    line-height: 1.6;
+    color: #ccc;
+    font-size: 1.05rem;
+}
+
+.key-points ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.key-points li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.key-points li i {
+    color: #4ade80;
+}
+
+.btn-back {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background: none;
+    border: 1px solid #444;
+    color: #888;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-back:hover {
+    color: white;
+    border-color: white;
+}
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.error-msg {
+    color: #ff4444;
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+@media (max-width: 900px) {
+    .combat-arena {
+        grid-template-columns: 1fr;
+    }
+    .vs-divider {
+        height: 60px;
+    }
+    .key-points ul {
+        grid-template-columns: 1fr;
+    }
+}

@@ -265,6 +265,34 @@ h1 {
   box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
 }
 
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-ai-simulator {
+  background: linear-gradient(135deg, #ff8c00 0%, #ff5e00 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(255, 140, 0, 0.2);
+}
+
+.btn-ai-simulator:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
+}
+
 .filtros-container > *:not(.filtros-header) {
   display: flex;
   gap: 15px;

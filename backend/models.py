@@ -76,3 +76,13 @@ class TanqueDB(Tanque):
     class Config:
         # Permite que Pydantic trabaje con el campo "_id" de MongoDB
         populate_by_name = True
+
+class CombateIARequest(BaseModel):
+    vehiculo1_id: str
+    vehiculo2_id: str
+    situacion: str
+
+class CombateIAResponse(BaseModel):
+    ganador: str
+    analisis: str
+    puntos_clave: List[str]
