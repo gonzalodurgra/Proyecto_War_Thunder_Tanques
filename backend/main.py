@@ -876,7 +876,9 @@ async def simular_combate_ia(request: CombateIARequest):
         {request.situacion}
 
         Basándote en sus estadísticas reales del juego y la situación descrita, determina quién ganaría,
-        considera que ambos usan la munición mas letal de cada uno para lograr penetrar al blindaje enemigo y eliminarlo lo mas rapido posible con daño post-penetración.
+        considera que ambos usan la munición mas letal de cada uno para lograr penetrar al blindaje enemigo y
+        eliminarlo lo mas rapido posible con daño post-penetración, siempre y cuando puedan penetrar al blindaje enemigo
+        con al menos un tiro, de todos sus cañones.
         Responde estrictamente en formato JSON con la siguiente estructura:
         {{
             "ganador": "Nombre del vehículo ganador",
