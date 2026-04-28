@@ -875,7 +875,7 @@ async def simular_combate_ia(request: CombateIARequest):
         SITUACIÓN DE COMBATE:
         {request.situacion}
 
-        Basándote en sus estadísticas reales del juego y la situación descrita, determina quién ganaría.
+        Basándote en sus estadísticas reales del juego y la situación descrita, determina quién ganaría, cuando usan la munición mas letal de cada uno para lograr penetrar al blindaje enemigo.
         Responde estrictamente en formato JSON con la siguiente estructura:
         {{
             "ganador": "Nombre del vehículo ganador",
