@@ -57,7 +57,7 @@
                 <option *ngFor="let m of modelos" [value]="m.id">{{m.nombre}}</option>
             </select>
             <small *ngIf="modeloSeleccionado" class="model-desc">
-                {{ modelos.find(m => m.id === modeloSeleccionado)?.descripcion }}
+                {{ descripcionModeloSeleccionado }}
             </small>
         </div>
         

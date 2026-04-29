@@ -86,6 +86,11 @@ export class CombatIAComponent implements OnInit {
     this.mostrarLista2 = false;
   }
 
+  get descripcionModeloSeleccionado(): string {
+    const modelo = this.modelos.find(m => m.id === this.modeloSeleccionado);
+    return modelo ? modelo.descripcion : '';
+  }
+
   simular(): void {
     if (!this.vehiculo1 || !this.vehiculo2 || !this.situacion) {
       this.error = 'Por favor, selecciona ambos vehículos y describe la situación.';
