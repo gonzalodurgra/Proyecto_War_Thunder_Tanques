@@ -2,7 +2,8 @@
 from fastapi import FastAPI, HTTPException, File, UploadFile, Depends
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Optional
+import markdown
 from database import get_tanks_collection, verificar_conexion
 from models import Tanque, TanqueDB, CombateIARequest, CombateIAResponse
 import google.generativeai as genai
@@ -948,6 +949,10 @@ async def simular_combate_ia(request: CombateIARequest):
         # Limpiar posibles bloques de código markdown si los hay
         texto_limpio = response.text.replace('```json', '').replace('```', '').strip()
         resultado_ia = json.loads(texto_limpio)
+
+        # Convertir el análisis de Markdown a HTML para que el frontend lo muestre bien
+        if 'analisis' in resultado_ia:
+            resultado_ia['analisis'] = markdown.markdown(resultado_ia['analisis'])
 
         return CombateIAResponse(**resultado_ia)
 

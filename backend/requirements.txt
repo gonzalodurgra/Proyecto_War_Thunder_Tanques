@@ -13,3 +13,4 @@ requests
 discord.py
 aiohttp
 google-generativeai
+markdown

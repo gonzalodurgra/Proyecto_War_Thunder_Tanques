@@ -130,7 +130,7 @@
     height: 180px;
     object-fit: contain;
     margin-bottom: 15px;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
 }
 
 .badge {
@@ -256,17 +256,38 @@ textarea {
     margin: 0;
 }
 
-.analysis h4, .key-points h4 {
+.analysis h4,
+.key-points h4 {
     color: #ff8c00;
     margin-bottom: 10px;
     text-transform: uppercase;
     font-size: 0.9rem;
 }
 
-.analysis p {
+.analysis .markdown-body {
     line-height: 1.6;
     color: #ccc;
     font-size: 1.05rem;
+}
+
+.analysis .markdown-body p {
+    margin-bottom: 12px;
+}
+
+.analysis .markdown-body strong {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.analysis .markdown-body ul,
+.analysis .markdown-body ol {
+    margin-bottom: 15px;
+    padding-left: 25px;
+}
+
+.analysis .markdown-body li {
+    margin-bottom: 6px;
+    list-style: disc;
 }
 
 .key-points ul {
@@ -321,13 +342,25 @@ textarea {
 }
 
 @keyframes rotation {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate-in {
@@ -345,9 +378,11 @@ textarea {
     .combat-arena {
         grid-template-columns: 1fr;
     }
+
     .vs-divider {
         height: 60px;
     }
+
     .key-points ul {
         grid-template-columns: 1fr;
     }
