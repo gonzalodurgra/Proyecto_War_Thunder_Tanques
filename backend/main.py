@@ -839,20 +839,34 @@ async def listar_modelos_ia():
     
     try:
         modelos = []
+        # Obtenemos todos los modelos de la API
         for m in genai.list_models():
-            # Filtro: debe permitir generar contenido Y ser de la familia 'gemini'
-            # Evitamos modelos de embeddings, aqa o especializados en imágenes
-            nombre_id = m.name.replace('models/', '')
-            if ('generateContent' in m.supported_generation_methods and 
-                nombre_id.startswith('gemini-') and 
-                'embedding' not in nombre_id and 
-                'aqa' not in nombre_id):
+            nombre_id = m.name.replace('models/', '').lower()
+            
+            # FILTRO: Debe permitir generar contenido
+            if 'generateContent' not in m.supported_generation_methods:
+                continue
                 
+            # LISTA NEGRA: Palabras clave de modelos que NO son para chat/texto general
+            # (Incluimos modelos de imagen, embeddings, experimentales limitados, etc.)
+            palabras_bloqueadas = [
+                'embedding', 'aqa', 'search', 'image', 'vision-only', 
+                'banana', 'nano-experimental', 'internal'
+            ]
+            
+            es_modelo_especializado = any(p in nombre_id for p in palabras_bloqueadas)
+            
+            # Solo incluimos modelos de la familia Gemini que no sean especializados
+            if nombre_id.startswith('gemini-') and not es_modelo_especializado:
                 modelos.append({
                     "id": nombre_id,
                     "nombre": m.display_name,
                     "descripcion": m.description
                 })
+        
+        # Ordenamos la lista para que los más nuevos (3.1, 2.0) salgan primero
+        modelos.sort(key=lambda x: x['id'], reverse=True)
+        
         return modelos
     except Exception as e:
         print(f"Error al listar modelos: {e}")
