@@ -50,6 +50,16 @@
     <div class="situation-container card">
         <h3><i class="fas fa-map-marked-alt"></i> Situación de Combate</h3>
         <textarea [(ngModel)]="situacion" placeholder="Describe la situación (distancia, terreno, ángulos...)"></textarea>
+
+        <div class="model-selector" *ngIf="modelos.length > 0">
+            <label for="modelSelect"><i class="fas fa-brain"></i> Cerebro de IA:</label>
+            <select id="modelSelect" [(ngModel)]="modeloSeleccionado">
+                <option *ngFor="let m of modelos" [value]="m.id">{{m.nombre}}</option>
+            </select>
+            <small *ngIf="modeloSeleccionado" class="model-desc">
+                {{ modelos.find(m => m.id === modeloSeleccionado)?.descripcion }}
+            </small>
+        </div>
         
         <button class="btn-simulate" (click)="simular()" [disabled]="cargando || !vehiculo1 || !vehiculo2">
             <span *ngIf="!cargando">INICIAR SIMULACIÓN</span>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TanksService, Tanque, CombateIAResponse } from '../../services/tanks';
+import { TanksService, Tanque, CombateIAResponse, IAModelo } from '../../services/tanks';
 import { Router } from '@angular/router';
 
 @Component({
@@ -21,6 +21,10 @@ export class CombatIAComponent implements OnInit {
   resultado: CombateIAResponse | null = null;
   error: string = '';
 
+  // Modelos disponibles
+  modelos: IAModelo[] = [];
+  modeloSeleccionado: string = 'gemini-3.1-flash-lite-preview';
+
   // Filtros para la selección
   filtro1: string = '';
   filtro2: string = '';
@@ -31,6 +35,19 @@ export class CombatIAComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarTanques();
+    this.cargarModelos();
+  }
+
+  cargarModelos(): void {
+    this.tanksService.obtenerModelosIA().subscribe({
+      next: (modelos) => {
+        this.modelos = modelos;
+        if (modelos.length > 0 && !modelos.find(m => m.id === this.modeloSeleccionado)) {
+          this.modeloSeleccionado = modelos[0].id;
+        }
+      },
+      error: (err) => console.error('Error al cargar modelos:', err)
+    });
   }
 
   cargarTanques(): void {
@@ -82,7 +99,8 @@ export class CombatIAComponent implements OnInit {
     const request = {
       vehiculo1_id: this.vehiculo1._id!,
       vehiculo2_id: this.vehiculo2._id!,
-      situacion: this.situacion
+      situacion: this.situacion,
+      modelo: this.modeloSeleccionado
     };
 
     this.tanksService.simularCombateIA(request).subscribe({

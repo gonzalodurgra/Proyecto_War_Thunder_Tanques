@@ -829,6 +829,30 @@ async def obtener_top(
             "caracteristica": caracteristica
         }
 
+@app.get("/ia/modelos/")
+async def listar_modelos_ia():
+    """
+    Retorna la lista de modelos de Gemini disponibles para la API Key actual.
+    """
+    if not GEMINI_API_KEY:
+        return []
+    
+    try:
+        modelos = []
+        for m in genai.list_models():
+            if 'generateContent' in m.supported_generation_methods:
+                # Quitamos el prefijo 'models/' para que sea más limpio
+                nombre_limpio = m.name.replace('models/', '')
+                modelos.append({
+                    "id": nombre_limpio,
+                    "nombre": m.display_name,
+                    "descripcion": m.description
+                })
+        return modelos
+    except Exception as e:
+        print(f"Error al listar modelos: {e}")
+        return []
+
 @app.post("/combate-ia/", response_model=CombateIAResponse)
 async def simular_combate_ia(request: CombateIARequest):
     """
@@ -889,8 +913,16 @@ async def simular_combate_ia(request: CombateIARequest):
         }}
         """
 
-        # 3. Llamar a Gemini (Versión 3.1 Flash-Lite optimizada para velocidad)
-        model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
+        # 3. Llamar a Gemini (Usar el modelo seleccionado o el default 3.1 Flash-Lite)
+        modelo_a_usar = request.modelo if hasattr(request, 'modelo') and request.modelo else 'gemini-3.1-flash-lite-preview'
+        
+        # Asegurarnos de que no tenga el prefijo si ya lo trae
+        if not modelo_a_usar.startswith('models/') and '/' not in modelo_a_usar:
+            # La mayoría de modelos en la SDK funcionan mejor sin prefijo o con prefijo según la versión
+            # pero GenerativeModel suele aceptar el nombre corto.
+            pass
+
+        model = genai.GenerativeModel(modelo_a_usar)
         response = model.generate_content(prompt)
         
         # 4. Parsear respuesta

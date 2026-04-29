@@ -81,6 +81,7 @@ class CombateIARequest(BaseModel):
     vehiculo1_id: str
     vehiculo2_id: str
     situacion: str
+    modelo: Optional[str] = "gemini-3.1-flash-lite-preview"
 
 class CombateIAResponse(BaseModel):
     ganador: str

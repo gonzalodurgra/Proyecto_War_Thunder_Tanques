@@ -62,6 +62,13 @@ export interface CombateIARequest {
   vehiculo1_id: string;
   vehiculo2_id: string;
   situacion: string;
+  modelo?: string;
+}
+
+export interface IAModelo {
+  id: string;
+  nombre: string;
+  descripcion: string;
 }
 
 export interface CombateIAResponse {
@@ -171,6 +178,10 @@ export class TanksService {
   // ====================================================================
   simularCombateIA(request: CombateIARequest): Observable<CombateIAResponse> {
     return this.http.post<CombateIAResponse>(`${this.apiUrl}/combate-ia/`, request);
+  }
+
+  obtenerModelosIA(): Observable<IAModelo[]> {
+    return this.http.get<IAModelo[]>(`${this.apiUrl}/ia/modelos/`);
   }
 
   // ====================================================================
