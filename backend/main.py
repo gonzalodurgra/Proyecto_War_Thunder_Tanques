@@ -840,11 +840,16 @@ async def listar_modelos_ia():
     try:
         modelos = []
         for m in genai.list_models():
-            if 'generateContent' in m.supported_generation_methods:
-                # Quitamos el prefijo 'models/' para que sea más limpio
-                nombre_limpio = m.name.replace('models/', '')
+            # Filtro: debe permitir generar contenido Y ser de la familia 'gemini'
+            # Evitamos modelos de embeddings, aqa o especializados en imágenes
+            nombre_id = m.name.replace('models/', '')
+            if ('generateContent' in m.supported_generation_methods and 
+                nombre_id.startswith('gemini-') and 
+                'embedding' not in nombre_id and 
+                'aqa' not in nombre_id):
+                
                 modelos.append({
-                    "id": nombre_limpio,
+                    "id": nombre_id,
                     "nombre": m.display_name,
                     "descripcion": m.description
                 })
