@@ -863,32 +863,34 @@ async def simular_combate_ia(request: CombateIARequest):
         - Blindaje (Chasis/Torreta): {v1.get('blindaje_chasis', 0)}/{v1.get('blindaje_torreta', 0)} mm
         - Velocidad Máx: {v1.get('velocidad_adelante_realista', 0)} km/h
         - Recarga: {v1.get('recarga', 0)} s
-        - Otros datos: {json.dumps(v1, default=str)[:1000]}...
+        - Datos técnicos completos: {json.dumps(v1, default=str)}
 
         VEHÍCULO 2: {v2['nombre']} ({v2['nacion']})
         - BR: {v2.get('rating_realista', 'N/A')}
         - Blindaje (Chasis/Torreta): {v2.get('blindaje_chasis', 0)}/{v2.get('blindaje_torreta', 0)} mm
         - Velocidad Máx: {v2.get('velocidad_adelante_realista', 0)} km/h
         - Recarga: {v2.get('recarga', 0)} s
-        - Otros datos: {json.dumps(v2, default=str)[:1000]}...
+        - Datos técnicos completos: {json.dumps(v2, default=str)}
 
         SITUACIÓN DE COMBATE:
         {request.situacion}
 
-        Basándote en sus estadísticas reales del juego y la situación descrita, determina quién ganaría,
-        considera que ambos usan la munición mas letal de cada uno para lograr penetrar al blindaje enemigo y
-        eliminarlo lo mas rapido posible con daño post-penetración, siempre y cuando puedan penetrar al blindaje enemigo
-        con al menos un tiro, de todos sus cañones.
+        INSTRUCCIONES DE ANÁLISIS:
+        1. Analiza TODAS las armas disponibles en cada vehículo (cañones principales, secundarios y ametralladoras).
+        2. Para cada arma, evalúa todas sus municiones disponibles.
+        3. Identifica la munición que, siendo capaz de penetrar el blindaje del oponente a la distancia de la situación dada, genere el mayor daño post-penetración (considerando tipo de proyectil, masa de explosivo y calibre).
+        4. Determina el ganador basándote en quién tiene la ventaja táctica, la capacidad de supervivencia y el arsenal más efectivo según este análisis detallado.
+        
         Responde estrictamente en formato JSON con la siguiente estructura:
         {{
             "ganador": "Nombre del vehículo ganador",
-            "analisis": "Explicación detallada del porqué basándote en estadísticas",
+            "analisis": "Explicación técnica detallada: indica qué arma y munición específica se usó, por qué es la más letal y cómo interactuó con el blindaje enemigo",
             "puntos_clave": ["Punto 1", "Punto 2", "Punto 3"]
         }}
         """
 
-        # 3. Llamar a Gemini
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        # 3. Llamar a Gemini (Versión 3.1 Flash-Lite optimizada para velocidad)
+        model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
         response = model.generate_content(prompt)
         
         # 4. Parsear respuesta
