@@ -6,7 +6,7 @@ from typing import List, Optional
 import markdown
 from database import get_tanks_collection, verificar_conexion
 from models import Tanque, TanqueDB, CombateIARequest, CombateIAResponse
-import google.generativeai as genai
+from google import genai
 import json
 from bson import ObjectId
 from auth_routes import router as auth_router
@@ -72,8 +72,9 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 # Configurar Gemini
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+client_ai = None
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+    client_ai = genai.Client(api_key=GEMINI_API_KEY)
 else:
     print("⚠️ ADVERTENCIA: GEMINI_API_KEY no configurada. El endpoint de IA no funcionará.")
 
@@ -835,21 +836,21 @@ async def listar_modelos_ia():
     """
     Retorna la lista de modelos de Gemini disponibles para la API Key actual.
     """
-    if not GEMINI_API_KEY:
+    if not client_ai:
         return []
     
     try:
         modelos = []
         # Obtenemos todos los modelos de la API
-        for m in genai.list_models():
-            nombre_id = m.name.replace('models/', '').lower()
+        for m in client_ai.models.list():
+            nombre_id = m.name.lower()
             
             # FILTRO: Debe permitir generar contenido
-            if 'generateContent' not in m.supported_generation_methods:
+            # En la nueva SDK, podemos checkear m.supported_generation_methods o simplemente filtrar
+            if 'generatecontent' not in [method.lower() for method in (m.supported_generation_methods or [])]:
                 continue
                 
             # LISTA NEGRA: Palabras clave de modelos que NO son para chat/texto general
-            # (Incluimos modelos de imagen, embeddings, experimentales limitados, etc.)
             palabras_bloqueadas = [
                 'embedding', 'aqa', 'search', 'image', 'vision-only', 
                 'banana', 'nano-experimental', 'internal'
@@ -865,7 +866,7 @@ async def listar_modelos_ia():
                     "descripcion": m.description
                 })
         
-        # Ordenamos la lista para que los más nuevos (3.1, 2.0) salgan primero
+        # Ordenamos la lista para que los más nuevos (2.0, 1.5) salgan primero
         modelos.sort(key=lambda x: x['id'], reverse=True)
         
         return modelos
@@ -943,17 +944,16 @@ async def simular_combate_ia(request: CombateIARequest):
         }}
         """
 
-        # 3. Llamar a Gemini (Usar el modelo seleccionado o el default 3.1 Flash-Lite)
-        modelo_a_usar = request.modelo if hasattr(request, 'modelo') and request.modelo else 'gemini-3.1-flash-lite-preview'
+        # 3. Llamar a Gemini (Usar el modelo seleccionado o el default 1.5 Flash)
+        modelo_a_usar = request.modelo if hasattr(request, 'modelo') and request.modelo else 'gemini-2.0-flash-exp'
         
-        # Asegurarnos de que no tenga el prefijo si ya lo trae
-        if not modelo_a_usar.startswith('models/') and '/' not in modelo_a_usar:
-            # La mayoría de modelos en la SDK funcionan mejor sin prefijo o con prefijo según la versión
-            # pero GenerativeModel suele aceptar el nombre corto.
-            pass
+        if not client_ai:
+            raise HTTPException(status_code=500, detail="El cliente de IA no está inicializado")
 
-        model = genai.GenerativeModel(modelo_a_usar)
-        response = model.generate_content(prompt)
+        response = client_ai.models.generate_content(
+            model=modelo_a_usar,
+            contents=prompt
+        )
         
         # 4. Parsear respuesta
         # Limpiar posibles bloques de código markdown si los hay
