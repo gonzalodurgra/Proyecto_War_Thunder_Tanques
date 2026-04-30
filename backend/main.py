@@ -846,8 +846,9 @@ async def listar_modelos_ia():
             nombre_id = m.name.lower()
             
             # FILTRO: Debe permitir generar contenido
-            # En la nueva SDK, podemos checkear m.supported_generation_methods o simplemente filtrar
-            if 'generatecontent' not in [method.lower() for method in (m.supported_generation_methods or [])]:
+            # En la nueva SDK (google-genai), el atributo es 'supported_actions'
+            acciones = getattr(m, 'supported_actions', [])
+            if acciones and 'generateContent' not in acciones:
                 continue
                 
             # LISTA NEGRA: Palabras clave de modelos que NO son para chat/texto general

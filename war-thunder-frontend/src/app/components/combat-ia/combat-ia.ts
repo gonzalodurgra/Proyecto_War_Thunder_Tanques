@@ -116,7 +116,7 @@ export class CombatIAComponent implements OnInit {
         this.cargando = false;
       },
       error: (err) => {
-        this.error = 'Error al simular el combate. Asegúrate de que la API Key de Gemini esté configurada.';
+        this.error = 'Error al simular el combate. Si el error persiste, por favor, inténtalo más tarde o cambia el modelo de IA.';
         this.cargando = false;
         console.error(err);
       }
