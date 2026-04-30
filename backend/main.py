@@ -907,6 +907,8 @@ async def simular_combate_ia(request: CombateIARequest):
         - Blindaje (Chasis/Torreta): {v1.get('blindaje_chasis', 0)}/{v1.get('blindaje_torreta', 0)} mm
         - Velocidad Máx: {v1.get('velocidad_adelante_realista', 0)} km/h
         - Recarga: {v1.get('recarga', 0)} s
+        - Cargador: {v1.get('cargador', 1)} disparos
+        - Cadencia: {v1.get('cadencia', 0)} disparos/min
         - Datos técnicos completos: {json.dumps(v1, default=str)}
 
         VEHÍCULO 2: {v2['nombre']} ({v2['nacion']})
@@ -914,6 +916,8 @@ async def simular_combate_ia(request: CombateIARequest):
         - Blindaje (Chasis/Torreta): {v2.get('blindaje_chasis', 0)}/{v2.get('blindaje_torreta', 0)} mm
         - Velocidad Máx: {v2.get('velocidad_adelante_realista', 0)} km/h
         - Recarga: {v2.get('recarga', 0)} s
+        - Cargador: {v2.get('cargador', 1)} disparos
+        - Cadencia: {v2.get('cadencia', 0)} disparos/min
         - Datos técnicos completos: {json.dumps(v2, default=str)}
 
         SITUACIÓN DE COMBATE:
@@ -926,12 +930,15 @@ async def simular_combate_ia(request: CombateIARequest):
         1. Analiza TODAS las armas disponibles en cada vehículo (cañones principales, secundarios y ametralladoras).
         2. Para cada arma, evalúa todas sus municiones disponibles.
         3. Identifica la munición que, siendo capaz de penetrar el blindaje del oponente a la distancia de la situación dada, genere el mayor daño post-penetración (considerando tipo de proyectil, masa de explosivo y calibre).
-        4. Determina el ganador basándote en quién tiene la ventaja táctica, la capacidad de supervivencia y el arsenal más efectivo según este análisis detallado.
+        4. Evalúa la capacidad de fuego para decidir el ganador:
+           - Si el vehículo tiene un 'cargador' mayor a 1, ten en cuenta la 'cadencia' de disparo para evaluar su capacidad de saturar al enemigo con varios disparos rápidos en poco tiempo.
+           - Si el 'cargador' es 1, básate simplemente en el tiempo de 'recarga' para disparos individuales.
+        5. Determina el ganador basándote en la ventaja táctica, supervivencia, arsenal y la lógica de cadencia/recarga analizada.
         
         Responde estrictamente en formato JSON con la siguiente estructura:
         {{
             "ganador": "Nombre del vehículo ganador",
-            "analisis": "Explicación técnica detallada: indica qué arma y munición específica se usó, por qué es la más letal y cómo interactuó con el blindaje enemigo",
+            "analisis": "Explicación técnica detallada: indica qué arma y munición específica se usó, por qué es la más letal y cómo influyó la cadencia/recarga en el resultado",
             "puntos_clave": ["Punto 1", "Punto 2", "Punto 3"]
         }}
         """
