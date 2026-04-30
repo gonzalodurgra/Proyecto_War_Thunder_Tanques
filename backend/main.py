@@ -919,6 +919,9 @@ async def simular_combate_ia(request: CombateIARequest):
         SITUACIÓN DE COMBATE:
         {request.situacion}
 
+        REFERENCIA TÉCNICA DE BALÍSTICA:
+        - El campo 'penetracion_mm' es una lista de 6 valores. Estos corresponden a la capacidad de penetración a las siguientes distancias: [0m, 100m, 500m, 1000m, 1500m, 2000m]. Úsalos para evaluar la efectividad real según la distancia de la SITUACIÓN DE COMBATE.
+
         INSTRUCCIONES DE ANÁLISIS:
         1. Analiza TODAS las armas disponibles en cada vehículo (cañones principales, secundarios y ametralladoras).
         2. Para cada arma, evalúa todas sus municiones disponibles.
