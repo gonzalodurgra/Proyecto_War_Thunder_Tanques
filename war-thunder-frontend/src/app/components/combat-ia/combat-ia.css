@@ -82,7 +82,7 @@
 }
 
 .selector-input input {
-    width: 100%;
+    width: 90%;
     padding: 12px 15px;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid #444;
@@ -152,7 +152,7 @@
 }
 
 textarea {
-    width: 100%;
+    width: 90%;
     height: 120px;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid #444;
