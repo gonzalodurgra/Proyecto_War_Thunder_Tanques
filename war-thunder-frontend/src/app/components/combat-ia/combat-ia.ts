@@ -25,15 +25,17 @@ export class CombatIAComponent implements OnInit {
   modelos: IAModelo[] = [];
   modeloSeleccionado: string = 'gemini-3.1-flash-lite-preview';
 
-  // Filtros para la selección
   filtro1: string = '';
   filtro2: string = '';
   mostrarLista1: boolean = false;
   mostrarLista2: boolean = false;
 
+  modoOscuro: boolean = false;
+
   constructor(private tanksService: TanksService, private router: Router) { }
 
   ngOnInit(): void {
+    this.cargarPreferenciaTema();
     this.cargarTanques();
     this.cargarModelos();
   }
@@ -123,5 +125,47 @@ export class CombatIAComponent implements OnInit {
 
   regresar(): void {
     this.router.navigate(['/tanques']);
+  }
+
+  /**
+   * Carga la preferencia de tema guardada en localStorage
+   */
+  cargarPreferenciaTema(): void {
+    const temaGuardado = localStorage.getItem('tema');
+    if (temaGuardado === 'oscuro') {
+      this.modoOscuro = true;
+      this.aplicarModoOscuro();
+    } else {
+      this.modoOscuro = false;
+      this.aplicarModoClaro();
+    }
+  }
+
+  /**
+   * Alterna entre modo claro y oscuro
+   */
+  toggleModoOscuro(): void {
+    this.modoOscuro = !this.modoOscuro;
+    if (this.modoOscuro) {
+      this.aplicarModoOscuro();
+      localStorage.setItem('tema', 'oscuro');
+    } else {
+      this.aplicarModoClaro();
+      localStorage.setItem('tema', 'claro');
+    }
+  }
+
+  /**
+   * Aplica el modo oscuro al documento
+   */
+  aplicarModoOscuro(): void {
+    document.body.classList.add('dark-mode');
+  }
+
+  /**
+   * Aplica el modo claro al documento
+   */
+  aplicarModoClaro(): void {
+    document.body.classList.remove('dark-mode');
   }
 }

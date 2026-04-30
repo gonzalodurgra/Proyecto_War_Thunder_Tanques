@@ -1,8 +1,15 @@
 <div class="combat-container">
     <div class="header">
-        <button class="btn-back" (click)="regresar()">
-            <i class="fas fa-arrow-left"></i> Volver al Hangar
-        </button>
+        <div class="header-nav">
+            <button class="btn-back" (click)="regresar()">
+                <i class="fas fa-arrow-left"></i> Volver al Hangar
+            </button>
+            <button class="btn-theme-toggle" (click)="toggleModoOscuro()"
+                [title]="modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+                <span *ngIf="!modoOscuro">🌙</span>
+                <span *ngIf="modoOscuro">☀️</span>
+            </button>
+        </div>
         <h1><i class="fas fa-robot"></i> Simulador de Combate IA</h1>
         <p class="subtitle">Análisis táctico impulsado por Gemini</p>
     </div>
@@ -12,7 +19,8 @@
         <div class="vehicle-selector card" [class.selected]="vehiculo1">
             <div class="card-header">VEHÍCULO 1</div>
             <div class="selector-input">
-                <input type="text" [(ngModel)]="filtro1" (focus)="mostrarLista1 = true" placeholder="Buscar vehículo..." />
+                <input type="text" [(ngModel)]="filtro1" (focus)="mostrarLista1 = true"
+                    placeholder="Buscar vehículo..." />
                 <div class="dropdown" *ngIf="mostrarLista1 && tanquesFiltrados1.length > 0">
                     <div *ngFor="let t of tanquesFiltrados1" (click)="seleccionarVehiculo1(t)" class="dropdown-item">
                         {{t.nombre}}
@@ -32,7 +40,8 @@
         <div class="vehicle-selector card" [class.selected]="vehiculo2">
             <div class="card-header">VEHÍCULO 2</div>
             <div class="selector-input">
-                <input type="text" [(ngModel)]="filtro2" (focus)="mostrarLista2 = true" placeholder="Buscar vehículo..." />
+                <input type="text" [(ngModel)]="filtro2" (focus)="mostrarLista2 = true"
+                    placeholder="Buscar vehículo..." />
                 <div class="dropdown" *ngIf="mostrarLista2 && tanquesFiltrados2.length > 0">
                     <div *ngFor="let t of tanquesFiltrados2" (click)="seleccionarVehiculo2(t)" class="dropdown-item">
                         {{t.nombre}}
@@ -49,7 +58,8 @@
 
     <div class="situation-container card">
         <h3><i class="fas fa-map-marked-alt"></i> Situación de Combate</h3>
-        <textarea [(ngModel)]="situacion" placeholder="Describe la situación (distancia, terreno, ángulos...)"></textarea>
+        <textarea [(ngModel)]="situacion"
+            placeholder="Describe la situación (distancia, terreno, ángulos...)"></textarea>
 
         <div class="model-selector" *ngIf="modelos.length > 0">
             <label for="modelSelect"><i class="fas fa-brain"></i> Cerebro de IA:</label>
@@ -60,12 +70,12 @@
                 {{ descripcionModeloSeleccionado }}
             </small>
         </div>
-        
+
         <button class="btn-simulate" (click)="simular()" [disabled]="cargando || !vehiculo1 || !vehiculo2">
             <span *ngIf="!cargando">INICIAR SIMULACIÓN</span>
             <span *ngIf="cargando" class="loader"></span>
         </button>
-        
+
         <div class="error-msg" *ngIf="error">{{error}}</div>
     </div>
 
