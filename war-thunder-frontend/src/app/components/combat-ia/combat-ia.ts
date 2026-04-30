@@ -16,7 +16,7 @@ export class CombatIAComponent implements OnInit {
   vehiculo1: Tanque | null = null;
   vehiculo2: Tanque | null = null;
   situacion: string = 'Encuentro frontal en campo abierto a 500 metros.';
-  
+
   cargando: boolean = false;
   resultado: CombateIAResponse | null = null;
   error: string = '';
@@ -31,7 +31,7 @@ export class CombatIAComponent implements OnInit {
   mostrarLista1: boolean = false;
   mostrarLista2: boolean = false;
 
-  constructor(private tanksService: TanksService, private router: Router) {}
+  constructor(private tanksService: TanksService, private router: Router) { }
 
   ngOnInit(): void {
     this.cargarTanques();
@@ -63,15 +63,15 @@ export class CombatIAComponent implements OnInit {
   }
 
   get tanquesFiltrados1() {
-    return this.tanques.filter(t => 
+    return this.tanques.filter(t =>
       t.nombre.toLowerCase().includes(this.filtro1.toLowerCase())
-    ).slice(0, 5);
+    ).slice(0, 70);
   }
 
   get tanquesFiltrados2() {
-    return this.tanques.filter(t => 
+    return this.tanques.filter(t =>
       t.nombre.toLowerCase().includes(this.filtro2.toLowerCase())
-    ).slice(0, 5);
+    ).slice(0, 70);
   }
 
   seleccionarVehiculo1(tanque: Tanque): void {
