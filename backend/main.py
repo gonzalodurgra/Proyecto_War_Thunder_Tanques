@@ -843,7 +843,9 @@ async def listar_modelos_ia():
         modelos = []
         # Obtenemos todos los modelos de la API
         for m in client_ai.models.list():
-            nombre_id = m.name.lower()
+            # El nombre suele venir como 'models/gemini-1.5-flash'
+            full_name = m.name.lower()
+            nombre_id = full_name.replace('models/', '')
             
             # FILTRO: Debe permitir generar contenido
             # En la nueva SDK (google-genai), el atributo es 'supported_actions'
