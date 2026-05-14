@@ -1,21 +1,26 @@
+from aiohttp.web import head
 import json
 import time
-from playwright.sync_api import sync_playwright
+import asyncio
+from playwright.async_api import async_playwright
 import os
-import requests
+import httpx
 from pathlib import Path
 
 def limpiar_texto(texto):
     """Limpia saltos de línea y espacios extraños del texto"""
     return texto.replace("\n", " ").replace("\xa0", " ").strip()
 
-def coger_texto(pagina, selector):
+async def coger_texto(pagina, selector):
     """Extrae texto de un elemento si existe, si no devuelve None"""
     elemento = pagina.locator(selector)
-    return limpiar_texto(elemento.first.inner_text()) if elemento.count() > 0 else None
+    if await elemento.count() > 0:
+        texto = await elemento.first.inner_text()
+        return limpiar_texto(texto)
+    return None
 
-def descargar_imagen(url_img, nombre_tanque):
-    """Descarga la imagen JPG del tanque en carpeta /imagenes."""
+async def descargar_imagen(url_img, nombre_tanque):
+    """Descarga la imagen JPG del tanque en carpeta /imagenes usando httpx."""
     if not url_img:
         return None
     
@@ -30,27 +35,28 @@ def descargar_imagen(url_img, nombre_tanque):
     ruta_archivo: Path = IMAGENES / nombre_archivo
 
     try:
-        # Descargar
-        r = requests.get(url_img, timeout=20)
-        if r.status_code == 200:
-            with open(ruta_archivo, "wb") as f:
-                f.write(r.content)
-                print(str(ruta_archivo.relative_to(Path(__file__).resolve().parent)))
-            return str(ruta_archivo.relative_to(Path(__file__).resolve().parent)).replace("\\", "/")
-        else:
-            print(f"Error descargando {url_img}: {r.status_code}")
-            return None
+        async with httpx.AsyncClient() as client:
+            r = await client.get(url_img, timeout=20.0)
+            if r.status_code == 200:
+                with open(ruta_archivo, "wb") as f:
+                    f.write(r.content)
+                    print(f"Descargada: {nombre_archivo}")
+                return str(ruta_archivo.relative_to(Path(__file__).resolve().parent)).replace("\\", "/")
+            else:
+                print(f"Error descargando {url_img}: {r.status_code}")
+                return None
     except Exception as e:
         print(f"Error al descargar imagen {url_img}: {e}")
         return None
 
 
-def extraer_datos_municion(fila, pagina):
+async def extraer_datos_municion(fila, pagina):
     """
     Extrae los datos de una fila de munición, incluyendo datos del popover. Devuelve el dict shell
     """
     # Leer datos básicos de la tabla
-    celdas = [limpiar_texto(t) for t in fila.locator("td").all_inner_texts() if t.strip()]
+    textos_celdas = await fila.locator("td").all_inner_texts()
+    celdas = [limpiar_texto(t) for t in textos_celdas if t.strip()]
     
     if len(celdas) < 2:
         return None  # Fila vacía o incompleta
@@ -67,69 +73,76 @@ def extraer_datos_municion(fila, pagina):
     # Intentar extraer datos del popover, necesario para masa de bala, velocidad de bala y masa de explosivo
     try:
         boton_info = fila.locator("button").first
-        boton_info.click()
+        await boton_info.click()
         
         popover = pagina.locator(".game-unit_popover").last
         try:
-            masa_total = coger_texto(popover, ".game-unit_chars-header:has-text('Projectile Mass') + .game-unit_chars-value")
-            if "kg" in masa_total:
+            masa_total = await coger_texto(popover, ".game-unit_chars-header:has-text('Projectile Mass') + .game-unit_chars-value")
+            if masa_total and "kg" in masa_total:
                 masa_total = float(masa_total.replace("kg", "").strip()) * 1000
-            elif "g" in masa_total:
+            elif masa_total and "g" in masa_total:
                 masa_total = float(masa_total.replace("g", "").strip())
-        except Exception as e:
+        except:
             shell["masa_total"] = None
         else:
             shell["masa_total"] = masa_total
+
         try:
-            if coger_texto(popover, ".game-unit_chars-header:has-text('Muzzle Velocity') + .game-unit_chars-value").replace("m/s", "").strip():
-                shell["velocidad_bala"] = int(coger_texto(popover, ".game-unit_chars-header:has-text('Muzzle Velocity') + .game-unit_chars-value").replace("m/s", "").replace(",", "").strip())
-        except Exception as e:
+            velocidad_texto = await coger_texto(popover, ".game-unit_chars-header:has-text('Muzzle Velocity') + .game-unit_chars-value")
+            if velocidad_texto and velocidad_texto.replace("m/s", "").strip():
+                shell["velocidad_bala"] = int(velocidad_texto.replace("m/s", "").replace(",", "").strip())
+        except:
             shell["velocidad_bala"] = None
+
         try:
-            masa_explosivo = coger_texto(popover, ".game-unit_chars-header:has-text('Explosive Mass') + .game-unit_chars-value")
-            if "kg" in masa_explosivo:
+            masa_explosivo = await coger_texto(popover, ".game-unit_chars-header:has-text('Explosive Mass') + .game-unit_chars-value")
+            if masa_explosivo and "kg" in masa_explosivo:
                 masa_explosivo = float(masa_explosivo.replace("kg", "").strip()) * 1000
-            elif "g" in masa_explosivo:
+            elif masa_explosivo and "g" in masa_explosivo:
                 masa_explosivo = float(masa_explosivo.replace("g", "").strip())
-        except Exception as e:
+        except:
             shell["masa_explosivo"] = None
         else:
             shell["masa_explosivo"] = masa_explosivo
+
         # Cerrar popover
         try:
-            boton_info.click()
+            await boton_info.click()
         except:
-            pagina.keyboard.press("Escape")
+            if not pagina.is_closed():
+                await pagina.keyboard.press("Escape")
             
-    except Exception as e:
-        print("No existen las características para el proyectil")
+    except Exception:
+        # print("No existen las características para el proyectil")
         shell["masa_explosivo"] = None
         shell["masa_total"] = None
         shell["velocidad_bala"] = None
     return shell
 
 
-def extraer_municiones_arma(bloque_arma, pagina):
+async def extraer_municiones_arma(bloque_arma, pagina):
     """
     Extrae todas las municiones de un arma específica.
     """
-    nombre_arma = limpiar_texto(bloque_arma.locator(".game-unit_weapon-title").first.inner_text())
+    nombre_arma_texto = await bloque_arma.locator(".game-unit_weapon-title").first.inner_text()
+    nombre_arma = limpiar_texto(nombre_arma_texto)
     proyectiles = []
     
     # Expandir acordeón si existe
-    if bloque_arma.locator(".accordion-button").count() > 0:
-        bloque_arma.locator(".accordion-button").click()
+    if await bloque_arma.locator(".accordion-button").count() > 0:
+        await bloque_arma.locator(".accordion-button").click()
     
     # Iterar sobre cada fila de munición
-    for fila in bloque_arma.locator(".game-unit_belt-list tr").all():
-        shell = extraer_datos_municion(fila, pagina)
+    filas = await bloque_arma.locator(".game-unit_belt-list tr").all()
+    for fila in filas:
+        shell = await extraer_datos_municion(fila, pagina)
         if shell:  # Solo agregar si no es None
             proyectiles.append(shell)
     
     return nombre_arma, proyectiles
 
 
-def extraer_armamento(pagina):
+async def extraer_armamento(pagina):
     """
     Extrae todo el armamento del tanque, manejando setups múltiples o único.
     """
@@ -137,15 +150,16 @@ def extraer_armamento(pagina):
     armamento_completo = {}
     
     # Determinar si hay múltiples setups o uno solo
-    tiene_setups = setups.count() > 0
-    num_iteraciones = setups.count() if tiene_setups else 1
+    num_setups = await setups.count()
+    tiene_setups = num_setups > 0
+    num_iteraciones = num_setups if tiene_setups else 1
     
     print(f"Setups encontrados: {num_iteraciones}")
     
     for indice_setup in range(num_iteraciones):
         # Si hay setups, hacer click en cada uno
         if tiene_setups:
-            setups.nth(indice_setup).click()
+            await setups.nth(indice_setup).click()
             armas = pagina.locator("#weapon .game-unit_weapon").filter(has=pagina.locator(":visible"))
         else:
             armas = pagina.locator("#weapon .game-unit_weapon")
@@ -153,9 +167,10 @@ def extraer_armamento(pagina):
         armamento_setup = {}
         
         # Procesar cada arma en este setup
-        for indice in range(armas.count()):
+        num_armas = await armas.count()
+        for indice in range(num_armas):
             bloque_arma = armas.nth(indice)
-            nombre_arma, proyectiles = extraer_municiones_arma(bloque_arma, pagina)
+            nombre_arma, proyectiles = await extraer_municiones_arma(bloque_arma, pagina)
             armamento_setup[nombre_arma] = {"municiones": proyectiles}
         
         # Guardar el setup
@@ -167,16 +182,9 @@ def extraer_armamento(pagina):
     return armamento_completo
 
 
-def fetch_data(pagina):
+async def fetch_data(pagina):
     """
     Extrae todos los datos de un tanque individual.
-    
-    Organización:
-    1. Datos básicos (nombre, rol, nación, rating)
-    2. Características (tripulación, visibilidad, peso)
-    3. Blindaje
-    4. Armamento principal (ángulos, rotación, recarga)
-    5. Municiones (usando la función extraer_armamento)
     """
     
     url_img = None
@@ -191,8 +199,14 @@ def fetch_data(pagina):
 
     for sel in selectores:
         loc = pagina.locator(sel)
-        if loc.count() > 0:
-            src = loc.first.get_attribute("src")
+        try:
+            # Esperar un poco a que la imagen aparezca (lazy loading)
+            await loc.first.wait_for(state="attached", timeout=2000)
+        except:
+            pass
+
+        if await loc.count() > 0:
+            src = await loc.first.get_attribute("src")
             if src and src.startswith("http"):
                 url_img = src
                 break
@@ -200,122 +214,167 @@ def fetch_data(pagina):
     datos = {}
     
     # === DATOS BÁSICOS ===
-    datos["nombre"] = coger_texto(pagina, ".game-unit_title .game-unit_name")
+    datos["nombre"] = await coger_texto(pagina, ".game-unit_title .game-unit_name")
     
     if not url_img:
         print(f"⚠ No se encontró imagen del tanque en la página {pagina.url}")
     else:
-        ruta_imagen = descargar_imagen(url_img, datos["nombre"])
+        ruta_imagen = await descargar_imagen(url_img, datos["nombre"])
         datos["imagen_local"] = ruta_imagen
     
-    datos["rol"] = coger_texto(pagina, "div:has(+.game-unit_card-info_title:has-text('Main Role')) .text-truncate")
-    datos["nacion"] = coger_texto(pagina, ".game-unit_card-info .text-truncate")
+    datos["rol"] = await coger_texto(pagina, "div:has(+.game-unit_card-info_title:has-text('Main Role')) .text-truncate")
+    datos["nacion"] = await coger_texto(pagina, ".game-unit_card-info .text-truncate")
     
     rating_locator = pagina.locator(".game-unit_br-item", has_text="AB").locator(".value")
-    datos["rating_arcade"] = float(limpiar_texto(rating_locator.first.inner_text())) if rating_locator.count() > 0 else None
+    if await rating_locator.count() > 0:
+        texto_rating = await rating_locator.first.inner_text()
+        datos["rating_arcade"] = float(limpiar_texto(texto_rating))
+    else:
+        datos["rating_arcade"] = None
     
     rating_locator = pagina.locator(".game-unit_br-item", has_text="RB").locator(".value")
-    datos["rating_realista"] = float(limpiar_texto(rating_locator.first.inner_text())) if rating_locator.count() > 0 else None
+    if await rating_locator.count() > 0:
+        texto_rating = await rating_locator.first.inner_text()
+        datos["rating_realista"] = float(limpiar_texto(texto_rating))
+    else:
+        datos["rating_realista"] = None
     
     # === CARACTERÍSTICAS ===
-    datos["tripulacion"] = int(coger_texto(pagina, ".game-unit_chars-line:has(.game-unit_chars-header:has-text('Crew')) .game-unit_chars-value").replace("persons", "").strip())
-    datos["visibilidad"] = int(coger_texto(pagina, ".game-unit_chars-header:has-text('Visibility') + .game-unit_chars-value").replace("%", "").strip())
-    datos["peso"] = float(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Weight') + .game-unit_chars-value span"))
+    crew_text = await coger_texto(pagina, ".game-unit_chars-line:has(.game-unit_chars-header:has-text('Crew')) .game-unit_chars-value")
+    if crew_text:
+        datos["tripulacion"] = int(crew_text.replace("persons", "").strip())
+    
+    vis_text = await coger_texto(pagina, ".game-unit_chars-header:has-text('Visibility') + .game-unit_chars-value")
+    if vis_text:
+        datos["visibilidad"] = int(vis_text.replace("%", "").strip())
+        
+    peso_text = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Weight') + .game-unit_chars-value span")
+    if peso_text:
+        datos["peso"] = float(peso_text)
     
     # === BLINDAJE ===
-    datos["blindaje_chasis"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Hull') + .game-unit_chars-value").split("/")[0].strip())
-    datos["blindaje_torreta"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Turret') + .game-unit_chars-value").split("/")[0].strip())
+    blindaje_chasis_text = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Hull') + .game-unit_chars-value")
+    if blindaje_chasis_text:
+        datos["blindaje_chasis"] = int(blindaje_chasis_text.split("/")[0].strip())
+        
+    blindaje_torreta_text = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Turret') + .game-unit_chars-value")
+    if blindaje_torreta_text:
+        datos["blindaje_torreta"] = int(blindaje_torreta_text.split("/")[0].strip())
     
     # === MOVILIDAD (VELOCIDADES) ===
-    # Buscar la sección de velocidad máxima
-    # Opción 1: Buscar "Max Speed" y luego "Forward" / "Reverse"
-    if pagina.locator(".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .text-success").count() > 0:
-        datos["velocidad_adelante_arcade"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .text-success"))
+    if await pagina.locator(".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .text-success").count() > 0:
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .text-success")
+        datos["velocidad_adelante_arcade"] = int(texto_vel)
     else:
-        datos["velocidad_adelante_arcade"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value span"))
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value span")
+        if texto_vel:
+            datos["velocidad_adelante_arcade"] = int(texto_vel)
     
-    if pagina.locator(".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .text-success").count() > 0:
-        datos["velocidad_atras_arcade"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .text-success"))
+    if await pagina.locator(".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .text-success").count() > 0:
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .text-success")
+        datos["velocidad_atras_arcade"] = int(texto_vel)
     else:
-        datos["velocidad_atras_arcade"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value span"))
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value span")
+        if texto_vel:
+            datos["velocidad_atras_arcade"] = int(texto_vel)
     
-    if pagina.locator(".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .text-success").count() > 0:
-        datos["relacion_potencia_peso"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .text-success"))
+    if await pagina.locator(".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .text-success").count() > 0:
+        texto_pwr = await coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .text-success")
+        datos["relacion_potencia_peso"] = float(texto_pwr)
     else:
-        datos["relacion_potencia_peso"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value span"))
+        texto_pwr = await coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value span")
+        if texto_pwr:
+            datos["relacion_potencia_peso"] = float(texto_pwr)
         
-    if pagina.locator(".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .show-char-rb").count() > 0:
-        datos["velocidad_adelante_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .show-char-rb"))
+    if await pagina.locator(".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .show-char-rb").count() > 0:
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .show-char-rb")
+        datos["velocidad_adelante_realista"] = int(texto_vel)
     else:
-        datos["velocidad_adelante_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value span"))
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value span")
+        if texto_vel:
+            datos["velocidad_adelante_realista"] = int(texto_vel)
         
-    if pagina.locator(".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb").count() > 0:
-        datos["velocidad_atras_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb"))
+    if await pagina.locator(".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb").count() > 0:
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value .show-char-rb")
+        datos["velocidad_atras_realista"] = int(texto_vel)
     else:
-        datos["velocidad_atras_realista"] = int(coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value span"))
+        texto_vel = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Backward') + .game-unit_chars-value span")
+        if texto_vel:
+            datos["velocidad_atras_realista"] = int(texto_vel)
         
-    if pagina.locator(".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb-mod-ref").count() > 0:
-        datos["relacion_potencia_peso_realista"] = float(coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb-mod-ref"))
+    if await pagina.locator(".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb-mod-ref").count() > 0:
+        texto_pwr = await coger_texto(pagina, ".game-unit_chars-line span:has-text('Power-to-weight ratio') + .game-unit_chars-value .show-char-rb-mod-ref")
+        datos["relacion_potencia_peso_realista"] = float(texto_pwr)
     
     # === ARMAMENTO PRINCIPAL ===
-    if pagina.locator(".game-unit_weapon-title").count() > 0:
+    if await pagina.locator(".game-unit_weapon-title").count() > 0:
         # Nombres de las armas
-        if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value"):
-            datos["angulo_depresion"] = abs(int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value").split("/")[0].strip()))
-            datos["angulo_elevacion"] = int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value").split("/")[1].replace("°", "").strip())
+        vert_guidance = await coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Vertical guidance') + .game-unit_chars-value")
+        if vert_guidance:
+            datos["angulo_depresion"] = abs(int(vert_guidance.split("/")[0].strip()))
+            datos["angulo_elevacion"] = int(vert_guidance.split("/")[1].replace("°", "").strip())
         
-        if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value"):
-            datos["recarga"] = float(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value").split("→")[1].replace("s", "").strip())
-        if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) .game-unit_chars-value"):
-            datos["recarga"] = float(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) .game-unit_chars-value").replace("s", "").strip())
+        reload_text = await coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) + .game-unit_chars-subline .game-unit_chars-value")
+        if reload_text:
+            datos["recarga"] = float(reload_text.split("→")[1].replace("s", "").strip())
         
-        if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Fire Rate') + .game-unit_chars-value"):
-            datos["cadencia"] = int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Fire Rate') + .game-unit_chars-value").replace("shots/min", "").replace(",","").strip())
+        reload_text_base = await coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-line:has(.game-unit_chars-header:has-text('Reload')) .game-unit_chars-value")
+        if reload_text_base:
+            datos["recarga"] = float(reload_text_base.replace("s", "").strip())
+        
+        fire_rate = await coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Fire Rate') + .game-unit_chars-value")
+        if fire_rate:
+            datos["cadencia"] = int(fire_rate.replace("shots/min", "").replace(",","").strip())
         else:
             if "recarga" in datos:
                 datos["cadencia"] = 1 / datos["recarga"] * 60
             else:
                 datos["cadencia"] = None
-        if coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-subline:has-text('Belt capacity') .game-unit_chars-value"):  
-            datos["cargador"] = int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-subline:has-text('Belt capacity') .game-unit_chars-value").replace("rounds", "").replace("round", "").replace(",","").strip())
+        
+        belt_cap = await coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-subline:has-text('Belt capacity') .game-unit_chars-value")
+        if belt_cap:  
+            datos["cargador"] = int(belt_cap.replace("rounds", "").replace("round", "").replace(",","").strip())
         else:
             datos["cargador"] = 1
         
-        datos["municion_total"] = int(coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Ammunition') + .game-unit_chars-value").replace("rounds", "").replace(",","").strip())
-            # Rotación de torreta (selector complejo)
+        ammunition = await coger_texto(pagina, ".game-unit_weapon:first-child .game-unit_chars-header:has-text('Ammunition') + .game-unit_chars-value")
+        if ammunition:
+            datos["municion_total"] = int(ammunition.replace("rounds", "").replace(",","").strip())
+            
+        # Rotación de torreta (selector complejo)
         linea_torreta = pagina.locator(".game-unit_weapon:first-child .game-unit_chars-line", has_text="Turret Rotation Speed")
         selector_horizontal = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Horizontal']]//span[contains(@class,'text-success')]"
         selector_vertical = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Vertical']]//span[contains(@class,'text-success')]"
             
-        if linea_torreta.locator(selector_horizontal).count() > 0:
-            valores = linea_torreta.locator(selector_horizontal).all()
+        if await linea_torreta.locator(selector_horizontal).count() > 0:
+            valores = await linea_torreta.locator(selector_horizontal).all()
             if len(valores) > 1:
-                rotacion_horizontal = float(valores[1].inner_text())
+                rotacion_horizontal = float(await valores[1].inner_text())
                 datos["rotacion_torreta_horizontal_arcade"] = rotacion_horizontal
                 
-        if linea_torreta.locator(selector_vertical).count() > 0:
-            valores = linea_torreta.locator(selector_vertical).all()
+        if await linea_torreta.locator(selector_vertical).count() > 0:
+            valores = await linea_torreta.locator(selector_vertical).all()
             if len(valores) > 1:
-                rotacion_vertical = float(valores[1].inner_text())
+                rotacion_vertical = float(await valores[1].inner_text())
                 datos["rotacion_torreta_vertical_arcade"] = rotacion_vertical
                 
-        selector_horizontal = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Horizontal']]//span[contains(@class,'show-char-rb-mod-ref')]"
-        selector_vertical = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Vertical']]//span[contains(@class,'show-char-rb-mod-ref')]"
+        selector_horizontal_rb = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Horizontal']]//span[contains(@class,'show-char-rb-mod-ref')]"
+        selector_vertical_rb = "xpath=following-sibling::div[contains(@class,'game-unit_chars-subline') and span[text()='Vertical']]//span[contains(@class,'show-char-rb-mod-ref')]"
         
-        if linea_torreta.locator(selector_horizontal).count() > 0:
-            valores = linea_torreta.locator(selector_horizontal).all()
+        if await linea_torreta.locator(selector_horizontal_rb).count() > 0:
+            valores = await linea_torreta.locator(selector_horizontal_rb).all()
             if len(valores) > 1:
-                rotacion_horizontal = float(valores[1].inner_text())
+                rotacion_horizontal = float(await valores[1].inner_text())
                 datos["rotacion_torreta_horizontal_realista"] = rotacion_horizontal
                 
-        if linea_torreta.locator(selector_vertical).count() > 0:
-            valores = linea_torreta.locator(selector_vertical).all()
+        if await linea_torreta.locator(selector_vertical_rb).count() > 0:
+            valores = await linea_torreta.locator(selector_vertical_rb).all()
             if len(valores) > 1:
-                rotacion_vertical = float(valores[1].inner_text())
+                rotacion_vertical = float(await valores[1].inner_text())
                 datos["rotacion_torreta_vertical_realista"] = rotacion_vertical
         
         # === MUNICIONES (código unificado) ===
-        armamento = extraer_armamento(pagina)
+        armamento = await extraer_armamento(pagina)
         if armamento:
             # Si hay setups, ya viene con la estructura setup_1, setup_2, etc.
             # Si no hay setups, viene como diccionario directo
@@ -330,69 +389,86 @@ def fetch_data(pagina):
     return datos
 
 
-def fetch_all_tanks():
+async def procesar_tanque(navegador, url_tanque, semaforo):
+    """Procesa un tanque individual con control de concurrencia."""
+    async with semaforo:
+        subpagina = await navegador.new_page()
+        try:
+            # Añadir un delay aleatorio pequeño para evitar detección
+            await asyncio.sleep(1) 
+            await subpagina.goto(url_tanque, timeout=90000, wait_until="domcontentloaded")
+            # Esperar a que la red esté tranquila para asegurar carga de imágenes
+            await subpagina.wait_for_load_state("networkidle", timeout=15000)
+            return await fetch_data(subpagina)
+        except Exception as e:
+            print(f"Error procesando {url_tanque}: {e}")
+            return None
+        finally:
+            if not subpagina.is_closed():
+                await subpagina.close()
+
+async def fetch_all_tanks():
     """
     Función principal que recorre todas las naciones y tanques.
-    
-    Flujo:
-    1. Abre el navegador
-    2. Va a la página de árboles tecnológicos
-    3. Itera sobre cada nación, para depuración simplemente
-    4. Para cada nación, obtiene todos los tanques
-    5. Abre cada tanque en una nueva pestaña y extrae sus datos
-    6. Guarda todo en una lista
     """
     base_url = "https://wiki.warthunder.com/"
     resultados = []
+    semaforo = asyncio.Semaphore(3)  # Reducido a 3 para evitar bloqueos por exceso de peticiones
     
-    with sync_playwright() as p:
-        navegador = p.chromium.launch(channel="chrome")
-        pagina = navegador.new_page()
-        pagina.goto(base_url, timeout=90000)
+    async with async_playwright() as p:
+        # Añadir User-Agent para parecer un navegador real
+        navegador = await p.chromium.launch(
+            channel="chrome",
+            args=["--disable-blink-features=AutomationControlled"],
+            headless=True
+        )
+        contexto = await navegador.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        pagina = await contexto.new_page()
+        await pagina.goto(base_url, timeout=90000)
         
         # Ir a árboles tecnológicos
-        pagina.goto("https://wiki.warthunder.com/ground?v=t&t_c=usa", timeout=90000)
-        pagina.wait_for_selector("#wt-tree-tabs .navtabs_item", timeout=15000)
+        await pagina.goto("https://wiki.warthunder.com/ground?v=t&t_c=usa", timeout=90000)
+        await pagina.wait_for_selector("#wt-tree-tabs .navtabs_item", timeout=15000)
         
         naciones = pagina.locator("#wt-tree-tabs .navtabs_item")
-        print(f"Encontradas {naciones.count()} naciones\n")
+        num_naciones = await naciones.count()
+        print(f"Encontradas {num_naciones} naciones\n")
         
-        for i in range(naciones.count()):
+        for i in range(num_naciones):
             nacion = naciones.nth(i)
-            nombre_nacion = limpiar_texto(nacion.inner_text())
+            nombre_nacion = limpiar_texto(await nacion.inner_text())
             print(f"=== Nación: {nombre_nacion} ===")
-            nacion.click()
+            await nacion.click()
             
             # Obtener tanques de la nación actual
             arbol = pagina.locator(".unit-tree").filter(has=pagina.locator(":visible"))
             tanques = arbol.locator(".wt-tree_item-link")
-            print(f"  {tanques.count()} tanques encontrados")
+            num_tanques = await tanques.count()
+            print(f"  {num_tanques} tanques encontrados")
             
-            for t in range(tanques.count()):
+            tasks = []
+            for t in range(num_tanques):
                 enlace_tanque = tanques.nth(t)
-                href = enlace_tanque.get_attribute("href")
+                href = await enlace_tanque.get_attribute("href")
                 
                 if not href or not href.startswith("/unit/"):
                     continue
                 
                 url_tanque = f"https://wiki.warthunder.com{href}"
-                print(f"  Procesando {url_tanque}")
-                
-                # Abrir tanque en nueva pestaña
-                subpagina = navegador.new_page()
-                subpagina.goto(url_tanque, timeout=90000)
-                
-                try:
-                    data_tanque = fetch_data(subpagina)
-                    resultados.append(data_tanque)
-                except Exception as e:
-                    print(f"Error procesando {url_tanque}: {e}")
-                
-                subpagina.close()
+                tasks.append(procesar_tanque(contexto, url_tanque, semaforo))
+                # Pequeña pausa entre lanzamientos de tareas para no saturar
+                # await asyncio.sleep(0.2)
+            
+            # Ejecutar descargas y scraping en paralelo
+            resultados_nacion = await asyncio.gather(*tasks)
+            # Filtrar resultados None (errores)
+            resultados.extend([r for r in resultados_nacion if r])
             
             print()  # Línea en blanco entre naciones
         
-        navegador.close()
+        await navegador.close()
     
     return resultados
 
@@ -401,7 +477,7 @@ if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent
     TANQUES_JSON = BASE_DIR / "tanques.json"
     print("Iniciando scraping de War Thunder Wiki...\n")
-    all_data = fetch_all_tanks()
+    all_data = asyncio.run(fetch_all_tanks())
     
     with open(TANQUES_JSON, "w", encoding="utf-8") as f:
         json.dump(all_data, f, indent=4, ensure_ascii=False)
