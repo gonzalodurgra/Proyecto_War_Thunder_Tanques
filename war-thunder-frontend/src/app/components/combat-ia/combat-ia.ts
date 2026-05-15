@@ -23,7 +23,7 @@ export class CombatIAComponent implements OnInit {
 
   // Modelos disponibles
   modelos: IAModelo[] = [];
-  modeloSeleccionado: string = 'gemini-3.1-flash-lite-preview';
+  modeloSeleccionado: string = 'gemini-3.1-flash-lite';
 
   filtro1: string = '';
   filtro2: string = '';
