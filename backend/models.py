@@ -87,3 +87,24 @@ class CombateIAResponse(BaseModel):
     ganador: str
     analisis: str
     puntos_clave: List[str]
+
+class ElementoAnalisis(BaseModel):
+    nombre: str
+    nacion: str
+    razon: str
+
+class SimulacionEquiposIARequest(BaseModel):
+    equipo_aliado: List[str]
+    equipo_enemigo: List[str]
+    tanque_usuario_id: str
+    situacion: str
+    modelo: Optional[str] = "gemini-2.0-flash-exp"
+
+class SimulacionEquiposIAResponse(BaseModel):
+    resultado_general: str
+    probabilidad_victoria: float
+    enemigos_prioritarios: List[ElementoAnalisis]
+    enemigos_a_evitar: List[ElementoAnalisis]
+    no_representan_amenaza: List[ElementoAnalisis]
+    mas_daninos: List[ElementoAnalisis]
+    mejores_companeros: List[ElementoAnalisis]

@@ -6,6 +6,7 @@ import { TankListComponent } from './components/tank-list/tank-list';
 import { TankEditComponent } from './components/tank-edit/tank-edit';
 import { AdminPanelComponent } from './components/admin-panel/admin-panel';
 import { CombatIAComponent } from './components/combat-ia/combat-ia';
+import { CombatEquiposIAComponent } from './components/combat-equipos-ia/combat-equipos-ia';
 
 // ====================================================================
 // DEFINIR LAS RUTAS DE LA APLICACIÓN
@@ -62,6 +63,10 @@ export const routes: Routes = [
   {
     path: 'combate-ia',
     component: CombatIAComponent
+  },
+  {
+    path: 'combate-equipos-ia',
+    component: CombatEquiposIAComponent
   },
   
   // Ruta 404 - cualquier ruta no definida redirige al login

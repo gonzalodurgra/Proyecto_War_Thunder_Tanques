@@ -1,0 +1,204 @@
+<div class="combat-container">
+  <div class="header">
+    <div class="header-nav">
+      <button class="btn-back" (click)="regresar()">
+        <i class="fas fa-arrow-left"></i> Volver al Hangar
+      </button>
+      <button class="btn-theme-toggle" (click)="toggleModoOscuro()"
+        [title]="modoOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+        <span *ngIf="!modoOscuro">🌙</span>
+        <span *ngIf="modoOscuro">☀️</span>
+      </button>
+    </div>
+    <h1><i class="fas fa-users-cog"></i> Simulador Táctico de Equipos IA</h1>
+    <p class="subtitle">Análisis estratégico grupal y de amenazas directas mediante Gemini</p>
+  </div>
+
+  <div class="setup-grid">
+    <!-- Equipo Aliado (Equipo 1) -->
+    <div class="team-panel card allied-card">
+      <div class="card-header allied-header">
+        <i class="fas fa-shield-alt"></i> EQUIPO ALIADO ({{ equipoAliado.length }}/16)
+      </div>
+      
+      <div class="selector-input">
+        <input type="text" [(ngModel)]="filtroAliado" (focus)="mostrarListaAliado = true"
+          placeholder="Buscar y añadir tanque aliado..." />
+        <div class="dropdown" *ngIf="mostrarListaAliado && tanquesFiltradosAliado.length > 0">
+          <div *ngFor="let t of tanquesFiltradosAliado" (click)="agregarAliado(t)" class="dropdown-item">
+            {{ t.nombre }} <span class="dropdown-sub">{{ t.nacion }} - BR {{ t.rating_realista }}</span>
+          </div>
+        </div>
+        <div class="backdrop" *ngIf="mostrarListaAliado" (click)="mostrarListaAliado = false"></div>
+      </div>
+
+      <div class="team-list">
+        <div *ngIf="equipoAliado.length === 0" class="empty-team">
+          No hay tanques aliados. Añade al menos uno para iniciar.
+        </div>
+        <div *ngFor="let t of equipoAliado; let i = index" class="team-member" [class.user-tank-row]="tanqueUsuario?._id === t._id">
+          <div class="member-info">
+            <span class="user-badge" *ngIf="tanqueUsuario?._id === t._id">TU TANQUE</span>
+            <span class="member-name">{{ t.nombre }}</span>
+            <span class="member-meta">{{ t.nacion }} | BR {{ t.rating_realista }}</span>
+          </div>
+          <div class="member-actions">
+            <button *ngIf="tanqueUsuario?._id !== t._id" class="btn-action btn-user" (click)="seleccionarComoUsuario(t)" title="Manejar este tanque">
+              🎮 Llevar
+            </button>
+            <button class="btn-action btn-remove" (click)="quitarAliado(i)" title="Quitar del equipo">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipo Enemigo (Equipo 2) -->
+    <div class="team-panel card enemy-card">
+      <div class="card-header enemy-header">
+        <i class="fas fa-crosshairs"></i> EQUIPO ENEMIGO ({{ equipoEnemigo.length }}/16)
+      </div>
+
+      <div class="selector-input">
+        <input type="text" [(ngModel)]="filtroEnemigo" (focus)="mostrarListaEnemigo = true"
+          placeholder="Buscar y añadir tanque enemigo..." />
+        <div class="dropdown" *ngIf="mostrarListaEnemigo && tanquesFiltradosEnemigo.length > 0">
+          <div *ngFor="let t of tanquesFiltradosEnemigo" (click)="agregarEnemigo(t)" class="dropdown-item">
+            {{ t.nombre }} <span class="dropdown-sub">{{ t.nacion }} - BR {{ t.rating_realista }}</span>
+          </div>
+        </div>
+        <div class="backdrop" *ngIf="mostrarListaEnemigo" (click)="mostrarListaEnemigo = false"></div>
+      </div>
+
+      <div class="team-list">
+        <div *ngIf="equipoEnemigo.length === 0" class="empty-team">
+          No hay tanques enemigos. Añade al menos uno para iniciar.
+        </div>
+        <div *ngFor="let t of equipoEnemigo; let i = index" class="team-member">
+          <div class="member-info">
+            <span class="member-name">{{ t.nombre }}</span>
+            <span class="member-meta">{{ t.nacion }} | BR {{ t.rating_realista }}</span>
+          </div>
+          <div class="member-actions">
+            <button class="btn-action btn-remove" (click)="quitarEnemigo(i)" title="Quitar del equipo">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="situation-container card">
+    <h3><i class="fas fa-map-marked-alt"></i> Configuración Táctica y Entorno</h3>
+    <textarea [(ngModel)]="situacion"
+      placeholder="Describe la situación (distancia, terreno, cobertura, clima, emboscadas...)"></textarea>
+
+    <div class="model-selector" *ngIf="modelos.length > 0">
+      <label for="modelSelect"><i class="fas fa-brain"></i> Modelo de IA:</label>
+      <select id="modelSelect" [(ngModel)]="modeloSeleccionado">
+        <option *ngFor="let m of modelos" [value]="m.id">{{ m.nombre }}</option>
+      </select>
+      <small *ngIf="modeloSeleccionado" class="model-desc">
+        {{ descripcionModeloSeleccionado }}
+      </small>
+    </div>
+
+    <button class="btn-simulate" (click)="simular()" [disabled]="cargando || equipoAliado.length === 0 || equipoEnemigo.length === 0 || !tanqueUsuario">
+      <span *ngIf="!cargando">SIMULAR BATALLA DE EQUIPOS</span>
+      <span *ngIf="cargando" class="loader"></span>
+    </button>
+
+    <div class="error-msg" *ngIf="error">{{ error }}</div>
+  </div>
+
+  <!-- Resultados de Simulación -->
+  <div class="result-container card animate-in" *ngIf="resultado">
+    <div class="simulation-dashboard">
+      <div class="victory-meter">
+        <div class="meter-circle">
+          <span class="meter-value">{{ resultado.probabilidad_victoria }}%</span>
+          <span class="meter-label">Probabilidad de Victoria Aliada</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" [style.width.%]="resultado.probabilidad_victoria"></div>
+        </div>
+      </div>
+
+      <div class="general-development">
+        <h3><i class="fas fa-file-alt"></i> Informe del Combate</h3>
+        <div [innerHTML]="resultado.resultado_general" class="markdown-body"></div>
+      </div>
+    </div>
+
+    <!-- Análisis Táctico Personalizado respecto al Tanque del Usuario -->
+    <div class="tactical-analysis-section">
+      <h2>Análisis Táctico para tu {{ tanqueUsuario?.nombre }}</h2>
+      
+      <div class="analysis-grid">
+        <!-- Enemigos Prioritarios (Green) -->
+        <div class="analysis-card priorities">
+          <div class="card-title"><span class="icon">🎯</span> Enemigos Prioritarios</div>
+          <div class="card-body">
+            <div *ngIf="resultado.enemigos_prioritarios.length === 0" class="empty-list">Ninguno identificado</div>
+            <div *ngFor="let item of resultado.enemigos_prioritarios" class="analysis-item">
+              <strong>{{ item.nombre }} ({{ item.nacion }})</strong>
+              <p>{{ item.razon }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enemigos a Evitar (Red) -->
+        <div class="analysis-card avoid">
+          <div class="card-title"><span class="icon">⚠️</span> Enemigos a Evitar</div>
+          <div class="card-body">
+            <div *ngIf="resultado.enemigos_a_evitar.length === 0" class="empty-list">Ninguno identificado</div>
+            <div *ngFor="let item of resultado.enemigos_a_evitar" class="analysis-item">
+              <strong>{{ item.nombre }} ({{ item.nacion }})</strong>
+              <p>{{ item.razon }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sin Amenaza (Gray) -->
+        <div class="analysis-card no-threat">
+          <div class="card-title"><span class="icon">🛡️</span> Sin Amenaza Real</div>
+          <div class="card-body">
+            <div *ngIf="resultado.no_representan_amenaza.length === 0" class="empty-list">Ninguno identificado</div>
+            <div *ngFor="let item of resultado.no_representan_amenaza" class="analysis-item">
+              <strong>{{ item.nombre }} ({{ item.nacion }})</strong>
+              <p>{{ item.razon }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Más Dañinos (Orange) -->
+        <div class="analysis-card dangerous">
+          <div class="card-title"><span class="icon">💀</span> Mayor Peligro de Daño</div>
+          <div class="card-body">
+            <div *ngIf="resultado.mas_daninos.length === 0" class="empty-list">Ninguno identificado</div>
+            <div *ngFor="let item of resultado.mas_daninos" class="analysis-item">
+              <strong>{{ item.nombre }} ({{ item.nacion }})</strong>
+              <p>{{ item.razon }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mejores Compañeros (Blue) -->
+      <div class="squadmates-card">
+        <div class="card-title"><span class="icon">🤝</span> Mejores Compañeros para Formar Escuadrón</div>
+        <div class="card-body">
+          <div *ngIf="resultado.mejores_companeros.length === 0" class="empty-list">Ninguno identificado</div>
+          <div class="squadmates-grid">
+            <div *ngFor="let item of resultado.mejores_companeros" class="squadmate-item">
+              <strong>{{ item.nombre }} ({{ item.nacion }})</strong>
+              <p>{{ item.razon }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

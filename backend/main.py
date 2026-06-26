@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 import markdown
 from database import get_tanks_collection, verificar_conexion
-from models import Tanque, TanqueDB, CombateIARequest, CombateIAResponse
+from models import Tanque, TanqueDB, CombateIARequest, CombateIAResponse, SimulacionEquiposIARequest, SimulacionEquiposIAResponse
 from google import genai
 import json
 from bson import ObjectId
@@ -973,6 +973,155 @@ async def simular_combate_ia(request: CombateIARequest):
     except Exception as e:
         print(f"Error en combate IA: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error al procesar la simulación: {str(e)}")
+
+
+@app.post("/simulacion-equipos-ia/", response_model=SimulacionEquiposIAResponse)
+async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
+    """
+    Simula un combate entre dos equipos de tanques (1-16 vehículos cada uno)
+    y genera un análisis táctico personalizado para el vehículo del usuario.
+    """
+    if not GEMINI_API_KEY:
+        raise HTTPException(
+            status_code=500, 
+            detail="La funcionalidad de IA no está configurada (falta API Key)"
+        )
+
+    if not (1 <= len(request.equipo_aliado) <= 16):
+        raise HTTPException(status_code=400, detail="El equipo aliado debe tener entre 1 y 16 tanques.")
+    if not (1 <= len(request.equipo_enemigo) <= 16):
+        raise HTTPException(status_code=400, detail="El equipo enemigo debe tener entre 1 y 16 tanques.")
+    if request.tanque_usuario_id not in request.equipo_aliado:
+        raise HTTPException(status_code=400, detail="El tanque del usuario debe estar en el equipo aliado.")
+
+    try:
+        # Obtener datos de tanques aliados
+        ids_aliados = [ObjectId(tid) for tid in request.equipo_aliado]
+        cursor_aliados = tanks_collection.find({"_id": {"$in": ids_aliados}})
+        dict_aliados = {str(t["_id"]): convertir_decimal128_recursivo(t) for t in cursor_aliados}
+
+        # Obtener datos de tanques enemigos
+        ids_enemigos = [ObjectId(tid) for tid in request.equipo_enemigo]
+        cursor_enemigos = tanks_collection.find({"_id": {"$in": ids_enemigos}})
+        dict_enemigos = {str(t["_id"]): convertir_decimal128_recursivo(t) for t in cursor_enemigos}
+
+        # Validar que todos los tanques existan
+        for tid in request.equipo_aliado:
+            if tid not in dict_aliados:
+                raise HTTPException(status_code=404, detail=f"Tanque aliado con ID {tid} no encontrado.")
+        for tid in request.equipo_enemigo:
+            if tid not in dict_enemigos:
+                raise HTTPException(status_code=404, detail=f"Tanque enemigo con ID {tid} no encontrado.")
+
+        tanque_usuario = dict_aliados[request.tanque_usuario_id]
+
+        def simplificar_tanque(t):
+            # Simplificamos la estructura para no superar límites de tokens del modelo
+            municiones = []
+            for setup_key in ["setup_1", "setup_2"]:
+                setup = t.get(setup_key, {})
+                if not setup:
+                    continue
+                for arma_name, arma in setup.items():
+                    if not isinstance(arma, dict):
+                        continue
+                    for m in arma.get("municiones", []):
+                        if isinstance(m, dict):
+                            municiones.append({
+                                "nombre": m.get("nombre"),
+                                "tipo": m.get("tipo"),
+                                "penetracion_mm": m.get("penetracion_mm", [])
+                            })
+            return {
+                "nombre": t.get("nombre"),
+                "nacion": t.get("nacion"),
+                "BR": t.get("rating_realista", "N/A"),
+                "blindaje_chasis": t.get("blindaje_chasis", 0),
+                "blindaje_torreta": t.get("blindaje_torreta", 0),
+                "velocidad_max": t.get("velocidad_adelante_realista", 0),
+                "recarga": t.get("recarga", 0),
+                "cadencia": t.get("cadencia", 0),
+                "cargador": t.get("cargador", 1),
+                "municiones": municiones[:5]  # Limitar para ahorrar espacio
+            }
+
+        aliados_info = [simplificar_tanque(dict_aliados[tid]) for tid in request.equipo_aliado]
+        enemigos_info = [simplificar_tanque(dict_enemigos[tid]) for tid in request.equipo_enemigo]
+        usuario_info = simplificar_tanque(tanque_usuario)
+
+        prompt = f"""
+        Como experto estratega y analista militar de War Thunder, simula un combate de equipos y genera un análisis táctico detallado y personalizado para el tanque controlado por el usuario.
+
+        SITUACIÓN DE COMBATE:
+        {request.situacion}
+
+        TANQUE QUE CONTROLA EL USUARIO:
+        {json.dumps(usuario_info, indent=2, ensure_ascii=False)}
+
+        EQUIPO ALIADO (Incluye al tanque del usuario):
+        {json.dumps(aliados_info, indent=2, ensure_ascii=False)}
+
+        EQUIPO ENEMIGO:
+        {json.dumps(enemigos_info, indent=2, ensure_ascii=False)}
+
+        INSTRUCCIONES DE ANÁLISIS:
+        1. Simula el combate general entre los dos equipos evaluando las composiciones, tipos de vehículos, blindaje, movilidad y potencial de fuego a las distancias de la situación dada.
+        2. Determina el desarrollo general de la batalla en "resultado_general" (narrativa detallada del combate en formato markdown) y la "probabilidad_victoria" del equipo aliado (un número entre 0.0 y 100.0).
+        3. Realiza un análisis táctico personalizado para el usuario, respondiendo estrictamente en las siguientes categorías en formato JSON:
+           - "enemigos_prioritarios": Enemigos que el usuario puede destruir con facilidad o representan blancos clave que debe priorizar.
+           - "enemigos_a_evitar": Enemigos que por su blindaje o calibre son demasiado peligrosos y el usuario debe evitar en combates directos 1v1.
+           - "no_representan_amenaza": Enemigos incapaces de penetrar el blindaje del usuario o con prestaciones sumamente bajas frente al vehículo del usuario.
+           - "mas_daninos": Enemigos con la mayor capacidad de destruir o infligir un daño masivo al tanque del usuario (basándote en su penetración y poder explosivo contra el blindaje del usuario).
+           - "mejores_companeros": Los mejores aliados de su propio equipo con los que el usuario debería cooperar o agruparse para compensar debilidades mutuas (por ejemplo, protección, flanqueo rápido, recarga).
+        
+        Cada elemento en las listas de análisis debe contener obligatoriamente:
+        - "nombre": Nombre exacto del tanque.
+        - "nacion": Nación del tanque.
+        - "razon": Explicación táctica detallada y técnica de por qué se clasifica así, basada en datos balísticos, de recarga, movilidad o blindaje.
+
+        Responde estrictamente en formato JSON con la siguiente estructura (no agregues texto fuera del JSON, usa markdown limpio para el campo "resultado_general"):
+        {{
+            "resultado_general": "Descripción detallada del desarrollo y transcurso de la batalla en formato markdown",
+            "probabilidad_victoria": 65.5,
+            "enemigos_prioritarios": [
+                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
+            ],
+            "enemigos_a_evitar": [
+                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
+            ],
+            "no_representan_amenaza": [
+                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
+            ],
+            "mas_daninos": [
+                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
+            ],
+            "mejores_companeros": [
+                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
+            ]
+        }}
+        """
+
+        modelo_a_usar = request.modelo if request.modelo else 'gemini-2.0-flash-exp'
+        
+        if not client_ai:
+            raise HTTPException(status_code=500, detail="El cliente de IA no está inicializado")
+
+        response = client_ai.models.generate_content(
+            model=modelo_a_usar,
+            contents=prompt
+        )
+
+        texto_limpio = response.text.replace('```json', '').replace('```', '').strip()
+        resultado_ia = json.loads(texto_limpio)
+
+        if 'resultado_general' in resultado_ia:
+            resultado_ia['resultado_general'] = markdown.markdown(resultado_ia['resultado_general'])
+
+        return SimulacionEquiposIAResponse(**resultado_ia)
+
+    except Exception as e:
+        print(f"Error en simulación de equipos IA: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al procesar la simulación de equipos: {str(e)}")
 
 
 # Para ejecutar la aplicación, usa en la terminal:

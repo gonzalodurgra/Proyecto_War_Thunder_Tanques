@@ -458,6 +458,10 @@ export class TankListComponent implements OnInit {
     this.router.navigate(['/combate-ia']);
   }
 
+  irASimuladorEquiposIA(): void {
+    this.router.navigate(['/combate-equipos-ia']);
+  }
+
   // ====================================================================
   // MÉTODO: Obtener color según la nación (para el UI)
   // ====================================================================

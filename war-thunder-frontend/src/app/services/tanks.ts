@@ -77,6 +77,30 @@ export interface CombateIAResponse {
   puntos_clave: string[];
 }
 
+export interface ElementoAnalisis {
+  nombre: string;
+  nacion: string;
+  razon: string;
+}
+
+export interface SimulacionEquiposIARequest {
+  equipo_aliado: string[];
+  equipo_enemigo: string[];
+  tanque_usuario_id: string;
+  situacion: string;
+  modelo?: string;
+}
+
+export interface SimulacionEquiposIAResponse {
+  resultado_general: string;
+  probabilidad_victoria: number;
+  enemigos_prioritarios: ElementoAnalisis[];
+  enemigos_a_evitar: ElementoAnalisis[];
+  no_representan_amenaza: ElementoAnalisis[];
+  mas_daninos: ElementoAnalisis[];
+  mejores_companeros: ElementoAnalisis[];
+}
+
 const URL_IMAGENES = 'https://proyecto-war-thunder-tanques.onrender.com/';
 
 // ====================================================================
@@ -178,6 +202,10 @@ export class TanksService {
   // ====================================================================
   simularCombateIA(request: CombateIARequest): Observable<CombateIAResponse> {
     return this.http.post<CombateIAResponse>(`${this.apiUrl}/combate-ia/`, request);
+  }
+
+  simularCombateEquiposIA(request: SimulacionEquiposIARequest): Observable<SimulacionEquiposIAResponse> {
+    return this.http.post<SimulacionEquiposIAResponse>(`${this.apiUrl}/simulacion-equipos-ia/`, request);
   }
 
   obtenerModelosIA(): Observable<IAModelo[]> {
