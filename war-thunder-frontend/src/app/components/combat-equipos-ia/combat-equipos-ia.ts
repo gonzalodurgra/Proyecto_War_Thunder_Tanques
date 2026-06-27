@@ -13,14 +13,14 @@ import { Router } from '@angular/router';
 })
 export class CombatEquiposIAComponent implements OnInit {
   tanques: Tanque[] = [];
-  
+
   // Equipos
   equipoAliado: Tanque[] = [];
   equipoEnemigo: Tanque[] = [];
   tanqueUsuario: Tanque | null = null;
-  
+
   situacion: string = 'Encuentro de escuadrones en terreno semiurbano a 800 metros con cobertura de colinas.';
-  
+
   cargando: boolean = false;
   resultado: SimulacionEquiposIAResponse | null = null;
   error: string = '';
@@ -33,7 +33,7 @@ export class CombatEquiposIAComponent implements OnInit {
 
   // Modelos de IA
   modelos: IAModelo[] = [];
-  modeloSeleccionado: string = 'gemini-2.0-flash-exp';
+  modeloSeleccionado: string = 'gemini-3.1-flash-lite';
 
   modoOscuro: boolean = false;
 
@@ -113,7 +113,7 @@ export class CombatEquiposIAComponent implements OnInit {
   quitarAliado(index: number): void {
     const tanqueQuitado = this.equipoAliado[index];
     this.equipoAliado.splice(index, 1);
-    
+
     // Si quitamos el tanque del usuario, asignamos otro o lo ponemos a null
     if (this.tanqueUsuario?._id === tanqueQuitado._id) {
       this.tanqueUsuario = this.equipoAliado.length > 0 ? this.equipoAliado[0] : null;
