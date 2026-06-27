@@ -980,6 +980,7 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
     """
     Simula un combate entre dos equipos de tanques (1-16 vehículos cada uno)
     y genera un análisis táctico personalizado para el vehículo del usuario.
+    Recibe los datos completos de cada tanque desde el frontend.
     """
     if not GEMINI_API_KEY:
         raise HTTPException(
@@ -991,29 +992,11 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
         raise HTTPException(status_code=400, detail="El equipo aliado debe tener entre 1 y 16 tanques.")
     if not (1 <= len(request.equipo_enemigo) <= 16):
         raise HTTPException(status_code=400, detail="El equipo enemigo debe tener entre 1 y 16 tanques.")
-    if request.tanque_usuario_id not in request.equipo_aliado:
-        raise HTTPException(status_code=400, detail="El tanque del usuario debe estar en el equipo aliado.")
+    if not (0 <= request.tanque_usuario_index < len(request.equipo_aliado)):
+        raise HTTPException(status_code=400, detail="El índice del tanque del usuario no es válido.")
 
     try:
-        # Obtener datos de tanques aliados
-        ids_aliados = [ObjectId(tid) for tid in request.equipo_aliado]
-        cursor_aliados = tanks_collection.find({"_id": {"$in": ids_aliados}})
-        dict_aliados = {str(t["_id"]): convertir_decimal128_recursivo(t) for t in cursor_aliados}
-
-        # Obtener datos de tanques enemigos
-        ids_enemigos = [ObjectId(tid) for tid in request.equipo_enemigo]
-        cursor_enemigos = tanks_collection.find({"_id": {"$in": ids_enemigos}})
-        dict_enemigos = {str(t["_id"]): convertir_decimal128_recursivo(t) for t in cursor_enemigos}
-
-        # Validar que todos los tanques existan
-        for tid in request.equipo_aliado:
-            if tid not in dict_aliados:
-                raise HTTPException(status_code=404, detail=f"Tanque aliado con ID {tid} no encontrado.")
-        for tid in request.equipo_enemigo:
-            if tid not in dict_enemigos:
-                raise HTTPException(status_code=404, detail=f"Tanque enemigo con ID {tid} no encontrado.")
-
-        tanque_usuario = dict_aliados[request.tanque_usuario_id]
+        tanque_usuario = request.equipo_aliado[request.tanque_usuario_index]
 
         def simplificar_tanque(t):
             # Simplificamos la estructura para no superar límites de tokens del modelo
@@ -1045,8 +1028,8 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
                 "municiones": municiones[:5]  # Limitar para ahorrar espacio
             }
 
-        aliados_info = [simplificar_tanque(dict_aliados[tid]) for tid in request.equipo_aliado]
-        enemigos_info = [simplificar_tanque(dict_enemigos[tid]) for tid in request.equipo_enemigo]
+        aliados_info = [simplificar_tanque(t) for t in request.equipo_aliado]
+        enemigos_info = [simplificar_tanque(t) for t in request.equipo_enemigo]
         usuario_info = simplificar_tanque(tanque_usuario)
 
         prompt = f"""

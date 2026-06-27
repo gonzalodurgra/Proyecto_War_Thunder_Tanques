@@ -36,14 +36,14 @@
         <div *ngIf="equipoAliado.length === 0" class="empty-team">
           No hay tanques aliados. Añade al menos uno para iniciar.
         </div>
-        <div *ngFor="let t of equipoAliado; let i = index" class="team-member" [class.user-tank-row]="tanqueUsuario?._id === t._id">
+        <div *ngFor="let t of equipoAliado; let i = index" class="team-member" [class.user-tank-row]="tanqueUsuarioIndex === i">
           <div class="member-info">
-            <span class="user-badge" *ngIf="tanqueUsuario?._id === t._id">TU TANQUE</span>
+            <span class="user-badge" *ngIf="tanqueUsuarioIndex === i">TU TANQUE</span>
             <span class="member-name">{{ t.nombre }}</span>
             <span class="member-meta">{{ t.nacion }} | BR {{ t.rating_realista }}</span>
           </div>
           <div class="member-actions">
-            <button *ngIf="tanqueUsuario?._id !== t._id" class="btn-action btn-user" (click)="seleccionarComoUsuario(t)" title="Manejar este tanque">
+            <button *ngIf="tanqueUsuarioIndex !== i" class="btn-action btn-user" (click)="seleccionarComoUsuario(i)" title="Manejar este tanque">
               🎮 Llevar
             </button>
             <button class="btn-action btn-remove" (click)="quitarAliado(i)" title="Quitar del equipo">

@@ -84,9 +84,9 @@ export interface ElementoAnalisis {
 }
 
 export interface SimulacionEquiposIARequest {
-  equipo_aliado: string[];
-  equipo_enemigo: string[];
-  tanque_usuario_id: string;
+  equipo_aliado: Tanque[];
+  equipo_enemigo: Tanque[];
+  tanque_usuario_index: number;
   situacion: string;
   modelo?: string;
 }

@@ -94,11 +94,11 @@ class ElementoAnalisis(BaseModel):
     razon: str
 
 class SimulacionEquiposIARequest(BaseModel):
-    equipo_aliado: List[str]
-    equipo_enemigo: List[str]
-    tanque_usuario_id: str
+    equipo_aliado: List[Dict]
+    equipo_enemigo: List[Dict]
+    tanque_usuario_index: int
     situacion: str
-    modelo: Optional[str] = "gemini-2.0-flash-exp"
+    modelo: Optional[str] = "gemini-3.1-flash-lite"
 
 class SimulacionEquiposIAResponse(BaseModel):
     resultado_general: str

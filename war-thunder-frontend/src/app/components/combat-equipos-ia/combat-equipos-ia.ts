@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TanksService, Tanque, SimulacionEquiposIAResponse, IAModelo } from '../../services/tanks';
+import { TanksService, Tanque, SimulacionEquiposIAResponse, SimulacionEquiposIARequest, IAModelo } from '../../services/tanks';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,7 +17,7 @@ export class CombatEquiposIAComponent implements OnInit {
   // Equipos
   equipoAliado: Tanque[] = [];
   equipoEnemigo: Tanque[] = [];
-  tanqueUsuario: Tanque | null = null;
+  tanqueUsuarioIndex: number | null = null;
 
   situacion: string = 'Encuentro de escuadrones en terreno semiurbano a 800 metros con cobertura de colinas.';
 
@@ -71,15 +71,13 @@ export class CombatEquiposIAComponent implements OnInit {
 
   get tanquesFiltradosAliado() {
     return this.tanques.filter(t =>
-      t.nombre.toLowerCase().includes(this.filtroAliado.toLowerCase()) &&
-      !this.equipoAliado.some(aliado => aliado._id === t._id)
+      t.nombre.toLowerCase().includes(this.filtroAliado.toLowerCase())
     ).slice(0, 15);
   }
 
   get tanquesFiltradosEnemigo() {
     return this.tanques.filter(t =>
-      t.nombre.toLowerCase().includes(this.filtroEnemigo.toLowerCase()) &&
-      !this.equipoEnemigo.some(enemigo => enemigo._id === t._id)
+      t.nombre.toLowerCase().includes(this.filtroEnemigo.toLowerCase())
     ).slice(0, 15);
   }
 
@@ -88,14 +86,15 @@ export class CombatEquiposIAComponent implements OnInit {
       this.error = 'El equipo aliado no puede superar los 16 tanques.';
       return;
     }
-    this.equipoAliado.push(tanque);
+    // Clonar para evitar mutación de referencias
+    this.equipoAliado.push({ ...tanque });
     this.filtroAliado = '';
     this.mostrarListaAliado = false;
     this.error = '';
 
-    // Si es el primer tanque, lo ponemos como el del usuario por defecto
-    if (!this.tanqueUsuario) {
-      this.tanqueUsuario = tanque;
+    // Si es el primer tanque, ponemos su índice (0) como el del usuario por defecto
+    if (this.tanqueUsuarioIndex === null || this.tanqueUsuarioIndex === -1) {
+      this.tanqueUsuarioIndex = 0;
     }
   }
 
@@ -104,19 +103,20 @@ export class CombatEquiposIAComponent implements OnInit {
       this.error = 'El equipo enemigo no puede superar los 16 tanques.';
       return;
     }
-    this.equipoEnemigo.push(tanque);
+    this.equipoEnemigo.push({ ...tanque });
     this.filtroEnemigo = '';
     this.mostrarListaEnemigo = false;
     this.error = '';
   }
 
   quitarAliado(index: number): void {
-    const tanqueQuitado = this.equipoAliado[index];
     this.equipoAliado.splice(index, 1);
 
-    // Si quitamos el tanque del usuario, asignamos otro o lo ponemos a null
-    if (this.tanqueUsuario?._id === tanqueQuitado._id) {
-      this.tanqueUsuario = this.equipoAliado.length > 0 ? this.equipoAliado[0] : null;
+    // Ajustar el índice del tanque de usuario
+    if (this.tanqueUsuarioIndex === index) {
+      this.tanqueUsuarioIndex = this.equipoAliado.length > 0 ? 0 : null;
+    } else if (this.tanqueUsuarioIndex !== null && this.tanqueUsuarioIndex > index) {
+      this.tanqueUsuarioIndex--;
     }
   }
 
@@ -124,8 +124,15 @@ export class CombatEquiposIAComponent implements OnInit {
     this.equipoEnemigo.splice(index, 1);
   }
 
-  seleccionarComoUsuario(tanque: Tanque): void {
-    this.tanqueUsuario = tanque;
+  seleccionarComoUsuario(index: number): void {
+    this.tanqueUsuarioIndex = index;
+  }
+
+  get tanqueUsuario(): Tanque | null {
+    if (this.tanqueUsuarioIndex !== null && this.tanqueUsuarioIndex >= 0 && this.tanqueUsuarioIndex < this.equipoAliado.length) {
+      return this.equipoAliado[this.tanqueUsuarioIndex];
+    }
+    return null;
   }
 
   get descripcionModeloSeleccionado(): string {
@@ -138,7 +145,7 @@ export class CombatEquiposIAComponent implements OnInit {
       this.error = 'Ambos equipos deben tener al menos 1 vehículo.';
       return;
     }
-    if (!this.tanqueUsuario) {
+    if (this.tanqueUsuarioIndex === null || this.tanqueUsuarioIndex === -1) {
       this.error = 'Debes elegir cuál de los tanques aliados manejas.';
       return;
     }
@@ -151,10 +158,10 @@ export class CombatEquiposIAComponent implements OnInit {
     this.resultado = null;
     this.error = '';
 
-    const request = {
-      equipo_aliado: this.equipoAliado.map(t => t._id!),
-      equipo_enemigo: this.equipoEnemigo.map(t => t._id!),
-      tanque_usuario_id: this.tanqueUsuario._id!,
+    const request: SimulacionEquiposIARequest = {
+      equipo_aliado: this.equipoAliado,
+      equipo_enemigo: this.equipoEnemigo,
+      tanque_usuario_index: this.tanqueUsuarioIndex,
       situacion: this.situacion,
       modelo: this.modeloSeleccionado
     };
