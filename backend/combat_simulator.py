@@ -106,6 +106,12 @@ class PerfilCombate:
     cadencia: float
     recarga: float
     municion_optima: MunicionOptima
+    velocidad_torreta: float
+    angulo_elevacion_max: float
+    angulo_depresion_max: float
+    tripulacion: float
+    tiempo_apuntado_base: float
+    supervivencia_base: float
     modificadores: Tuple[float, float, float] = (1.0, 1.0, 1.0)
 
 
@@ -277,6 +283,10 @@ class CombatSimulatorEngine:
             "recarga": random.uniform(3, 12),
             "cadencia": random.uniform(5, 20),
             "cargador": random.choice([1, 1, 1, 3, 5, 8]),
+            "velocidad_torreta": random.uniform(15, 60),
+            "angulo_elevacion_max": random.uniform(20, 40),
+            "angulo_depresion_max": random.uniform(5, 20),
+            "tripulacion": random.uniform(0.6, 1.0),
             "setup_1": {
                 "cañon": {
                     "municiones": [{
@@ -296,7 +306,6 @@ class CombatSimulatorEngine:
                 }
             },
         }
-
     @staticmethod
     def _modificadores_monte_carlo_puro(tanque: Dict[str, Any], distancia: float) -> List[float]:
         br = float(tanque.get("rating_realista") or 5)
@@ -358,6 +367,12 @@ class CombatSimulatorEngine:
             float(tanque.get("blindaje_chasis") or 0),
             float(tanque.get("blindaje_torreta") or 0),
         )
+        velocidad_torreta = float(tanque.get("velocidad_torreta") or tanque.get("rotacion_torreta") or 30)
+        angulo_elevacion_max = float(tanque.get("angulo_elevacion_max") or 30)
+        angulo_depresion_max = float(tanque.get("angulo_depresion_max") or 10)
+        tripulacion = min(max(float(tanque.get("tripulacion") or 0.75), 0.4), 1.0)
+        tiempo_apuntado_base = max(0.5, 4.0 / max(velocidad_torreta, 1.0) + (30 - angulo_elevacion_max) * 0.02 + (15 - angulo_depresion_max) * 0.02)
+        supervivencia_base = max(0.8, 0.8 + (blindaje / 300.0) * 0.6 + (tripulacion - 0.5) * 0.4)
         return PerfilCombate(
             nombre=tanque.get("nombre", "Desconocido"),
             nacion=tanque.get("nacion", "N/A"),
@@ -371,6 +386,12 @@ class CombatSimulatorEngine:
             cadencia=float(tanque.get("cadencia") or 0),
             recarga=float(tanque.get("recarga") or 5),
             municion_optima=municion,
+            velocidad_torreta=velocidad_torreta,
+            angulo_elevacion_max=angulo_elevacion_max,
+            angulo_depresion_max=angulo_depresion_max,
+            tripulacion=tripulacion,
+            tiempo_apuntado_base=tiempo_apuntado_base,
+            supervivencia_base=supervivencia_base,
             modificadores=mods,
         )
 
@@ -516,8 +537,28 @@ def obtener_penetracion_maxima(
 
 def calcular_dpm(tanque: Dict[str, Any], distancia: int) -> float:
     municion = obtener_penetracion_maxima(tanque, distancia)
-    disparos_por_min = 60.0 / max(intervalo_disparo(tanque), 0.5)
-    return disparos_por_min * max(municion.dano_esperado, 0.05) * 100
+    cadencia = float(tanque.get("cadencia") or 1.0)
+    recarga = float(tanque.get("recarga") or 5.0)
+    cargador = int(tanque.get("cargador") or 1)
+    dano = max(municion.dano_esperado, 0.05)
+
+    if cargador > 1:
+        intervalo_entre_disparos = 60.0 / max(cadencia, 1.0)
+        ciclo = cargador * intervalo_entre_disparos + max(recarga, 0.8)
+        disparos_por_min = cargador * 60.0 / max(ciclo, 1.0)
+    else:
+        disparos_por_min = 60.0 / max(recarga, 0.5)
+
+    return disparos_por_min * dano * 100
+
+
+def _tiempo_de_apuntado(atacante: PerfilCombate, distancia: int, rng: random.Random) -> float:
+    distancia_factor = 1.0 + min(max(distancia / 1500.0, 0.0), 0.5)
+    turret_speed_penalty = max(0.9, 1.0 + (45.0 - atacante.velocidad_torreta) / 120.0)
+    elevation_penalty = 1.0 + max(0.0, (25.0 - atacante.angulo_elevacion_max) / 80.0 + (12.0 - atacante.angulo_depresion_max) / 140.0)
+    crew_penalty = 1.0 + (1.0 - atacante.tripulacion) * 0.35
+    ruido = rng.uniform(0.85, 1.15)
+    return max(0.35, atacante.tiempo_apuntado_base * distancia_factor * turret_speed_penalty * elevation_penalty * crew_penalty * ruido)
 
 
 def _prob_penetracion(pen: float, blindaje: float, pen_mod: float, rng: random.Random) -> bool:
@@ -538,7 +579,8 @@ def _simular_disparo(
     if not _prob_penetracion(pen, defensor.blindaje_efectivo, 1.0, rng):
         return 0.0
     dano = atacante.municion_optima.dano_esperado * atacante.modificadores[1]
-    dano /= max(defensor.modificadores[2], 0.5)
+    supervivencia = max(defensor.modificadores[2] * defensor.supervivencia_base, 0.6)
+    dano /= supervivencia
     variacion = rng.uniform(0.75, 1.25)
     return min(1.0, dano * variacion)
 
@@ -546,25 +588,40 @@ def _simular_disparo(
 def _simular_duelo_unico(
     perfil_a: PerfilCombate,
     perfil_b: PerfilCombate,
+    distancia: int,
     rng: random.Random,
     max_tiempo: float = 120.0,
 ) -> Tuple[str, float]:
     hp_a, hp_b = 1.0, 1.0
     t = 0.0
-    next_a = 0.0
-    next_b = rng.uniform(0, perfil_b.intervalo_disparo * 0.3)
+    next_a = _tiempo_de_apuntado(perfil_a, distancia, rng)
+    next_b = _tiempo_de_apuntado(perfil_b, distancia, rng) * rng.uniform(0.8, 1.2)
+    rounds_a = perfil_a.cargador
+    rounds_b = perfil_b.cargador
 
     while t < max_tiempo and hp_a > 0 and hp_b > 0:
-        if t >= next_a:
-            hp_b -= _simular_disparo(perfil_a, perfil_b, rng)
-            next_a = t + perfil_a.intervalo_disparo
-            if perfil_a.cargador > 1 and rng.random() < 0.35:
-                hp_b -= _simular_disparo(perfil_a, perfil_b, rng) * 0.85
-        if t >= next_b:
-            hp_a -= _simular_disparo(perfil_b, perfil_a, rng)
-            next_b = t + perfil_b.intervalo_disparo
-            if perfil_b.cargador > 1 and rng.random() < 0.35:
-                hp_a -= _simular_disparo(perfil_b, perfil_a, rng) * 0.85
+        if t >= next_a and hp_b > 0:
+            if rounds_a <= 0:
+                rounds_a = perfil_a.cargador
+                next_a = t + max(perfil_a.recarga * rng.uniform(0.85, 1.15), 1.0)
+            else:
+                hp_b -= _simular_disparo(perfil_a, perfil_b, rng)
+                rounds_a -= 1
+                intervalo = perfil_a.intervalo_disparo
+                aim_penalty = _tiempo_de_apuntado(perfil_a, distancia, rng)
+                next_a = t + max(intervalo, aim_penalty)
+
+        if t >= next_b and hp_a > 0:
+            if rounds_b <= 0:
+                rounds_b = perfil_b.cargador
+                next_b = t + max(perfil_b.recarga * rng.uniform(0.85, 1.15), 1.0)
+            else:
+                hp_a -= _simular_disparo(perfil_b, perfil_a, rng)
+                rounds_b -= 1
+                intervalo = perfil_b.intervalo_disparo
+                aim_penalty = _tiempo_de_apuntado(perfil_b, distancia, rng)
+                next_b = t + max(intervalo, aim_penalty)
+
         t += 0.05
 
     if hp_a <= 0 and hp_b <= 0:
@@ -602,7 +659,7 @@ def simular_duelo_monte_carlo(
     tiempos: List[float] = []
 
     for _ in range(n_simulaciones):
-        ganador, tiempo = _simular_duelo_unico(p1, p2, rng)
+        ganador, tiempo = _simular_duelo_unico(p1, p2, distancia, rng)
         victorias[ganador] += 1
         tiempos.append(tiempo)
 
