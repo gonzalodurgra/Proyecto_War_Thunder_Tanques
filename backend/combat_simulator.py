@@ -6,17 +6,76 @@ PyTorch que refina la efectividad de cada vehículo.
 
 from __future__ import annotations
 
+import os
 import random
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Dict, List, Optional, Tuple
 
-import torch
-import torch.nn as nn
+import numpy as np
 
+try:
+    import torch
+    import torch.nn as nn
+except ImportError:  # pragma: no cover - optional dependency in local dev
+    torch = None
+    nn = None
+
+try:
+    import onnxruntime as ort
+except ImportError:  # pragma: no cover - optional dependency in local dev
+    ort = None
+
+if nn is None:
+    class _TorchFallbackModule:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            pass
+
+        def __call__(self, *args: Any, **kwargs: Any) -> Any:
+            raise RuntimeError("PyTorch no está instalado. Usa el modelo ONNX o instala torch.")
+
+        def eval(self) -> "_TorchFallbackModule":
+            return self
+
+        def train(self) -> "_TorchFallbackModule":
+            return self
+
+    class _TorchFallbackSequential:
+        def __init__(self, *layers: Any) -> None:
+            self.layers = layers
+
+        def __call__(self, x: Any) -> Any:
+            raise RuntimeError("PyTorch no está instalado. Usa el modelo ONNX o instala torch.")
+
+    class _TorchFallbackOptimizer:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            pass
+
+        def zero_grad(self) -> None:
+            return None
+
+        def step(self) -> None:
+            return None
+
+    class _TorchFallbackLoss:
+        def __call__(self, *args: Any, **kwargs: Any) -> Any:
+            raise RuntimeError("PyTorch no está instalado. Usa el modelo ONNX o instala torch.")
+
+    nn = SimpleNamespace(
+        Module=_TorchFallbackModule,
+        Sequential=_TorchFallbackSequential,
+        Linear=lambda *args, **kwargs: _TorchFallbackModule(),
+        ReLU=lambda *args, **kwargs: _TorchFallbackModule(),
+        MSELoss=_TorchFallbackLoss,
+        Adam=_TorchFallbackOptimizer,
+    )
+
+BASE_DIR = Path(__file__).resolve().parent
 DISTANCIAS_REF = [0, 100, 500, 1000, 1500, 2000]
-MODELO_PATH = Path(__file__).parent / "combat_model.pt"
+MODELO_PATH = Path(os.getenv("COMBAT_MODEL_PT_PATH", str(BASE_DIR / "combat_model.pt")))
+MODELO_ONNX_PATH = Path(os.getenv("COMBAT_MODEL_ONNX_PATH", str(BASE_DIR / "combat_model.onnx")))
 SLOPE_FACTOR = 1.35
 MC_DUELO_ITERACIONES = 2000
 MC_EQUIPO_ITERACIONES = 800
@@ -116,22 +175,60 @@ class CombatSimulatorEngine:
         self.net = CombatEffectivenessNet().to(self.device)
         self.net.eval()
         self._model_ready = False
+        self.onnx_session = None
+
+    @staticmethod
+    def _resolve_model_path(path: Path) -> Path:
+        if path.is_absolute():
+            return path
+        candidates = [BASE_DIR / path, Path.cwd() / path]
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+        return candidates[0]
 
     def ensure_model_ready(self) -> None:
         if self._model_ready:
             return
-        if MODELO_PATH.exists():
+
+        onnx_model_path = self._resolve_model_path(MODELO_ONNX_PATH)
+        pt_model_path = self._resolve_model_path(MODELO_PATH)
+
+        if onnx_model_path.exists() and ort is not None:
             try:
-                self.net.load_state_dict(torch.load(MODELO_PATH, map_location=self.device))
+                self.onnx_session = ort.InferenceSession(str(onnx_model_path), providers=["CPUExecutionProvider"])
                 self._model_ready = True
                 return
-            except Exception:
-                pass
+            except Exception as exc:
+                self.onnx_session = None
+                print(f"Advertencia: no se pudo cargar el modelo ONNX {onnx_model_path}: {exc}")
+
+        if pt_model_path.exists() and torch is not None:
+            try:
+                self.net.load_state_dict(torch.load(pt_model_path, map_location=self.device))
+                self._model_ready = True
+                return
+            except Exception as exc:
+                print(f"Advertencia: no se pudo cargar el modelo PyTorch {pt_model_path}: {exc}")
+
+        if torch is None and ort is None:
+            print("Advertencia: no hay PyTorch ni ONNX Runtime disponible; usando heurística simple.")
+            self._model_ready = True
+            return
+
+        if torch is None:
+            print("Advertencia: PyTorch no está instalado; usando heurística simple.")
+            self._model_ready = True
+            return
+
         self._bootstrap_train()
         self._model_ready = True
 
     def _bootstrap_train(self) -> None:
         """Entrena la red con pares sintéticos calibrados contra Monte Carlo puro."""
+        if torch is None:
+            return
+
         self.net.train()
         optimizer = torch.optim.Adam(self.net.parameters(), lr=0.01)
         loss_fn = nn.MSELoss()
@@ -231,8 +328,15 @@ class CombatSimulatorEngine:
     def obtener_modificadores(self, tanque: Dict[str, Any], distancia: int) -> Tuple[float, float, float]:
         self.ensure_model_ready()
         feat = self._vector_caracteristicas(tanque, distancia)
-        with torch.no_grad():
-            mods = self.net(torch.tensor([feat], dtype=torch.float32, device=self.device))[0].tolist()
+        if self.onnx_session is not None:
+            input_name = self.onnx_session.get_inputs()[0].name
+            outputs = self.onnx_session.run(None, {input_name: np.array([feat], dtype=np.float32)})
+            mods = outputs[0][0].tolist()
+        elif torch is not None:
+            with torch.no_grad():
+                mods = self.net(torch.tensor([feat], dtype=torch.float32, device=self.device))[0].tolist()
+        else:
+            mods = self._modificadores_monte_carlo_puro(tanque, distancia=feat[-1] * 2000)
         return mods[0], mods[1], mods[2]
 
     def construir_perfil(
