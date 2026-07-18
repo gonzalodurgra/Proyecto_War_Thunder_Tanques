@@ -6,6 +6,12 @@ from typing import List, Optional
 import markdown
 from database import get_tanks_collection, verificar_conexion
 from models import Tanque, TanqueDB, CombateIARequest, CombateIAResponse, SimulacionEquiposIARequest, SimulacionEquiposIAResponse
+from combat_simulator import (
+    simular_duelo_monte_carlo,
+    simular_equipos_monte_carlo,
+    resultado_duelo_a_dict,
+    resultado_equipos_a_dict,
+)
 from google import genai
 import json
 from bson import ObjectId
@@ -878,98 +884,127 @@ async def listar_modelos_ia():
         print(f"Error al listar modelos: {e}")
         return []
 
+def _parsear_json_gemini(texto: str) -> dict:
+    texto_limpio = texto.replace("```json", "").replace("```", "").strip()
+    return json.loads(texto_limpio)
+
+
+def _generar_analisis_duelo_gemini(
+    v1: dict,
+    v2: dict,
+    situacion: str,
+    resultado_sim: dict,
+    modelo: str,
+) -> dict:
+    prompt = f"""
+Eres un analista militar de War Thunder. El resultado del combate YA FUE CALCULADO por simulación Monte Carlo
+({resultado_sim['simulaciones_monte_carlo']} iteraciones) y refinamiento con red neuronal PyTorch.
+NO cambies el ganador ni las probabilidades. Tu tarea es EXPLICAR el resultado con base en los datos.
+
+SITUACIÓN DE COMBATE:
+{situacion}
+
+VEHÍCULO 1: {v1['nombre']} ({v1['nacion']})
+VEHÍCULO 2: {v2['nombre']} ({v2['nacion']})
+
+RESULTADOS CALCULADOS (fuente de verdad):
+{json.dumps(resultado_sim, indent=2, ensure_ascii=False)}
+
+Redacta un análisis técnico detallado en markdown explicando:
+- Por qué ganó {resultado_sim['ganador']}
+- Qué munición óptima usó cada vehículo y su efectividad balística
+- Cómo influyeron cadencia/recarga, blindaje y movilidad según las probabilidades calculadas
+
+Responde estrictamente en JSON:
+{{
+    "analisis": "Explicación en markdown",
+    "puntos_clave": ["Punto 1", "Punto 2", "Punto 3"]
+}}
+"""
+    response = client_ai.models.generate_content(model=modelo, contents=prompt)
+    return _parsear_json_gemini(response.text)
+
+
+def _generar_narrativa_equipos_gemini(
+    usuario: dict,
+    situacion: str,
+    resultado_sim: dict,
+    modelo: str,
+) -> str:
+    prompt = f"""
+Eres un estratega de War Thunder. La batalla entre equipos YA FUE SIMULADA con Monte Carlo
+({resultado_sim['simulaciones_monte_carlo']} iteraciones) y red neuronal PyTorch.
+NO cambies la probabilidad de victoria ni reclasifiques tanques.
+
+SITUACIÓN:
+{situacion}
+
+TANQUE DEL USUARIO:
+{usuario.get('nombre')} ({usuario.get('nacion')})
+
+RESULTADOS CALCULADOS:
+{json.dumps(resultado_sim, indent=2, ensure_ascii=False)}
+
+Redacta en markdown una narrativa táctica del desarrollo de la batalla coherente con:
+- Probabilidad de victoria aliada: {resultado_sim['probabilidad_victoria']}%
+- Clasificaciones de enemigos y aliados ya calculadas
+- Promedio de supervivientes indicado en los datos
+
+Responde estrictamente en JSON:
+{{
+    "resultado_general": "Narrativa en markdown"
+}}
+"""
+    response = client_ai.models.generate_content(model=modelo, contents=prompt)
+    return _parsear_json_gemini(response.text)["resultado_general"]
+
+
 @app.post("/combate-ia/", response_model=CombateIAResponse)
 async def simular_combate_ia(request: CombateIARequest):
     """
-    Simula un combate entre dos vehículos de War Thunder usando IA Gemini.
+    Simula un combate 1v1 con Monte Carlo + PyTorch y usa Gemini solo para redactar el análisis.
     """
     if not GEMINI_API_KEY:
         raise HTTPException(
-            status_code=500, 
+            status_code=500,
             detail="La funcionalidad de IA no está configurada (falta API Key)"
         )
 
     try:
-        # 1. Obtener datos de ambos vehículos
         v1 = tanks_collection.find_one({"_id": ObjectId(request.vehiculo1_id)})
         v2 = tanks_collection.find_one({"_id": ObjectId(request.vehiculo2_id)})
 
         if not v1 or not v2:
             raise HTTPException(status_code=404, detail="Uno o ambos vehículos no fueron encontrados")
 
-        # Limpiar datos para el prompt
         v1 = convertir_decimal128_recursivo(v1)
         v2 = convertir_decimal128_recursivo(v2)
         v1["_id"] = str(v1["_id"])
         v2["_id"] = str(v2["_id"])
 
-        # 2. Construir el prompt
-        prompt = f"""
-        Como experto analista militar de War Thunder, simula un enfrentamiento entre estos dos vehículos:
+        resultado_mc = simular_duelo_monte_carlo(v1, v2, request.situacion)
+        resultado_sim = resultado_duelo_a_dict(resultado_mc)
 
-        VEHÍCULO 1: {v1['nombre']} ({v1['nacion']})
-        - BR: {v1.get('rating_realista', 'N/A')}
-        - Blindaje (Chasis/Torreta): {v1.get('blindaje_chasis', 0)}/{v1.get('blindaje_torreta', 0)} mm
-        - Velocidad Máx: {v1.get('velocidad_adelante_realista', 0)} km/h
-        - Recarga: {v1.get('recarga', 0)} s
-        - Cargador: {v1.get('cargador', 1)} disparos
-        - Cadencia: {v1.get('cadencia', 0)} disparos/min
-        - Datos técnicos completos: {json.dumps(v1, default=str)}
-
-        VEHÍCULO 2: {v2['nombre']} ({v2['nacion']})
-        - BR: {v2.get('rating_realista', 'N/A')}
-        - Blindaje (Chasis/Torreta): {v2.get('blindaje_chasis', 0)}/{v2.get('blindaje_torreta', 0)} mm
-        - Velocidad Máx: {v2.get('velocidad_adelante_realista', 0)} km/h
-        - Recarga: {v2.get('recarga', 0)} s
-        - Cargador: {v2.get('cargador', 1)} disparos
-        - Cadencia: {v2.get('cadencia', 0)} disparos/min
-        - Datos técnicos completos: {json.dumps(v2, default=str)}
-
-        SITUACIÓN DE COMBATE:
-        {request.situacion}
-
-        REFERENCIA TÉCNICA DE BALÍSTICA:
-        - El campo 'penetracion_mm' es una lista de 6 valores. Estos corresponden a la capacidad de penetración a las siguientes distancias: [0m, 100m, 500m, 1000m, 1500m, 2000m]. Úsalos para evaluar la efectividad real según la distancia de la SITUACIÓN DE COMBATE.
-        - Los campos 'masa_total' y 'masa_explosivo' están en gramos, úsalos para evaluar el daño post-penetración. Ten en cuenta que no todo el blindaje ni tiene la misma composición ni la misma inclinación, por lo que deberás investigar al respecto para tomar una decisión acertada.
-        INSTRUCCIONES DE ANÁLISIS:
-        1. Analiza TODAS las armas disponibles en cada vehículo (cañones principales, secundarios y ametralladoras).
-        2. Para cada arma, evalúa todas sus municiones disponibles.
-        3. Identifica la munición que, siendo capaz de penetrar el blindaje del oponente a la distancia de la situación dada, genere el mayor daño post-penetración (considerando tipo de proyectil, masa de explosivo y calibre).
-        4. Evalúa la capacidad de fuego para decidir el ganador:
-           - Si el vehículo tiene un 'cargador' mayor a 1, ten en cuenta la 'cadencia' de disparo para evaluar su capacidad de saturar al enemigo con varios disparos rápidos en poco tiempo.
-           - Si el 'cargador' es 1, básate simplemente en el tiempo de 'recarga' para disparos individuales.
-        5. Determina el ganador basándote en la ventaja táctica, supervivencia, arsenal y la lógica de cadencia/recarga analizada.
-        
-        Responde estrictamente en formato JSON con la siguiente estructura:
-        {{
-            "ganador": "Nombre del vehículo ganador",
-            "analisis": "Explicación técnica detallada: indica qué arma y munición específica se usó, por qué es la más letal y cómo influyó la cadencia/recarga en el resultado",
-            "puntos_clave": ["Punto 1", "Punto 2", "Punto 3"]
-        }}
-        """
-
-        # 3. Llamar a Gemini (Usar el modelo seleccionado o el default 1.5 Flash)
-        modelo_a_usar = request.modelo if hasattr(request, 'modelo') and request.modelo else 'gemini-2.0-flash-exp'
-        
+        modelo_a_usar = request.modelo if request.modelo else "gemini-2.0-flash-exp"
         if not client_ai:
             raise HTTPException(status_code=500, detail="El cliente de IA no está inicializado")
 
-        response = client_ai.models.generate_content(
-            model=modelo_a_usar,
-            contents=prompt
+        narrativa = _generar_analisis_duelo_gemini(
+            v1, v2, request.situacion, resultado_sim, modelo_a_usar
         )
-        
-        # 4. Parsear respuesta
-        # Limpiar posibles bloques de código markdown si los hay
-        texto_limpio = response.text.replace('```json', '').replace('```', '').strip()
-        resultado_ia = json.loads(texto_limpio)
 
-        # Convertir el análisis de Markdown a HTML para que el frontend lo muestre bien
-        if 'analisis' in resultado_ia:
-            resultado_ia['analisis'] = markdown.markdown(resultado_ia['analisis'])
+        return CombateIAResponse(
+            ganador=resultado_sim["ganador"],
+            analisis=markdown.markdown(narrativa.get("analisis", "")),
+            puntos_clave=narrativa.get("puntos_clave", [])[:3] or [
+                f"Ganador calculado: {resultado_sim['ganador']} ({resultado_sim['prob_victoria_ganador_pct']:.1f}%)",
+                f"Distancia de combate: {resultado_sim['distancia_m']} m",
+                resultado_sim["resumen_tecnico"],
+            ],
+        )
 
-        return CombateIAResponse(**resultado_ia)
-
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error en combate IA: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error al procesar la simulación: {str(e)}")
@@ -978,13 +1013,11 @@ async def simular_combate_ia(request: CombateIARequest):
 @app.post("/simulacion-equipos-ia/", response_model=SimulacionEquiposIAResponse)
 async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
     """
-    Simula un combate entre dos equipos de tanques (1-16 vehículos cada uno)
-    y genera un análisis táctico personalizado para el vehículo del usuario.
-    Recibe los datos completos de cada tanque desde el frontend.
+    Simula combate de equipos con Monte Carlo + PyTorch y usa Gemini solo para la narrativa.
     """
     if not GEMINI_API_KEY:
         raise HTTPException(
-            status_code=500, 
+            status_code=500,
             detail="La funcionalidad de IA no está configurada (falta API Key)"
         )
 
@@ -996,112 +1029,38 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
         raise HTTPException(status_code=400, detail="El índice del tanque del usuario no es válido.")
 
     try:
-        tanque_usuario = request.equipo_aliado[request.tanque_usuario_index]
+        aliados = [convertir_decimal128_recursivo(t) for t in request.equipo_aliado]
+        enemigos = [convertir_decimal128_recursivo(t) for t in request.equipo_enemigo]
+        usuario = aliados[request.tanque_usuario_index]
 
-        def simplificar_tanque(t):
-            # Simplificamos la estructura para no superar límites de tokens del modelo
-            municiones = []
-            for setup_key in ["setup_1", "setup_2"]:
-                setup = t.get(setup_key, {})
-                if not setup:
-                    continue
-                for arma_name, arma in setup.items():
-                    if not isinstance(arma, dict):
-                        continue
-                    for m in arma.get("municiones", []):
-                        if isinstance(m, dict):
-                            municiones.append({
-                                "nombre": m.get("nombre"),
-                                "tipo": m.get("tipo"),
-                                "penetracion_mm": m.get("penetracion_mm", [])
-                            })
-            return {
-                "nombre": t.get("nombre"),
-                "nacion": t.get("nacion"),
-                "BR": t.get("rating_realista", "N/A"),
-                "blindaje_chasis": t.get("blindaje_chasis", 0),
-                "blindaje_torreta": t.get("blindaje_torreta", 0),
-                "velocidad_max": t.get("velocidad_adelante_realista", 0),
-                "recarga": t.get("recarga", 0),
-                "cadencia": t.get("cadencia", 0),
-                "cargador": t.get("cargador", 1),
-                "municiones": municiones[:5]  # Limitar para ahorrar espacio
-            }
+        resultado_mc = simular_equipos_monte_carlo(
+            aliados,
+            enemigos,
+            request.tanque_usuario_index,
+            request.situacion,
+        )
+        resultado_sim = resultado_equipos_a_dict(resultado_mc)
 
-        aliados_info = [simplificar_tanque(t) for t in request.equipo_aliado]
-        enemigos_info = [simplificar_tanque(t) for t in request.equipo_enemigo]
-        usuario_info = simplificar_tanque(tanque_usuario)
-
-        prompt = f"""
-        Como experto estratega y analista militar de War Thunder, simula un combate de equipos y genera un análisis táctico detallado y personalizado para el tanque controlado por el usuario.
-
-        SITUACIÓN DE COMBATE:
-        {request.situacion}
-
-        TANQUE QUE CONTROLA EL USUARIO:
-        {json.dumps(usuario_info, indent=2, ensure_ascii=False)}
-
-        EQUIPO ALIADO (Incluye al tanque del usuario):
-        {json.dumps(aliados_info, indent=2, ensure_ascii=False)}
-
-        EQUIPO ENEMIGO:
-        {json.dumps(enemigos_info, indent=2, ensure_ascii=False)}
-
-        INSTRUCCIONES DE ANÁLISIS:
-        1. Simula el combate general entre los dos equipos evaluando las composiciones, tipos de vehículos, blindaje, movilidad y potencial de fuego a las distancias de la situación dada.
-        2. Determina el desarrollo general de la batalla en "resultado_general" (narrativa detallada del combate en formato markdown) y la "probabilidad_victoria" del equipo aliado (un número entre 0.0 y 100.0).
-        3. Realiza un análisis táctico personalizado para el usuario, respondiendo estrictamente en las siguientes categorías en formato JSON:
-           - "enemigos_prioritarios": Enemigos que el usuario puede destruir con facilidad o representan blancos clave que debe priorizar.
-           - "enemigos_a_evitar": Enemigos que por su blindaje o calibre son demasiado peligrosos y el usuario debe evitar en combates directos 1v1.
-           - "no_representan_amenaza": Enemigos incapaces de penetrar el blindaje del usuario o con prestaciones sumamente bajas frente al vehículo del usuario.
-           - "mas_daninos": Enemigos con la mayor capacidad de destruir o infligir un daño masivo al tanque del usuario (basándote en su penetración y poder explosivo contra el blindaje del usuario).
-           - "mejores_companeros": Los mejores aliados de su propio equipo con los que el usuario debería cooperar o agruparse para compensar debilidades mutuas (por ejemplo, protección, flanqueo rápido, recarga).
-        
-        Cada elemento en las listas de análisis debe contener obligatoriamente:
-        - "nombre": Nombre exacto del tanque.
-        - "nacion": Nación del tanque.
-        - "razon": Explicación táctica detallada y técnica de por qué se clasifica así, basada en datos balísticos, de recarga, movilidad o blindaje.
-
-        Responde estrictamente en formato JSON con la siguiente estructura (no agregues texto fuera del JSON, usa markdown limpio para el campo "resultado_general"):
-        {{
-            "resultado_general": "Descripción detallada del desarrollo y transcurso de la batalla en formato markdown",
-            "probabilidad_victoria": 65.5,
-            "enemigos_prioritarios": [
-                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
-            ],
-            "enemigos_a_evitar": [
-                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
-            ],
-            "no_representan_amenaza": [
-                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
-            ],
-            "mas_daninos": [
-                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
-            ],
-            "mejores_companeros": [
-                {{"nombre": "Nombre", "nacion": "Nacion", "razon": "Razon técnica"}}
-            ]
-        }}
-        """
-
-        modelo_a_usar = request.modelo if request.modelo else 'gemini-2.0-flash-exp'
-        
+        modelo_a_usar = request.modelo if request.modelo else "gemini-2.0-flash-exp"
         if not client_ai:
             raise HTTPException(status_code=500, detail="El cliente de IA no está inicializado")
 
-        response = client_ai.models.generate_content(
-            model=modelo_a_usar,
-            contents=prompt
+        resultado_general_md = _generar_narrativa_equipos_gemini(
+            usuario, request.situacion, resultado_sim, modelo_a_usar
         )
 
-        texto_limpio = response.text.replace('```json', '').replace('```', '').strip()
-        resultado_ia = json.loads(texto_limpio)
+        return SimulacionEquiposIAResponse(
+            resultado_general=markdown.markdown(resultado_general_md),
+            probabilidad_victoria=resultado_sim["probabilidad_victoria"],
+            enemigos_prioritarios=resultado_sim["enemigos_prioritarios"],
+            enemigos_a_evitar=resultado_sim["enemigos_a_evitar"],
+            no_representan_amenaza=resultado_sim["no_representan_amenaza"],
+            mas_daninos=resultado_sim["mas_daninos"],
+            mejores_companeros=resultado_sim["mejores_companeros"],
+        )
 
-        if 'resultado_general' in resultado_ia:
-            resultado_ia['resultado_general'] = markdown.markdown(resultado_ia['resultado_general'])
-
-        return SimulacionEquiposIAResponse(**resultado_ia)
-
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error en simulación de equipos IA: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error al procesar la simulación de equipos: {str(e)}")
