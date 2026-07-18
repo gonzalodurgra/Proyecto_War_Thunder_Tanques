@@ -462,25 +462,32 @@ def _es_municion_he_pura(tipo: str) -> bool:
 
 
 def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blindaje: float) -> float:
-    if penetracion < blindaje * 0.82:
-        return 0.0
     tipo = str(municion.get("tipo", "")).upper()
     masa_exp = float(municion.get("masa_explosivo") or 0)
     masa_total = float(municion.get("masa_total") or 1000)
-    factor_pen = min(1.0, penetracion / max(blindaje, 1))
+
+    if penetracion <= 0:
+        return 0.0
+
+    umbral = max(blindaje, 1) * 0.82
+    if penetracion < umbral:
+        factor_pen = max(0.15, penetracion / max(umbral, 1))
+    else:
+        factor_pen = min(1.0, penetracion / max(blindaje, 1))
 
     if _es_municion_aphe(tipo):
-        # Mayor daño post-penetración: explosivo detonando tras atravesar el blindaje
-        base = 0.48 + min(0.52, masa_exp / 3000) + min(0.22, masa_total / 11000)
+        # Las APHE deben conservar más daño incluso con penetración marginal.
+        base = 0.42 + min(0.36, masa_exp / 2400) + min(0.16, masa_total / 12000)
     elif "HEAT" in tipo:
-        base = 0.45 + min(0.55, masa_exp / 2800)
+        base = 0.38 + min(0.42, masa_exp / 2400)
     elif _es_municion_he_pura(tipo):
-        base = 0.25 + min(0.75, masa_exp / 4500)
+        base = 0.20 + min(0.60, masa_exp / 3000)
     elif "APCR" in tipo or "APDS" in tipo:
-        base = 0.30 + min(0.45, masa_total / 9000)
+        base = 0.28 + min(0.42, masa_total / 8000)
     else:
-        base = 0.35 + min(0.45, masa_exp / 3800) + min(0.12, masa_total / 14000)
-    return min(1.0, base * (0.65 + 0.35 * factor_pen))
+        base = 0.30 + min(0.32, masa_exp / 4000) + min(0.12, masa_total / 12000)
+
+    return min(1.0, base * (0.55 + 0.45 * factor_pen))
 
 
 def iterar_municiones(tanque: Dict[str, Any]):
