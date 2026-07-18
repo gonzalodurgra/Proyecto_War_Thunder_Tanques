@@ -165,14 +165,21 @@ class CombatEffectivenessNet(nn.Module):
             nn.Linear(16, 3),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Any) -> Any:
+        if torch is None:
+            raise RuntimeError("PyTorch no está disponible; usa ONNX Runtime para inferencia.")
         return 0.75 + 0.5 * torch.sigmoid(self.encoder(x))
 
 
 class CombatSimulatorEngine:
     def __init__(self) -> None:
-        self.device = torch.device("cpu")
-        self.net = CombatEffectivenessNet().to(self.device)
+        if torch is not None:
+            self.device = torch.device("cpu")
+            # only call .to() when torch is available
+            self.net = CombatEffectivenessNet().to(self.device)
+        else:
+            self.device = None
+            self.net = CombatEffectivenessNet()
         self.net.eval()
         self._model_ready = False
         self.onnx_session = None
