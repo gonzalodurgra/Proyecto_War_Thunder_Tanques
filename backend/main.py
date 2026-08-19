@@ -30,9 +30,6 @@ from typing import Optional
 from statistics import mean
 from bson.decimal128 import Decimal128
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from actualizar_datos import actualizar_tanques_semanal
-
 def convertir_decimal128_recursivo(dato):
     """
     Convierte todos los Decimal128 a float de forma recursiva.
@@ -61,17 +58,8 @@ async def lifespan(app: FastAPI):
     """
     print("Iniciando aplicación...")
     verificar_conexion()
-    
-    # Iniciar el programador de tareas (APScheduler)
-    scheduler = AsyncIOScheduler()
-    # Programar para ejecutarse cada semana (ejemplo: Lunes a las 03:00 AM)
-    scheduler.add_job(actualizar_tanques_semanal, 'cron', day_of_week='*', hour=23, minute=20)
-    scheduler.start()
-    print("Programador de tareas iniciado (Actualización de tanques programada a las 23:20).")
-    
     yield
     print("Deteniendo aplicación.")
-    scheduler.shutdown()
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(

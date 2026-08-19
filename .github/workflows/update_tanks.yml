@@ -1,0 +1,53 @@
+name: Update Tanks Weekly
+
+on:
+  schedule:
+    # Run at 03:00 on Monday
+    - cron: '30 23 * * *'
+  workflow_dispatch: # Permite ejecutar el workflow manualmente
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements-scraper.txt
+          
+      - name: Install Playwright Browsers
+        run: |
+          cd backend
+          playwright install chromium
+          
+      - name: Run Scraper and Update DB
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          cd backend
+          python actualizar_datos.py
+          
+      - name: Commit changes (New images and tanques.json)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add backend/imagenes/
+          git add backend/tanques.json
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update tanks data and images"
+            git push
+          fi
