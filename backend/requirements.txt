@@ -18,3 +18,4 @@ onnxruntime
 onnx
 onnxscript
 apscheduler
+playwright
