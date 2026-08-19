@@ -65,9 +65,9 @@ async def lifespan(app: FastAPI):
     # Iniciar el programador de tareas (APScheduler)
     scheduler = AsyncIOScheduler()
     # Programar para ejecutarse cada semana (ejemplo: Lunes a las 03:00 AM)
-    scheduler.add_job(actualizar_tanques_semanal, 'cron', day_of_week='*', hour=0, minute=0)
+    scheduler.add_job(actualizar_tanques_semanal, 'cron', day_of_week='*', hour=23, minute=15)
     scheduler.start()
-    print("Programador de tareas iniciado (Actualización de tanques programada a las 00:00 AM).")
+    print("Programador de tareas iniciado (Actualización de tanques programada a las 23:15 AM).")
     
     yield
     print("Deteniendo aplicación.")
