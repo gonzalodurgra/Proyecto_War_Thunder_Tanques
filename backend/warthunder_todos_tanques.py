@@ -130,7 +130,14 @@ async def extraer_municiones_arma(bloque_arma, pagina):
     
     # Expandir acordeón si existe
     if await bloque_arma.locator(".accordion-button").count() > 0:
-        await bloque_arma.locator(".accordion-button").click()
+        try:
+            await bloque_arma.locator(".accordion-button").click(timeout=5000)
+        except Exception:
+            # Si un popup o header intercepta el click, forzar el click con JavaScript
+            try:
+                await bloque_arma.locator(".accordion-button").click(force=True, timeout=3000)
+            except Exception:
+                pass  # Si sigue fallando, continuar sin expandir
     
     # Iterar sobre cada fila de munición
     filas = await bloque_arma.locator(".game-unit_belt-list tr").all()
@@ -399,6 +406,16 @@ async def procesar_tanque(navegador, url_tanque, semaforo):
             await subpagina.goto(url_tanque, timeout=90000, wait_until="domcontentloaded")
             # Esperar a que la red esté tranquila para asegurar carga de imágenes
             await subpagina.wait_for_load_state("networkidle", timeout=15000)
+            
+            # Cerrar popup de cookies si aparece (bloquea clicks en acordeones)
+            try:
+                cookie_btn = subpagina.locator("#ch2-dialog .ch2-allow-all-btn, #ch2-dialog .ch2-btn-primary, .ch2-close-btn")
+                if await cookie_btn.count() > 0:
+                    await cookie_btn.first.click(timeout=3000)
+                    await subpagina.wait_for_timeout(500)
+            except Exception:
+                pass  # Si no hay popup, continuar
+            
             return await fetch_data(subpagina)
         except Exception as e:
             print(f"Error procesando {url_tanque}: {e}")
