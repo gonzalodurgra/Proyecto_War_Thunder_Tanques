@@ -14,6 +14,7 @@ class Municion(BaseModel):
     masa_total: Optional[float] = None  # Optional significa que puede ser None
     velocidad_bala: Optional[int] = None
     masa_explosivo: Optional[float] = None
+    datos_generados_por_ia: Optional[bool] = False
 
 # Paso 2: Definir el modelo para las armas
 class Arma(BaseModel):
@@ -87,6 +88,7 @@ class CombateIAResponse(BaseModel):
     ganador: str
     analisis: str
     puntos_clave: List[str]
+    datos_estimados_ia: Optional[bool] = False
 
 class ElementoAnalisis(BaseModel):
     nombre: str
@@ -108,3 +110,4 @@ class SimulacionEquiposIAResponse(BaseModel):
     no_representan_amenaza: List[ElementoAnalisis]
     mas_daninos: List[ElementoAnalisis]
     mejores_companeros: List[ElementoAnalisis]
+    datos_estimados_ia: Optional[bool] = False

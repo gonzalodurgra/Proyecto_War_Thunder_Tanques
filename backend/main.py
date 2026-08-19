@@ -30,6 +30,9 @@ from typing import Optional
 from statistics import mean
 from bson.decimal128 import Decimal128
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from actualizar_datos import actualizar_tanques_semanal
+
 def convertir_decimal128_recursivo(dato):
     """
     Convierte todos los Decimal128 a float de forma recursiva.
@@ -58,8 +61,17 @@ async def lifespan(app: FastAPI):
     """
     print("Iniciando aplicación...")
     verificar_conexion()
+    
+    # Iniciar el programador de tareas (APScheduler)
+    scheduler = AsyncIOScheduler()
+    # Programar para ejecutarse cada semana (ejemplo: Lunes a las 03:00 AM)
+    scheduler.add_job(actualizar_tanques_semanal, 'cron', day_of_week='*', hour=0, minute=0)
+    scheduler.start()
+    print("Programador de tareas iniciado (Actualización de tanques programada a las 00:00 AM).")
+    
     yield
     print("Deteniendo aplicación.")
+    scheduler.shutdown()
 
 # Paso 1: Crear la aplicación FastAPI
 app = FastAPI(
@@ -959,6 +971,90 @@ Responde estrictamente en JSON:
     return _parsear_json_gemini(response.text)["resultado_general"]
 
 
+def _estimar_datos_municion_gemini(nombre_arma: str, municion: dict, tanque_nombre: str, modelo: str) -> dict:
+    prompt = f"""
+Eres un experto balístico de War Thunder. Necesito estimar datos faltantes para la munición '{municion.get('nombre')}' (tipo: {municion.get('tipo')}) disparada por el cañón '{nombre_arma}' del tanque '{tanque_nombre}'.
+Solo estima los datos faltantes si no existen o son 0.
+Debes devolver un JSON con esta estructura exacta:
+{{
+    "masa_total": <numero en kg, ej: 15.5>,
+    "velocidad_bala": <numero en m/s, ej: 850>,
+    "masa_explosivo": <numero en gramos, ej: 150>
+}}
+Si no sabes, haz tu mejor estimación realista basada en municiones similares de la vida real o del juego. No devuelvas markdown, solo el JSON puro.
+"""
+    response = client_ai.models.generate_content(model=modelo, contents=prompt)
+    return _parsear_json_gemini(response.text)
+
+
+def _estimar_slope_factor_gemini(tanque: dict, modelo: str) -> float:
+    prompt = f"""
+Eres un experto en blindaje de tanques de War Thunder. El simulador necesita un 'slope factor' (factor de efectividad del blindaje inclinado) para el tanque '{tanque.get('nombre')}' ({tanque.get('nacion')}).
+El valor por defecto es 1.35. Basado en el diseño del chasis y torreta de este tanque, devuelve una estimación realista de su factor multiplicador de blindaje frente a proyectiles.
+Un tanque con blindaje muy inclinado (ej. T-34, Panther) puede tener 1.5 - 1.8, uno con blindaje plano (ej. Tiger I) puede tener 1.0 - 1.2.
+Debes devolver un JSON con esta estructura exacta:
+{{
+    "slope_factor": <numero flotante, ej: 1.45>
+}}
+No devuelvas markdown, solo el JSON puro.
+"""
+    response = client_ai.models.generate_content(model=modelo, contents=prompt)
+    data = _parsear_json_gemini(response.text)
+    return float(data.get("slope_factor", 1.35))
+
+
+async def _procesar_tanque_con_ia(tanque: dict, modelo: str) -> dict:
+    if not client_ai:
+        return tanque
+    
+    modificado = False
+    
+    if "slope_factor_ia" not in tanque:
+        try:
+            sf = _estimar_slope_factor_gemini(tanque, modelo)
+            tanque["slope_factor_ia"] = sf
+            modificado = True
+        except Exception as e:
+            print(f"Error estimando slope_factor: {e}")
+            
+    for armamento_key in ["armamento", "setup_1", "setup_2"]:
+        if armamento_key in tanque and isinstance(tanque[armamento_key], dict):
+            for nombre_arma, datos_arma in tanque[armamento_key].items():
+                if "municiones" in datos_arma:
+                    for municion in datos_arma["municiones"]:
+                        faltan = False
+                        if not municion.get("masa_total"): faltan = True
+                        if not municion.get("velocidad_bala"): faltan = True
+                        if not municion.get("masa_explosivo"): faltan = True
+                        
+                        if faltan:
+                            try:
+                                estimacion = _estimar_datos_municion_gemini(nombre_arma, municion, tanque.get("nombre", "Desconocido"), modelo)
+                                if not municion.get("masa_total"): municion["masa_total"] = float(estimacion.get("masa_total") or 0)
+                                if not municion.get("velocidad_bala"): municion["velocidad_bala"] = int(estimacion.get("velocidad_bala") or 0)
+                                if not municion.get("masa_explosivo"): municion["masa_explosivo"] = float(estimacion.get("masa_explosivo") or 0)
+                                municion["datos_generados_por_ia"] = True
+                                modificado = True
+                            except Exception as e:
+                                print(f"Error estimando munición: {e}")
+                                
+    if modificado and "_id" in tanque:
+        try:
+            id_tanque = tanque["_id"]
+            if isinstance(id_tanque, str):
+                id_tanque = ObjectId(id_tanque)
+            
+            tanque_update = dict(tanque)
+            if "_id" in tanque_update:
+                del tanque_update["_id"]
+                
+            tanks_collection.update_one({"_id": id_tanque}, {"$set": tanque_update})
+        except Exception as e:
+            print(f"Error actualizando tanque en BD: {e}")
+
+    return tanque
+
+
 @app.post("/combate-ia/", response_model=CombateIAResponse)
 async def simular_combate_ia(request: CombateIARequest):
     """
@@ -979,13 +1075,19 @@ async def simular_combate_ia(request: CombateIARequest):
 
         v1 = convertir_decimal128_recursivo(v1)
         v2 = convertir_decimal128_recursivo(v2)
+        
+        # Procesar con IA si faltan datos y obtener el slope factor
+        modelo_a_usar = request.modelo if request.modelo else "gemini-3.5-flash-lite"
+        v1 = await _procesar_tanque_con_ia(v1, modelo_a_usar)
+        v2 = await _procesar_tanque_con_ia(v2, modelo_a_usar)
+        
         v1["_id"] = str(v1["_id"])
         v2["_id"] = str(v2["_id"])
 
         resultado_mc = simular_duelo_monte_carlo(v1, v2, request.situacion)
         resultado_sim = resultado_duelo_a_dict(resultado_mc)
 
-        modelo_a_usar = request.modelo if request.modelo else "gemini-2.0-flash-exp"
+        modelo_a_usar = request.modelo if request.modelo else "gemini-3.5-flash-lite"
         if not client_ai:
             raise HTTPException(status_code=500, detail="El cliente de IA no está inicializado")
 
@@ -1001,6 +1103,7 @@ async def simular_combate_ia(request: CombateIARequest):
                 f"Distancia de combate: {resultado_sim['distancia_m']} m",
                 resultado_sim["resumen_tecnico"],
             ],
+            datos_estimados_ia=True
         )
 
     except HTTPException:
@@ -1029,8 +1132,20 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
         raise HTTPException(status_code=400, detail="El índice del tanque del usuario no es válido.")
 
     try:
-        aliados = [convertir_decimal128_recursivo(t) for t in request.equipo_aliado]
-        enemigos = [convertir_decimal128_recursivo(t) for t in request.equipo_enemigo]
+        modelo_a_usar = request.modelo if request.modelo else "gemini-3.5-flash-lite"
+        
+        aliados = []
+        for t in request.equipo_aliado:
+            t = convertir_decimal128_recursivo(t)
+            t = await _procesar_tanque_con_ia(t, modelo_a_usar)
+            aliados.append(t)
+            
+        enemigos = []
+        for t in request.equipo_enemigo:
+            t = convertir_decimal128_recursivo(t)
+            t = await _procesar_tanque_con_ia(t, modelo_a_usar)
+            enemigos.append(t)
+            
         usuario = aliados[request.tanque_usuario_index]
 
         resultado_mc = simular_equipos_monte_carlo(
@@ -1041,7 +1156,7 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
         )
         resultado_sim = resultado_equipos_a_dict(resultado_mc)
 
-        modelo_a_usar = request.modelo if request.modelo else "gemini-2.0-flash-exp"
+        modelo_a_usar = request.modelo if request.modelo else "gemini-3.5-flash-lite"
         if not client_ai:
             raise HTTPException(status_code=500, detail="El cliente de IA no está inicializado")
 
@@ -1057,6 +1172,7 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
             no_representan_amenaza=resultado_sim["no_representan_amenaza"],
             mas_daninos=resultado_sim["mas_daninos"],
             mejores_companeros=resultado_sim["mejores_companeros"],
+            datos_estimados_ia=True
         )
 
     except HTTPException:

@@ -379,7 +379,7 @@ class CombatSimulatorEngine:
             br=float(tanque.get("rating_realista") or 0),
             blindaje_chasis=float(tanque.get("blindaje_chasis") or 0),
             blindaje_torreta=float(tanque.get("blindaje_torreta") or 0),
-            blindaje_efectivo=blindaje * SLOPE_FACTOR,
+            blindaje_efectivo=blindaje * float(tanque.get("slope_factor_ia", SLOPE_FACTOR)),
             velocidad=float(tanque.get("velocidad_adelante_realista") or 0),
             intervalo_disparo=intervalo_disparo(tanque),
             cargador=int(tanque.get("cargador") or 1),
