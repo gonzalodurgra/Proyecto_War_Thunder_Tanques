@@ -36,7 +36,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.code-workspace
-tanques.json
-tanques_limpio.json
+#tanques.json
+#tanques_limpio.json
 todos_los_tanques.json
 backend/export_model_onnx.py
