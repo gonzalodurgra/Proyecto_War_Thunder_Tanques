@@ -482,12 +482,23 @@ def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blinda
         base = 0.38 + min(0.42, masa_exp / 2400)
     elif _es_municion_he_pura(tipo):
         base = 0.20 + min(0.60, masa_exp / 3000)
-    elif "APCR" in tipo or "APDS" in tipo:
+    elif "APCR" in tipo or "APDS" in tipo or "APFSDS" in tipo:
         base = 0.28 + min(0.42, masa_total / 8000)
+    elif "AP" in tipo:
+        base = 0.42 + min(0.36, masa_exp / 2400) + min(0.16, masa_total / 12000)
     else:
         base = 0.30 + min(0.32, masa_exp / 4000) + min(0.12, masa_total / 12000)
 
-    return min(1.0, base * (0.55 + 0.45 * factor_pen))
+    dano_final = base * (0.55 + 0.45 * factor_pen)
+    
+    # Bonificación por metralla (spalling): más blindaje penetrado crea más fragmentos
+    if penetracion >= umbral:
+        # Aumentamos el daño basándonos en el espesor del blindaje (1% extra por cada 10mm)
+        # Limitado a un +30% de daño base para mantener el equilibrio.
+        factor_metralla = min(0.30, blindaje / 1000.0)
+        dano_final += factor_metralla
+
+    return min(1.0, dano_final)
 
 
 def iterar_municiones(tanque: Dict[str, Any]):
