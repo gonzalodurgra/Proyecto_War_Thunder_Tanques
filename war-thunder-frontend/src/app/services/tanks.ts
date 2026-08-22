@@ -75,6 +75,8 @@ export interface CombateIAResponse {
   ganador: string;
   analisis: string;
   puntos_clave: string[];
+  detalles_aliados?: any[];
+  detalles_enemigos?: any[];
 }
 
 export interface ElementoAnalisis {
@@ -99,6 +101,8 @@ export interface SimulacionEquiposIAResponse {
   no_representan_amenaza: ElementoAnalisis[];
   mas_daninos: ElementoAnalisis[];
   mejores_companeros: ElementoAnalisis[];
+  detalles_aliados?: any[];
+  detalles_enemigos?: any[];
 }
 
 const URL_IMAGENES = 'https://proyecto-war-thunder-tanques.onrender.com/';
@@ -115,7 +119,7 @@ const URL_IMAGENES = 'https://proyecto-war-thunder-tanques.onrender.com/';
 export class TanksService {
   // URL base de tu API FastAPI
   private apiUrl = environment.apiUrl;
-  
+
   // Headers HTTP opcionales (por si necesitas añadir autenticación después)
   // private httpOptions = {
   //   headers: new HttpHeaders({
@@ -169,7 +173,7 @@ export class TanksService {
     // - Omitimos el _id porque MongoDB lo genera automáticamente
     // - Enviamos el tanque en el body de la petición
     const { _id: _id, ...tanqueSinId } = tanque;
-    
+
     return this.http.post<any>(
       `${this.apiUrl}/tanques/`,
       tanqueSinId,
@@ -182,7 +186,7 @@ export class TanksService {
   // ====================================================================
   actualizarTanque(id: string, tanque: Tanque): Observable<any> {
     const { _id: _id, ...tanqueSinId } = tanque;
-    
+
     return this.http.put<any>(
       `${this.apiUrl}/tanques/${id}`,
       tanqueSinId,
@@ -218,19 +222,19 @@ export class TanksService {
   obtenerNacionesUnicas(): Observable<string[]> {
     // EXPLICACIÓN: Este método procesa los tanques para obtener
     // una lista única de naciones
-    
+
     return new Observable(observer => {
       this.obtenerTodosLosTanques().subscribe({
         next: (tanques) => {
           // Extraer todas las naciones
           const naciones = tanques.map(t => t.nacion);
-          
+
           // Obtener valores únicos usando Set
           const nacionesUnicas = Array.from(new Set(naciones));
-          
+
           // Ordenar alfabéticamente
           nacionesUnicas.sort();
-          
+
           observer.next(nacionesUnicas);
           observer.complete();
         },
@@ -243,7 +247,7 @@ export class TanksService {
 
   private getAuthHeaders() {
     const token = localStorage.getItem('access_token');
-    
+
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -253,35 +257,35 @@ export class TanksService {
   }
 
   private traducirNombres(tanque: Tanque): Tanque {
-  // Diccionarios de traducción
-  const traducciones = {
-    nacion: {
-      'USA': 'Estados Unidos',
-      'Germany': 'Alemania',
-      'USSR': 'URSS',
-      'Great Britain': 'Gran Bretaña',
-      'Japan': 'Japón',
-      'China': 'China',
-      'Italy': 'Italia',
-      'France': 'Francia',
-      'Sweden': 'Suecia',
-      'Israel': 'Israel'
-    },
-    rol: {
-      'Light tank': 'Tanque Ligero',
-      'Medium tank': 'Tanque Medio',
-      'Heavy tank': 'Tanque Pesado',
-      'Tank destroyer': 'Destructor de Tanques',
-      'SPAA': 'Antiaéreo Autopropulsado'
-    }
-  };
+    // Diccionarios de traducción
+    const traducciones = {
+      nacion: {
+        'USA': 'Estados Unidos',
+        'Germany': 'Alemania',
+        'USSR': 'URSS',
+        'Great Britain': 'Gran Bretaña',
+        'Japan': 'Japón',
+        'China': 'China',
+        'Italy': 'Italia',
+        'France': 'Francia',
+        'Sweden': 'Suecia',
+        'Israel': 'Israel'
+      },
+      rol: {
+        'Light tank': 'Tanque Ligero',
+        'Medium tank': 'Tanque Medio',
+        'Heavy tank': 'Tanque Pesado',
+        'Tank destroyer': 'Destructor de Tanques',
+        'SPAA': 'Antiaéreo Autopropulsado'
+      }
+    };
 
-  // Retornar el tanque traducido
-  return {
-    ...tanque,
-    imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`,
-    nacion: traducciones.nacion[tanque.nacion as keyof typeof traducciones.nacion] || tanque.nacion,
-    rol: traducciones.rol[tanque.rol as keyof typeof traducciones.rol] || tanque.rol
-  };
-}
+    // Retornar el tanque traducido
+    return {
+      ...tanque,
+      imagen_local: `${URL_IMAGENES}${tanque.imagen_local}`,
+      nacion: traducciones.nacion[tanque.nacion as keyof typeof traducciones.nacion] || tanque.nacion,
+      rol: traducciones.rol[tanque.rol as keyof typeof traducciones.rol] || tanque.rol
+    };
+  }
 }
