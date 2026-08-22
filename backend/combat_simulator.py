@@ -558,14 +558,14 @@ def calcular_dpm(tanque: Dict[str, Any], distancia: int) -> float:
     cadencia = float(tanque.get("cadencia") or 1.0)
     recarga = float(tanque.get("recarga") or 5.0)
     cargador = int(tanque.get("cargador") or 1)
-    dano = max(municion.dano_esperado, 0.05)
+    dano = municion.dano_esperado
 
     if cargador > 1:
-        intervalo_entre_disparos = 60.0 / max(cadencia, 1.0)
-        ciclo = cargador * intervalo_entre_disparos + max(recarga, 0.8)
-        disparos_por_min = cargador * 60.0 / max(ciclo, 1.0)
+        intervalo_entre_disparos = 60.0 / cadencia
+        ciclo = cargador * intervalo_entre_disparos + recarga
+        disparos_por_min = cargador * 60.0 / ciclo
     else:
-        disparos_por_min = 60.0 / max(recarga, 0.5)
+        disparos_por_min = 60.0 / recarga
 
     return disparos_por_min * dano * 100
 
