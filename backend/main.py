@@ -1091,6 +1091,8 @@ async def simular_combate_ia(request: CombateIARequest):
                 f"Distancia de combate: {resultado_sim['distancia_m']} m",
                 resultado_sim["resumen_tecnico"],
             ],
+            detalles_aliados=[resultado_sim["vehiculo_1"]],
+            detalles_enemigos=[resultado_sim["vehiculo_2"]],
             datos_estimados_ia=True
         )
 
@@ -1160,6 +1162,8 @@ async def simular_combate_equipos_ia(request: SimulacionEquiposIARequest):
             no_representan_amenaza=resultado_sim["no_representan_amenaza"],
             mas_daninos=resultado_sim["mas_daninos"],
             mejores_companeros=resultado_sim["mejores_companeros"],
+            detalles_aliados=resultado_sim.get("detalles_aliados", []),
+            detalles_enemigos=resultado_sim.get("detalles_enemigos", []),
             datos_estimados_ia=True
         )
 

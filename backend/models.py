@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from bson.decimal128 import Decimal128
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 
 # Paso 1: Definir el modelo para las municiones
 class Municion(BaseModel):
@@ -88,6 +88,8 @@ class CombateIAResponse(BaseModel):
     ganador: str
     analisis: str
     puntos_clave: List[str]
+    detalles_aliados: Optional[List[Dict[str, Any]]] = None
+    detalles_enemigos: Optional[List[Dict[str, Any]]] = None
     datos_estimados_ia: Optional[bool] = False
 
 class ElementoAnalisis(BaseModel):
@@ -110,4 +112,6 @@ class SimulacionEquiposIAResponse(BaseModel):
     no_representan_amenaza: List[ElementoAnalisis]
     mas_daninos: List[ElementoAnalisis]
     mejores_companeros: List[ElementoAnalisis]
+    detalles_aliados: Optional[List[Dict[str, Any]]] = None
+    detalles_enemigos: Optional[List[Dict[str, Any]]] = None
     datos_estimados_ia: Optional[bool] = False
