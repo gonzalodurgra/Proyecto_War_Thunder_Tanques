@@ -103,10 +103,10 @@
             </ul>
         </div>
 
-        <div class="vehicle-details card" *ngIf="resultado.detalles_aliados || resultado.detalles_enemigos">
+        <div class="vehicle-details card" *ngIf="resultado?.detalles_aliados || resultado?.detalles_enemigos">
             <div class="detail-group">
                 <h4>Aliados</h4>
-                <div *ngFor="let v of resultado.detalles_aliados" class="detail-item">
+                <div *ngFor="let v of (resultado?.detalles_aliados || [])" class="detail-item">
                     <span>{{v.nombre}}</span>
                     <small>{{v.nacion}} - {{v.br}}</small>
                     <small>Daño: {{v.dano_esperado}}</small>
@@ -114,7 +114,7 @@
             </div>
             <div class="detail-group">
                 <h4>Enemigos</h4>
-                <div *ngFor="let v of resultado.detalles_enemigos" class="detail-item">
+                <div *ngFor="let v of (resultado?.detalles_enemigos || [])" class="detail-item">
                     <span>{{v.nombre}}</span>
                     <small>{{v.nacion}} - {{v.br}}</small>
                     <small>Daño: {{v.dano_esperado}}</small>
