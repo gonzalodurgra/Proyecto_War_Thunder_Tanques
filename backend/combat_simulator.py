@@ -491,14 +491,14 @@ def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blinda
 
     dano_final = base * (0.55 + 0.45 * factor_pen)
     
-    # Bonificación por metralla (spalling): más blindaje penetrado crea más fragmentos
+    # Bonificación por metralla (spalling): más blindaje penetrado y más explosivo crean más fragmentos
     if penetracion >= umbral:
         # Aumentamos el daño basándonos en el espesor del blindaje (1% extra por cada 10mm)
-        # Limitado a un +30% de daño base para mantener el equilibrio.
-        factor_metralla = min(0.30, blindaje / 1000.0)
+        # y la masa explosiva del proyectil. Limitado para mantener el equilibrio.
+        factor_metralla = min(0.30, blindaje / 1000.0) + min(0.30, masa_exp / 2000.0) + min(0.30, masa_total / 12000.0)
         dano_final += factor_metralla
 
-    return min(1.0, dano_final)
+    return dano_final
 
 
 def iterar_municiones(tanque: Dict[str, Any]):
