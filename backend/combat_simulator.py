@@ -154,6 +154,8 @@ class ResultadoEquipos:
     mejores_companeros: List[ElementoClasificado]
     duelos_usuario: List[Dict[str, Any]]
     resumen_batalla: str
+    detalles_aliados: List[Dict[str, Any]] = None
+    detalles_enemigos: List[Dict[str, Any]] = None
 
 
 class CombatEffectivenessNet(nn.Module):
@@ -726,6 +728,7 @@ def _detalle_perfil(
         "nombre": atacante.nombre,
         "nacion": atacante.nacion,
         "br": atacante.br,
+        "dano_esperado": round(atacante.municion_optima.dano_esperado, 3),
         "blindaje_efectivo_mm": round(atacante.blindaje_efectivo, 1),
         "velocidad_kmh": atacante.velocidad,
         "intervalo_disparo_s": round(atacante.intervalo_disparo, 2),
@@ -886,6 +889,24 @@ def simular_equipos_monte_carlo(
         f"enemigos {enemigos_vivos_total/n_simulaciones:.1f}."
     )
 
+    detalles_aliados = []
+    for i, t in enumerate(equipo_aliado):
+        detalles_aliados.append({
+            "nombre": t.get("nombre", "N/A"),
+            "nacion": t.get("nacion", "N/A"),
+            "br": t.get("rating_realista") or t.get("rating_arcade"),
+            "dano_esperado": round(perfiles_aliados[i].municion_optima.dano_esperado, 3)
+        })
+
+    detalles_enemigos = []
+    for i, t in enumerate(equipo_enemigo):
+        detalles_enemigos.append({
+            "nombre": t.get("nombre", "N/A"),
+            "nacion": t.get("nacion", "N/A"),
+            "br": t.get("rating_realista") or t.get("rating_arcade"),
+            "dano_esperado": round(perfiles_enemigos[i].municion_optima.dano_esperado, 3)
+        })
+
     return ResultadoEquipos(
         probabilidad_victoria=round(prob_victoria, 1),
         simulaciones=n_simulaciones,
@@ -899,6 +920,8 @@ def simular_equipos_monte_carlo(
         mejores_companeros=clasificaciones["companeros"],
         duelos_usuario=duelos_usuario,
         resumen_batalla=resumen,
+        detalles_aliados=detalles_aliados,
+        detalles_enemigos=detalles_enemigos,
     )
 
 
@@ -1056,4 +1079,6 @@ def resultado_equipos_a_dict(resultado: ResultadoEquipos) -> Dict[str, Any]:
         "mejores_companeros": _lista(resultado.mejores_companeros),
         "duelos_usuario_vs_enemigos": resultado.duelos_usuario,
         "resumen_batalla": resultado.resumen_batalla,
+        "detalles_aliados": resultado.detalles_aliados or [],
+        "detalles_enemigos": resultado.detalles_enemigos or [],
     }

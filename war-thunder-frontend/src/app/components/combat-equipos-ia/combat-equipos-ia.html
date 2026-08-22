@@ -20,7 +20,7 @@
       <div class="card-header allied-header">
         <i class="fas fa-shield-alt"></i> EQUIPO ALIADO ({{ equipoAliado.length }}/16)
       </div>
-      
+
       <div class="selector-input">
         <input type="text" [(ngModel)]="filtroAliado" (focus)="mostrarListaAliado = true"
           placeholder="Buscar y añadir tanque aliado..." />
@@ -36,14 +36,16 @@
         <div *ngIf="equipoAliado.length === 0" class="empty-team">
           No hay tanques aliados. Añade al menos uno para iniciar.
         </div>
-        <div *ngFor="let t of equipoAliado; let i = index" class="team-member" [class.user-tank-row]="tanqueUsuarioIndex === i">
+        <div *ngFor="let t of equipoAliado; let i = index" class="team-member"
+          [class.user-tank-row]="tanqueUsuarioIndex === i">
           <div class="member-info">
             <span class="user-badge" *ngIf="tanqueUsuarioIndex === i">TU TANQUE</span>
             <span class="member-name">{{ t.nombre }}</span>
             <span class="member-meta">{{ t.nacion }} | BR {{ t.rating_realista }}</span>
           </div>
           <div class="member-actions">
-            <button *ngIf="tanqueUsuarioIndex !== i" class="btn-action btn-user" (click)="seleccionarComoUsuario(i)" title="Manejar este tanque">
+            <button *ngIf="tanqueUsuarioIndex !== i" class="btn-action btn-user" (click)="seleccionarComoUsuario(i)"
+              title="Manejar este tanque">
               🎮 Llevar
             </button>
             <button class="btn-action btn-remove" (click)="quitarAliado(i)" title="Quitar del equipo">
@@ -105,7 +107,8 @@
       </small>
     </div>
 
-    <button class="btn-simulate" (click)="simular()" [disabled]="cargando || equipoAliado.length === 0 || equipoEnemigo.length === 0 || !tanqueUsuario">
+    <button class="btn-simulate" (click)="simular()"
+      [disabled]="cargando || equipoAliado.length === 0 || equipoEnemigo.length === 0 || !tanqueUsuario">
       <span *ngIf="!cargando">SIMULAR BATALLA DE EQUIPOS</span>
       <span *ngIf="cargando" class="loader"></span>
     </button>
@@ -135,7 +138,7 @@
     <!-- Análisis Táctico Personalizado respecto al Tanque del Usuario -->
     <div class="tactical-analysis-section">
       <h2>Análisis Táctico para tu {{ tanqueUsuario?.nombre }}</h2>
-      
+
       <div class="analysis-grid">
         <!-- Enemigos Prioritarios (Green) -->
         <div class="analysis-card priorities">
@@ -198,6 +201,25 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vehicle-details card" *ngIf="resultado.detalles_aliados || resultado.detalles_enemigos">
+    <div class="detail-group">
+      <h4>Aliados</h4>
+      <div *ngFor="let v of resultado.detalles_aliados" class="detail-item">
+        <span>{{v.nombre}}</span>
+        <small>{{v.nacion}} - {{v.br}}</small>
+        <small>Daño: {{v.dano_esperado}}</small>
+      </div>
+    </div>
+    <div class="detail-group">
+      <h4>Enemigos</h4>
+      <div *ngFor="let v of resultado.detalles_enemigos" class="detail-item">
+        <span>{{v.nombre}}</span>
+        <small>{{v.nacion}} - {{v.br}}</small>
+        <small>Daño: {{v.dano_esperado}}</small>
       </div>
     </div>
   </div>
