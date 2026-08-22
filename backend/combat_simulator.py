@@ -370,9 +370,9 @@ class CombatSimulatorEngine:
         velocidad_torreta = float(tanque.get("velocidad_torreta") or tanque.get("rotacion_torreta") or 30)
         angulo_elevacion_max = float(tanque.get("angulo_elevacion_max") or 30)
         angulo_depresion_max = float(tanque.get("angulo_depresion_max") or 10)
-        tripulacion = min(max(float(tanque.get("tripulacion") or 0.75), 0.4), 1.0)
-        tiempo_apuntado_base = max(0.5, 4.0 / max(velocidad_torreta, 1.0) + (30 - angulo_elevacion_max) * 0.02 + (15 - angulo_depresion_max) * 0.02)
-        supervivencia_base = max(0.8, 0.8 + (blindaje / 300.0) * 0.6 + (tripulacion - 0.5) * 0.4)
+        tripulacion = float(tanque.get("tripulacion") or 0.75)
+        tiempo_apuntado_base = 0.5 + 4.0 / velocidad_torreta + (30 - angulo_elevacion_max) * 0.02 + (15 - angulo_depresion_max) * 0.02
+        supervivencia_base = 0.8 + (blindaje / 300.0) * 0.6 + (tripulacion - 0.5) * 0.4
         return PerfilCombate(
             nombre=tanque.get("nombre", "Desconocido"),
             nacion=tanque.get("nacion", "N/A"),
