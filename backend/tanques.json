@@ -157,9 +157,9 @@
                             50,
                             41
                         ],
-                        "masa_total": 870.0,
-                        "velocidad_bala": 883,
-                        "masa_explosivo": null
+                        "masa_explosivo": null,
+                        "masa_total": null,
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -12073,8 +12073,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -39973,9 +39974,9 @@
                             39,
                             32
                         ],
-                        "masa_explosivo": null,
-                        "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_total": 1400.0,
+                        "velocidad_bala": 760,
+                        "masa_explosivo": 19.0
                     },
                     {
                         "nombre": "BR-240SP",
@@ -39988,9 +39989,9 @@
                             41,
                             34
                         ],
-                        "masa_explosivo": null,
-                        "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_total": 1400.0,
+                        "velocidad_bala": 757,
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -55754,9 +55755,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -78298,9 +78298,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
