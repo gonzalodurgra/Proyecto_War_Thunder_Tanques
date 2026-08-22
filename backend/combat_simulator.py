@@ -477,17 +477,17 @@ def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blinda
 
     if _es_municion_aphe(tipo):
         # Las APHE deben conservar más daño incluso con penetración marginal.
-        base = 0.42 + min(0.36, masa_exp / 2400) + min(0.16, masa_total / 12000)
+        base = 0.42 + (masa_exp / 2400) + (masa_total / 12000)
     elif "HEAT" in tipo:
-        base = 0.38 + min(0.42, masa_exp / 2400)
+        base = 0.38 + (masa_exp / 2400)
     elif _es_municion_he_pura(tipo):
-        base = 0.20 + min(0.60, masa_exp / 3000)
+        base = 0.20 + (masa_exp / 3000)
     elif "APCR" in tipo or "APDS" in tipo or "APFSDS" in tipo:
-        base = 0.28 + min(0.42, masa_total / 8000)
+        base = 0.28 + (masa_total / 8000)
     elif "AP" in tipo:
-        base = 0.42 + min(0.36, masa_exp / 2400) + min(0.16, masa_total / 12000)
+        base = 0.42 + (masa_exp / 2400) + (masa_total / 12000)
     else:
-        base = 0.30 + min(0.32, masa_exp / 4000) + min(0.12, masa_total / 12000)
+        base = 0.30 + (masa_exp / 4000) + (masa_total / 12000)
 
     dano_final = base * (0.55 + 0.45 * factor_pen)
     
@@ -495,7 +495,7 @@ def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blinda
     if penetracion >= umbral:
         # Aumentamos el daño basándonos en el espesor del blindaje (1% extra por cada 10mm)
         # y la masa explosiva del proyectil. Limitado para mantener el equilibrio.
-        factor_metralla = min(0.30, blindaje / 1000.0) + min(0.30, masa_exp / 2000.0) + min(0.30, masa_total / 12000.0)
+        factor_metralla = (blindaje / 1000.0) + (masa_exp / 2000.0) + (masa_total / 12000.0)
         dano_final += factor_metralla
 
     return dano_final
