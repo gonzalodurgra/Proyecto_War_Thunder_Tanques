@@ -1,12 +1,6 @@
 name: Update Tanks Weekly
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'backend/tanques.json'
-      - 'backend/imagenes/**'
   schedule:
     # Run at 23:30 every day
     - cron: '30 23 * * *'
