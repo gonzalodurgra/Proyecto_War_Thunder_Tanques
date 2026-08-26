@@ -157,9 +157,9 @@
                             50,
                             41
                         ],
-                        "masa_explosivo": null,
-                        "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_total": 870.0,
+                        "velocidad_bala": 883,
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -194,9 +194,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -8931,8 +8930,9 @@
                             9,
                             6
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -15440,8 +15440,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -24567,9 +24568,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -61752,8 +61752,9 @@
                             0,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -66264,8 +66265,9 @@
                             0,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -77307,125 +77309,6 @@
         }
     },
     {
-        "nombre": "Ka-Chi",
-        "imagen_local": "imagenes/Ka-Chi.jpg",
-        "rol": "Medium tank",
-        "nacion": "Japan",
-        "rating_arcade": 2.0,
-        "rating_realista": 2.0,
-        "tripulacion": 7,
-        "visibilidad": 250,
-        "peso": 28.8,
-        "blindaje_chasis": 50,
-        "blindaje_torreta": 50,
-        "velocidad_adelante_arcade": 39,
-        "velocidad_atras_arcade": 11,
-        "relacion_potencia_peso": 15.9,
-        "velocidad_adelante_realista": 35,
-        "velocidad_atras_realista": 10,
-        "relacion_potencia_peso_realista": 8.3,
-        "angulo_depresion": 15,
-        "angulo_elevacion": 20,
-        "recarga": 3.3,
-        "cadencia": 18.181818181818183,
-        "cargador": 1,
-        "municion_total": 120,
-        "rotacion_torreta_horizontal_arcade": 28.2,
-        "rotacion_torreta_vertical_arcade": 35.0,
-        "rotacion_torreta_horizontal_realista": 15.0,
-        "rotacion_torreta_vertical_realista": 10.0,
-        "setup_1": {
-            "47 mm Type 1 cannon": {
-                "municiones": [
-                    {
-                        "nombre": "Type 1 APHE",
-                        "tipo": "APHE",
-                        "penetracion_mm": [
-                            77,
-                            75,
-                            67,
-                            58,
-                            50,
-                            44
-                        ],
-                        "masa_total": 1500.0,
-                        "velocidad_bala": 808,
-                        "masa_explosivo": 14.0
-                    },
-                    {
-                        "nombre": "Type 1 HE",
-                        "tipo": "HE",
-                        "penetracion_mm": [
-                            10,
-                            9,
-                            8,
-                            7,
-                            5,
-                            5
-                        ],
-                        "masa_total": 1400.0,
-                        "velocidad_bala": 822,
-                        "masa_explosivo": 87.0
-                    }
-                ]
-            },
-            "7.7 mm Type 97 machine gun (coaxial)": {
-                "municiones": [
-                    {
-                        "nombre": "Default",
-                        "tipo": "AP/AP/T",
-                        "penetracion_mm": [
-                            13,
-                            12,
-                            7,
-                            3,
-                            2,
-                            0
-                        ],
-                        "masa_total": null,
-                        "masa_explosivo": null
-                    }
-                ]
-            }
-        },
-        "setup_2": {
-            "47 mm Type 1 cannon": {
-                "municiones": [
-                    {
-                        "nombre": "Type 1 APHE",
-                        "tipo": "APHE",
-                        "penetracion_mm": [
-                            77,
-                            75,
-                            67,
-                            58,
-                            50,
-                            44
-                        ],
-                        "masa_total": 1500.0,
-                        "velocidad_bala": 808,
-                        "masa_explosivo": 14.0
-                    },
-                    {
-                        "nombre": "Type 1 HE",
-                        "tipo": "HE",
-                        "penetracion_mm": [
-                            10,
-                            9,
-                            8,
-                            7,
-                            5,
-                            5
-                        ],
-                        "masa_total": 1400.0,
-                        "velocidad_bala": 822,
-                        "masa_explosivo": 87.0
-                    }
-                ]
-            }
-        }
-    },
-    {
         "nombre": "Ro-Go",
         "imagen_local": "imagenes/Ro-Go.jpg",
         "rol": "Heavy tank",
@@ -84717,9 +84600,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -91073,8 +90955,9 @@
                             9,
                             6
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -96917,9 +96800,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -107092,8 +106974,9 @@
                             9,
                             6
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -127524,9 +127407,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -128261,9 +128143,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -131042,9 +130923,8 @@
                             9,
                             6
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
