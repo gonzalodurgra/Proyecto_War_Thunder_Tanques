@@ -6112,8 +6112,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -28318,9 +28319,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -35936,7 +35936,8 @@
         "velocidad_adelante_realista": 60,
         "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 16.0,
-        "cadencia": 27,
+        "recarga": 1.0,
+        "cadencia": 60.0,
         "cargador": 1,
         "municion_total": 6,
         "rotacion_torreta_horizontal_arcade": 39.2,
@@ -41389,8 +41390,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -44524,8 +44526,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -47914,8 +47917,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -56568,7 +56572,8 @@
         "velocidad_adelante_realista": 60,
         "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 16.0,
-        "cadencia": 27,
+        "recarga": 1.0,
+        "cadencia": 60.0,
         "cargador": 1,
         "municion_total": 6,
         "rotacion_torreta_horizontal_arcade": 39.2,
@@ -59945,8 +59950,9 @@
                             12,
                             8
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -61752,9 +61758,8 @@
                             0,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -67872,8 +67877,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -73777,7 +73783,8 @@
         "velocidad_adelante_realista": 60,
         "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 16.0,
-        "cadencia": 27,
+        "recarga": 1.0,
+        "cadencia": 60.0,
         "cargador": 1,
         "municion_total": 6,
         "rotacion_torreta_horizontal_arcade": 39.2,
@@ -81980,71 +81987,6 @@
         }
     },
     {
-        "nombre": "Ho-Ri Production",
-        "imagen_local": "imagenes/Ho-Ri_Production.jpg",
-        "rol": "Tank destroyer",
-        "nacion": "Japan",
-        "rating_arcade": 7.3,
-        "rating_realista": 7.3,
-        "tripulacion": 6,
-        "visibilidad": 130,
-        "peso": 65.0,
-        "blindaje_chasis": 120,
-        "blindaje_torreta": 225,
-        "velocidad_adelante_arcade": 44,
-        "velocidad_atras_arcade": 9,
-        "relacion_potencia_peso": 29.6,
-        "velocidad_adelante_realista": 40,
-        "velocidad_atras_realista": 9,
-        "relacion_potencia_peso_realista": 16.9,
-        "angulo_depresion": 10,
-        "angulo_elevacion": 20,
-        "recarga": 8.6,
-        "cadencia": 6.976744186046512,
-        "cargador": 1,
-        "municion_total": 51,
-        "rotacion_torreta_horizontal_arcade": 10.4,
-        "rotacion_torreta_vertical_arcade": 12.2,
-        "rotacion_torreta_horizontal_realista": 6.0,
-        "rotacion_torreta_vertical_realista": 4.0,
-        "armamento": {
-            "105 mm Type 5 cannon": {
-                "municiones": [
-                    {
-                        "nombre": "Type 2 APHE",
-                        "tipo": "APHE",
-                        "penetracion_mm": [
-                            233,
-                            228,
-                            205,
-                            181,
-                            159,
-                            140
-                        ],
-                        "masa_total": 16000.0,
-                        "velocidad_bala": 1000,
-                        "masa_explosivo": 200.0
-                    },
-                    {
-                        "nombre": "Experimental HE",
-                        "tipo": "HE",
-                        "penetracion_mm": [
-                            30,
-                            30,
-                            30,
-                            30,
-                            30,
-                            30
-                        ],
-                        "masa_total": 16000.0,
-                        "velocidad_bala": 920,
-                        "masa_explosivo": 2500.0
-                    }
-                ]
-            }
-        }
-    },
-    {
         "nombre": "Type 75 MLRS",
         "imagen_local": "imagenes/Type_75_MLRS.jpg",
         "rol": "Tank destroyer",
@@ -82105,6 +82047,71 @@
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Ho-Ri Production",
+        "imagen_local": "imagenes/Ho-Ri_Production.jpg",
+        "rol": "Tank destroyer",
+        "nacion": "Japan",
+        "rating_arcade": 7.3,
+        "rating_realista": 7.3,
+        "tripulacion": 6,
+        "visibilidad": 130,
+        "peso": 65.0,
+        "blindaje_chasis": 120,
+        "blindaje_torreta": 225,
+        "velocidad_adelante_arcade": 44,
+        "velocidad_atras_arcade": 9,
+        "relacion_potencia_peso": 29.6,
+        "velocidad_adelante_realista": 40,
+        "velocidad_atras_realista": 9,
+        "relacion_potencia_peso_realista": 16.9,
+        "angulo_depresion": 10,
+        "angulo_elevacion": 20,
+        "recarga": 8.6,
+        "cadencia": 6.976744186046512,
+        "cargador": 1,
+        "municion_total": 51,
+        "rotacion_torreta_horizontal_arcade": 10.4,
+        "rotacion_torreta_vertical_arcade": 12.2,
+        "rotacion_torreta_horizontal_realista": 6.0,
+        "rotacion_torreta_vertical_realista": 4.0,
+        "armamento": {
+            "105 mm Type 5 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Type 2 APHE",
+                        "tipo": "APHE",
+                        "penetracion_mm": [
+                            233,
+                            228,
+                            205,
+                            181,
+                            159,
+                            140
+                        ],
+                        "masa_total": 16000.0,
+                        "velocidad_bala": 1000,
+                        "masa_explosivo": 200.0
+                    },
+                    {
+                        "nombre": "Experimental HE",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            30,
+                            30,
+                            30,
+                            30,
+                            30,
+                            30
+                        ],
+                        "masa_total": 16000.0,
+                        "velocidad_bala": 920,
+                        "masa_explosivo": 2500.0
                     }
                 ]
             }
@@ -94878,8 +94885,9 @@
                             200,
                             200
                         ],
-                        "masa_total": 7000.0,
-                        "masa_explosivo": 600.0
+                        "masa_explosivo": null,
+                        "masa_total": null,
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -98233,8 +98241,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -99399,9 +99408,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -105143,8 +105151,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -105999,7 +106008,8 @@
         "velocidad_adelante_realista": 60,
         "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 16.0,
-        "cadencia": 27,
+        "recarga": 1.0,
+        "cadencia": 60.0,
         "cargador": 1,
         "municion_total": 6,
         "rotacion_torreta_horizontal_arcade": 39.2,
@@ -121368,9 +121378,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -127007,9 +127016,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
