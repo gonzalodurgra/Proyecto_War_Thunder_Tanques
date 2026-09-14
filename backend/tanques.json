@@ -7876,9 +7876,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -60702,8 +60701,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
