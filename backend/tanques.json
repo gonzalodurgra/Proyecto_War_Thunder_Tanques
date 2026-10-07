@@ -3677,8 +3677,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -15556,8 +15557,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -16751,8 +16753,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -21231,9 +21234,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -47714,9 +47716,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -66596,8 +66597,9 @@
                             0,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -80850,8 +80852,9 @@
                             9,
                             6
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -97989,9 +97992,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -100567,9 +100569,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -100978,8 +100979,9 @@
                             9,
                             6
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -112015,9 +112017,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -112749,8 +112750,9 @@
                             9,
                             6
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -122556,9 +122558,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -127529,6 +127530,157 @@
         }
     },
     {
+        "nombre": "AMV (BMP-3)",
+        "imagen_local": "imagenes/AMV_(BMP-3).jpg",
+        "rol": "Light tank",
+        "nacion": "Sweden",
+        "rating_arcade": 9.3,
+        "rating_realista": 9.3,
+        "tripulacion": 3,
+        "visibilidad": 150,
+        "peso": 28.0,
+        "blindaje_chasis": 20,
+        "blindaje_torreta": 20,
+        "velocidad_adelante_arcade": 111,
+        "velocidad_atras_arcade": 19,
+        "relacion_potencia_peso": 37.5,
+        "velocidad_adelante_realista": 100,
+        "velocidad_atras_realista": 17,
+        "relacion_potencia_peso_realista": 19.6,
+        "recarga": 4.0,
+        "cadencia": 15.0,
+        "cargador": 1,
+        "municion_total": 48,
+        "armamento": {
+            "100 mm 2A70 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "3OF32",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            31,
+                            31,
+                            31,
+                            31,
+                            31,
+                            31
+                        ],
+                        "masa_total": 15600.0,
+                        "velocidad_bala": 250,
+                        "masa_explosivo": 1700.0
+                    },
+                    {
+                        "nombre": "3OF70",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            36,
+                            36,
+                            36,
+                            36,
+                            36,
+                            36
+                        ],
+                        "masa_total": 13400.0,
+                        "velocidad_bala": 355,
+                        "masa_explosivo": 2300.0
+                    },
+                    {
+                        "nombre": "9M117",
+                        "tipo": "ATGM",
+                        "penetracion_mm": [
+                            600,
+                            600,
+                            600,
+                            600,
+                            600,
+                            600
+                        ],
+                        "masa_total": 18800.0,
+                        "masa_explosivo": 3000.0
+                    },
+                    {
+                        "nombre": "9M117M1",
+                        "tipo": "ATGM (tandem)",
+                        "penetracion_mm": [
+                            750,
+                            750,
+                            750,
+                            750,
+                            750,
+                            750
+                        ],
+                        "masa_total": 18800.0,
+                        "masa_explosivo": 3000.0
+                    }
+                ]
+            },
+            "30 mm 2A72 automatic cannon": {
+                "municiones": [
+                    {
+                        "nombre": "30 mm HEI",
+                        "tipo": "HEF-I/HEF-I/HEF-I/AP-T",
+                        "penetracion_mm": [
+                            65,
+                            63,
+                            53,
+                            44,
+                            36,
+                            29
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm APDS",
+                        "tipo": "APDS/APDS/APDS/APDS/HEF-T",
+                        "penetracion_mm": [
+                            82,
+                            81,
+                            79,
+                            75,
+                            72,
+                            69
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm AP-T",
+                        "tipo": "AP-T/AP-T/AP-T/HEF-T",
+                        "penetracion_mm": [
+                            65,
+                            63,
+                            53,
+                            44,
+                            36,
+                            29
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm PKT machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP-I/API-T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
         "nombre": "Strf 9040C",
         "imagen_local": "imagenes/Strf_9040C.jpg",
         "rol": "Light tank",
@@ -128421,9 +128573,8 @@
                             9,
                             6
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -128520,8 +128671,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -129774,9 +129926,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -136047,15 +136198,15 @@
         "rating_realista": 12.7,
         "tripulacion": 4,
         "visibilidad": 87,
-        "peso": 59.9,
+        "peso": 63.0,
         "blindaje_chasis": 9,
         "blindaje_torreta": 6,
         "velocidad_adelante_arcade": 76,
         "velocidad_atras_arcade": 34,
-        "relacion_potencia_peso": 41.8,
+        "relacion_potencia_peso": 39.7,
         "velocidad_adelante_realista": 68,
         "velocidad_atras_realista": 31,
-        "relacion_potencia_peso_realista": 25.0,
+        "relacion_potencia_peso_realista": 23.8,
         "angulo_depresion": 9,
         "angulo_elevacion": 20,
         "recarga": 6.0,
