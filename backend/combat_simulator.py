@@ -1,7 +1,14 @@
 """
-Motor de simulación de combate War Thunder.
-Combina simulación Monte Carlo basada en reglas balísticas con una red neuronal
-PyTorch que refina la efectividad de cada vehículo.
+====================================================================
+MOTOR DE SIMULACIÓN DE COMBATE TÁCTICO WAR THUNDER
+====================================================================
+Este módulo implementa el núcleo de simulación balística y combate:
+1. Simulación Monte Carlo estocástica basada en reglas físicas y balísticas de War Thunder.
+2. Refinamiento mediante una Red Neuronal PyTorch / ONNX Runtime que ajusta
+   multiplicadores de penetración, daño y supervivencia según los atributos del vehículo.
+3. Simulación de duelos 1 vs 1 y combates por equipos (hasta 16 vs 16).
+4. Clasificación táctica de amenazas (prioritarios, a evitar, no amenaza, sinergias aliadas).
+====================================================================
 """
 
 from __future__ import annotations
@@ -16,20 +23,27 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
+# ====================================================================
+# SECCIÓN 1: IMPORTACIÓN CONDICIONAL Y FALLBACKS (PYTORCH / ONNX)
+# ====================================================================
+# Permite que el simulador funcione en entornos ligeros o sin dependencias compiladas,
+# priorizando ONNX Runtime y recurriendo a PyTorch o heurísticas simples si es necesario.
+
 try:
     import torch
     import torch.nn as nn
-except ImportError:  # pragma: no cover - optional dependency in local dev
+except ImportError:  # pragma: no cover - dependencia opcional en desarrollo local
     torch = None
     nn = None
 
 try:
     import onnxruntime as ort
-except ImportError:  # pragma: no cover - optional dependency in local dev
+except ImportError:  # pragma: no cover - dependencia opcional en desarrollo local
     ort = None
 
 if nn is None:
     class _TorchFallbackModule:
+        """Clase dummy para cuando PyTorch no está instalado."""
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             pass
 
@@ -43,6 +57,7 @@ if nn is None:
             return self
 
     class _TorchFallbackSequential:
+        """Clase dummy para capas secuenciales cuando PyTorch no está disponible."""
         def __init__(self, *layers: Any) -> None:
             self.layers = layers
 
@@ -50,6 +65,7 @@ if nn is None:
             raise RuntimeError("PyTorch no está instalado. Usa el modelo ONNX o instala torch.")
 
     class _TorchFallbackOptimizer:
+        """Clase dummy para el optimizador Adam cuando PyTorch no está disponible."""
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             pass
 
@@ -60,6 +76,7 @@ if nn is None:
             return None
 
     class _TorchFallbackLoss:
+        """Clase dummy para la función de pérdida cuando PyTorch no está disponible."""
         def __call__(self, *args: Any, **kwargs: Any) -> Any:
             raise RuntimeError("PyTorch no está instalado. Usa el modelo ONNX o instala torch.")
 
@@ -72,18 +89,27 @@ if nn is None:
         Adam=_TorchFallbackOptimizer,
     )
 
+# ====================================================================
+# SECCIÓN 2: CONSTANTES DE CALIBRACIÓN Y RUTAS DE MODELOS
+# ====================================================================
+
 BASE_DIR = Path(__file__).resolve().parent
-DISTANCIAS_REF = [0, 100, 500, 1000, 1500, 2000]
+DISTANCIAS_REF = [0, 100, 500, 1000, 1500, 2000]  # Distancias discretas de la wiki oficial (metros)
 MODELO_PATH = Path(os.getenv("COMBAT_MODEL_PT_PATH", str(BASE_DIR / "combat_model.pt")))
 MODELO_ONNX_PATH = Path(os.getenv("COMBAT_MODEL_ONNX_PATH", str(BASE_DIR / "combat_model.onnx")))
-SLOPE_FACTOR = 1.35
-MC_DUELO_ITERACIONES = 2000
-MC_EQUIPO_ITERACIONES = 800
-MC_PAREJA_ITERACIONES = 400
+SLOPE_FACTOR = 1.35  # Multiplicador base de blindaje efectivo para superficies inclinadas
+MC_DUELO_ITERACIONES = 2000    # Iteraciones Monte Carlo para duelos 1v1
+MC_EQUIPO_ITERACIONES = 800    # Iteraciones Monte Carlo para batallas de escuadrón
+MC_PAREJA_ITERACIONES = 400    # Iteraciones para evaluación de parejas de tanques
 
+
+# ====================================================================
+# SECCIÓN 3: ESTRUCTURAS DE DATOS TIPADAS (DATACLASSES)
+# ====================================================================
 
 @dataclass
 class MunicionOptima:
+    """Representa la mejor munición seleccionada dinámicamente frente al blindaje rival."""
     nombre: str
     tipo: str
     nombre_arma: str
@@ -94,6 +120,7 @@ class MunicionOptima:
 
 @dataclass
 class PerfilCombate:
+    """Ficha técnica normalizada y optimizada para la simulación Monte Carlo."""
     nombre: str
     nacion: str
     br: float
@@ -112,11 +139,12 @@ class PerfilCombate:
     tripulacion: float
     tiempo_apuntado_base: float
     supervivencia_base: float
-    modificadores: Tuple[float, float, float] = (1.0, 1.0, 1.0)
+    modificadores: Tuple[float, float, float] = (1.0, 1.0, 1.0)  # (penetracion, dano, supervivencia)
 
 
 @dataclass
 class ResultadoDuelo:
+    """Resultado detallado y estadístico de un duelo 1 vs 1."""
     ganador: str
     perdedor: str
     prob_victoria_ganador: float
@@ -134,6 +162,7 @@ class ResultadoDuelo:
 
 @dataclass
 class ElementoClasificado:
+    """Entrada individual de clasificación táctica de un tanque (score y justificación)."""
     nombre: str
     nacion: str
     razon: str
@@ -142,6 +171,7 @@ class ElementoClasificado:
 
 @dataclass
 class ResultadoEquipos:
+    """Resultado agregado de una batalla entre dos escuadrones."""
     probabilidad_victoria: float
     simulaciones: int
     distancia_m: int
@@ -158,8 +188,18 @@ class ResultadoEquipos:
     detalles_enemigos: List[Dict[str, Any]] = None
 
 
+# ====================================================================
+# SECCIÓN 4: RED NEURONAL DE EFECTIVIDAD EN COMBATE (PYTORCH)
+# ====================================================================
+
 class CombatEffectivenessNet(nn.Module):
-    """Red neuronal que refina multiplicadores de penetración, daño y supervivencia."""
+    """
+    Red Neuronal Perceptrón Multicapa (MLP) que procesa un vector de 15 características
+    técnicas y balísticas de un vehículo a una distancia dada para predecir 3 multiplicadores:
+    - Multiplicador de Penetración efectivo.
+    - Multiplicador de Daño / Letalidad.
+    - Multiplicador de Supervivencia / Resistencia.
+    """
 
     INPUT_DIM = 15
 
@@ -176,14 +216,23 @@ class CombatEffectivenessNet(nn.Module):
     def forward(self, x: Any) -> Any:
         if torch is None:
             raise RuntimeError("PyTorch no está disponible; usa ONNX Runtime para inferencia.")
+        # Salida escalada entre [0.75, 1.25] mediante sigmoide
         return 0.75 + 0.5 * torch.sigmoid(self.encoder(x))
 
 
+
+# ====================================================================
+# SECCIÓN 5: MOTOR DE SIMULACIÓN Y GESTIÓN DE INFERENCIA
+# ====================================================================
+
 class CombatSimulatorEngine:
+    """
+    Motor central encargado de cargar pesos del modelo (ONNX/PyTorch),
+    extraer características vectoriales y construir perfiles de combate listos para simulación.
+    """
     def __init__(self) -> None:
         if torch is not None:
             self.device = torch.device("cpu")
-            # only call .to() when torch is available
             self.net = CombatEffectivenessNet().to(self.device)
         else:
             self.device = None
@@ -194,6 +243,7 @@ class CombatSimulatorEngine:
 
     @staticmethod
     def _resolve_model_path(path: Path) -> Path:
+        """Resuelve rutas relativas y absolutas buscando en BASE_DIR y cwd."""
         if path.is_absolute():
             return path
         candidates = [BASE_DIR / path, Path.cwd() / path]
@@ -203,6 +253,10 @@ class CombatSimulatorEngine:
         return candidates[0]
 
     def ensure_model_ready(self) -> None:
+        """
+        Carga el modelo preentrenado optimizado ONNX Runtime si existe;
+        en su defecto carga PyTorch (.pt) o ejecuta un bootstrap training sintético.
+        """
         if self._model_ready:
             return
 
@@ -240,7 +294,7 @@ class CombatSimulatorEngine:
         self._model_ready = True
 
     def _bootstrap_train(self) -> None:
-        """Entrena la red con pares sintéticos calibrados contra Monte Carlo puro."""
+        """Entrena la red neuronal con pares sintéticos calibrados contra Monte Carlo puro."""
         if torch is None:
             return
 
@@ -274,6 +328,7 @@ class CombatSimulatorEngine:
 
     @staticmethod
     def _tanque_sintetico() -> Dict[str, Any]:
+        """Genera un tanque aleatorio con rangos realistas para calibración."""
         pen = random.uniform(50, 350)
         return {
             "nombre": "Synth",
@@ -308,8 +363,10 @@ class CombatSimulatorEngine:
                 }
             },
         }
+
     @staticmethod
     def _modificadores_monte_carlo_puro(tanque: Dict[str, Any], distancia: float) -> List[float]:
+        """Heurística analítica que estima modificadores ideales de penetración, daño y supervivencia."""
         br = float(tanque.get("rating_realista") or 5)
         armor = max(
             float(tanque.get("blindaje_chasis") or 0),
@@ -325,6 +382,7 @@ class CombatSimulatorEngine:
         return [pen_mod, dmg_mod, surv_mod]
 
     def _vector_caracteristicas(self, tanque: Dict[str, Any], distancia: int) -> List[float]:
+        """Extrae y normaliza un vector de 15 dimensiones a partir de los datos técnicos del tanque."""
         br = float(tanque.get("rating_realista") or 5) / 12.0
         armor = max(
             float(tanque.get("blindaje_chasis") or 0),
@@ -344,6 +402,7 @@ class CombatSimulatorEngine:
                 armor * 0.8, speed * 0.5, pen * dano, recarga * cadencia]
 
     def obtener_modificadores(self, tanque: Dict[str, Any], distancia: int) -> Tuple[float, float, float]:
+        """Ejecuta inferencia (ONNX/PyTorch) y retorna (mod_penetracion, mod_dano, mod_supervivencia)."""
         self.ensure_model_ready()
         feat = self._vector_caracteristicas(tanque, distancia)
         if self.onnx_session is not None:
@@ -363,6 +422,10 @@ class CombatSimulatorEngine:
         distancia: int,
         blindaje_objetivo: Optional[float] = None,
     ) -> PerfilCombate:
+        """
+        Construye el objeto PerfilCombate compilando blindaje efectivo,
+        munición óptima frente al oponente, tiempos de apuntado y modificadores de IA.
+        """
         mods = self.obtener_modificadores(tanque, distancia)
         municion = obtener_penetracion_maxima(tanque, distancia, blindaje_objetivo)
         blindaje = max(
@@ -398,17 +461,26 @@ class CombatSimulatorEngine:
         )
 
 
+# Singleton del motor de simulación
 _engine: Optional[CombatSimulatorEngine] = None
 
-
 def get_engine() -> CombatSimulatorEngine:
+    """Devuelve o inicializa la instancia única de CombatSimulatorEngine."""
     global _engine
     if _engine is None:
         _engine = CombatSimulatorEngine()
     return _engine
 
 
+# ====================================================================
+# SECCIÓN 6: CÁLCULOS BALÍSTICOS, PARSING Y FÍSICA DE IMPACTO
+# ====================================================================
+
 def parse_distancia_combate(situacion: str) -> int:
+    """
+    Extrae la distancia de combate en metros a partir del texto de la situación táctica
+    (soporta '1.5km', '800m', 'CQB', 'urbano', 'snip', 'campo abierto', etc.).
+    """
     texto = situacion.lower()
     km_match = re.search(r"(\d+(?:[.,]\d+)?)\s*km", texto)
     if km_match:
@@ -426,6 +498,10 @@ def parse_distancia_combate(situacion: str) -> int:
 
 
 def penetracion_a_distancia(penetracion_mm: List[float], distancia: int) -> float:
+    """
+    Calcula la penetración balística interpolando linealmente entre los valores de referencia
+    [0m, 100m, 500m, 1000m, 1500m, 2000m].
+    """
     if not penetracion_mm:
         return 0.0
     valores = [float(v) for v in penetracion_mm[:6]]
@@ -444,6 +520,10 @@ def penetracion_a_distancia(penetracion_mm: List[float], distancia: int) -> floa
 
 
 def intervalo_disparo(tanque: Dict[str, Any]) -> float:
+    """
+    Calcula el tiempo entre disparos en segundos.
+    Distingue entre cañones automáticos/tambores (usa cadencia) y cañones estándar (usa tiempo de recarga).
+    """
     cargador = int(tanque.get("cargador") or 1)
     if cargador > 1:
         cadencia = float(tanque.get("cadencia") or 1)
@@ -452,18 +532,25 @@ def intervalo_disparo(tanque: Dict[str, Any]) -> float:
 
 
 def _es_municion_aphe(tipo: str) -> bool:
-    """APHE, APHEBC y APHECBC comparten el prefijo APHE."""
+    """Comprueba si el proyectil es de tipo APHE / APHEBC / APHECBC con relleno explosivo."""
     return "APHE" in tipo
 
 
 def _es_municion_he_pura(tipo: str) -> bool:
-    """HE de fragmentación sin capacidad de penetración tipo AP."""
+    """Comprueba si es munición de alto explosivo pura (sin carga hueca HEAT ni núcleo cinético AP)."""
     if "HEAT" in tipo or _es_municion_aphe(tipo):
         return False
     return tipo == "HE" or tipo.startswith("HE-")
 
 
 def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blindaje: float) -> float:
+    """
+    Calcula el daño relativo post-penetración considerando:
+    - Tipo de munición (APHE, HEAT, APFSDS, APCR, HE).
+    - Masa total y masa de explosivo.
+    - Factor de sobrepenetración vs penetración marginal.
+    - Efecto metralla/fragmentación interna (*spalling*) al perforar blindajes gruesos.
+    """
     tipo = str(municion.get("tipo", "")).upper()
     masa_exp = float(municion.get("masa_explosivo") or 0)
     masa_total = float(municion.get("masa_total") or 1000)
@@ -478,7 +565,6 @@ def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blinda
         factor_pen = min(1.0, penetracion / max(blindaje, 1))
 
     if _es_municion_aphe(tipo):
-        # Las APHE deben conservar más daño incluso con penetración marginal.
         base = 0.42 + (masa_exp / 2400) + (masa_total / 12000)
     elif "HEAT" in tipo:
         base = 0.38 + (masa_exp / 2400)
@@ -493,10 +579,8 @@ def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blinda
 
     dano_final = base * (0.55 + 0.45 * factor_pen)
     
-    # Bonificación por metralla (spalling): más blindaje penetrado y más explosivo crean más fragmentos
+    # Bonificación por metralla (spalling): blindaje perforado + masa explosiva
     if penetracion >= umbral:
-        # Aumentamos el daño basándonos en el espesor del blindaje (1% extra por cada 10mm)
-        # y la masa explosiva del proyectil. Limitado para mantener el equilibrio.
         factor_metralla = (blindaje / 1000.0) + (masa_exp / 2000.0) + (masa_total / 12000.0)
         dano_final += factor_metralla
 
@@ -504,6 +588,7 @@ def calcular_dano_proyectil(municion: Dict[str, Any], penetracion: float, blinda
 
 
 def iterar_municiones(tanque: Dict[str, Any]):
+    """Generador que recorre todas las municiones del tanque en 'armamento', 'setup_1' o 'setup_2'."""
     fuentes = []
     if "armamento" in tanque:
         fuentes.append(tanque["armamento"])
@@ -524,6 +609,10 @@ def obtener_penetracion_maxima(
     distancia: int,
     blindaje_objetivo: Optional[float] = None,
 ) -> MunicionOptima:
+    """
+    Selecciona la munición óptima combinando penetración efectiva a la distancia dada
+    y daño destructivo esperado contra el blindaje objetivo del oponente.
+    """
     mejor = MunicionOptima("N/A", "N/A", "N/A", 0.0, 0.0, 0.0)
     blindaje_referencia = blindaje_objetivo
     if blindaje_referencia is None:
@@ -556,6 +645,7 @@ def obtener_penetracion_maxima(
 
 
 def calcular_dpm(tanque: Dict[str, Any], distancia: int) -> float:
+    """Calcula el daño teórico por minuto (DPM) a una distancia dada."""
     municion = obtener_penetracion_maxima(tanque, distancia)
     cadencia = float(tanque.get("cadencia") or 1.0)
     recarga = float(tanque.get("recarga") or 5.0)
@@ -572,7 +662,20 @@ def calcular_dpm(tanque: Dict[str, Any], distancia: int) -> float:
     return disparos_por_min * dano * 100
 
 
+
+# ====================================================================
+# SECCIÓN 7: SIMULACIÓN DE DUELOS 1 VS 1 (MONTE CARLO ESTOCÁSTICO)
+# ====================================================================
+
 def _tiempo_de_apuntado(atacante: PerfilCombate, distancia: int, rng: random.Random) -> float:
+    """
+    Calcula el tiempo dinámico de adquisición de blanco y apuntado.
+    Aplica penalizaciones acumulativas por:
+    - Distancia del combate (más lejos requiere ajuste fino).
+    - Velocidad de rotación de la torreta.
+    - Límites de elevación y depresión de la cúpula/cañón.
+    - Cantidad de tripulación activa y variabilidad estocástica.
+    """
     distancia_factor = 1.0 + min(max(distancia / 1500.0, 0.0), 0.5)
     turret_speed_penalty = max(0.9, 1.0 + (45.0 - atacante.velocidad_torreta) / 120.0)
     elevation_penalty = 1.0 + max(0.0, (25.0 - atacante.angulo_elevacion_max) / 80.0 + (12.0 - atacante.angulo_depresion_max) / 140.0)
@@ -582,6 +685,10 @@ def _tiempo_de_apuntado(atacante: PerfilCombate, distancia: int, rng: random.Ran
 
 
 def _prob_penetracion(pen: float, blindaje: float, pen_mod: float, rng: random.Random) -> bool:
+    """
+    Determina probabilísticamente si un proyectil perfora el blindaje enemigo,
+    incorporando ángulos aleatorios de impacto y rebotes no lineales.
+    """
     angulo = rng.uniform(0.88, 1.45)
     umbral = blindaje * angulo / max(pen_mod, 0.1)
     if pen >= umbral:
@@ -595,6 +702,12 @@ def _simular_disparo(
     defensor: PerfilCombate,
     rng: random.Random,
 ) -> float:
+    """
+    Simula un impacto balístico individual:
+    1. Evalúa si el proyectil penetra el blindaje efectivo del defensor.
+    2. Si penetra, calcula la fracción de vida (HP) restada modulada por el daño letal
+       del proyectil y la capacidad de supervivencia del tanque objetivo.
+    """
     pen = atacante.municion_optima.penetracion_mm * atacante.modificadores[0]
     if not _prob_penetracion(pen, defensor.blindaje_efectivo, 1.0, rng):
         return 0.0
@@ -612,6 +725,11 @@ def _simular_duelo_unico(
     rng: random.Random,
     max_tiempo: float = 120.0,
 ) -> Tuple[str, float]:
+    """
+    Ejecuta un enfrentamiento 1v1 discreto en el tiempo (pasos de 0.05s):
+    - Ambos tanques apuntan, disparan, agotan tambor/cargador y recargan.
+    - Se registran los impactos hasta la neutralización de uno de los dos o fin del tiempo.
+    """
     hp_a, hp_b = 1.0, 1.0
     t = 0.0
     next_a = _tiempo_de_apuntado(perfil_a, distancia, rng)
@@ -661,6 +779,11 @@ def simular_duelo_monte_carlo(
     situacion: str,
     n_simulaciones: int = MC_DUELO_ITERACIONES,
 ) -> ResultadoDuelo:
+    """
+    Simula n iteraciones Monte Carlo (por defecto 2000) de un duelo 1 vs 1.
+    Calcula porcentajes de victoria, duración media del combate, municiones óptimas
+    y resumen técnico balístico.
+    """
     engine = get_engine()
     distancia = parse_distancia_combate(situacion)
     blindaje_v2 = max(
@@ -722,6 +845,7 @@ def _detalle_perfil(
     tanque: Dict[str, Any],
     distancia: int,
 ) -> Dict[str, Any]:
+    """Genera un resumen técnico detallado del perfil balístico y modificadores de IA."""
     pen = atacante.municion_optima.penetracion_mm
     puede_penetrar = pen >= defensor.blindaje_efectivo * 0.85
     return {
@@ -753,12 +877,17 @@ def _detalle_perfil(
     }
 
 
+# ====================================================================
+# SECCIÓN 8: EVALUACIÓN DE PAREJAS Y COMBATE POR EQUIPOS (MONTE CARLO)
+# ====================================================================
+
 def _simular_pareja(
     tanque_a: Dict[str, Any],
     tanque_b: Dict[str, Any],
     distancia: int,
     n: int = MC_PAREJA_ITERACIONES,
 ) -> Dict[str, float]:
+    """Simula un sub-duelo directo entre dos tanques para evaluar emparejamientos tácticos."""
     engine = get_engine()
     pa = engine.construir_perfil(tanque_a, distancia, max(
         float(tanque_b.get("blindaje_chasis") or 0),
@@ -813,6 +942,12 @@ def simular_equipos_monte_carlo(
     situacion: str,
     n_simulaciones: int = MC_EQUIPO_ITERACIONES,
 ) -> ResultadoEquipos:
+    """
+    Simula batallas completas de escuadrones (hasta 16 vs 16) mediante Monte Carlo:
+    - Selección estocástica de objetivos vivos entre líneas enemigas.
+    - Temporizadores de disparo independientes para cada tanque según su cadencia/recarga.
+    - Promedios de bajas, supervivencia y probabilidades globales de victoria.
+    """
     engine = get_engine()
     distancia = parse_distancia_combate(situacion)
     usuario = equipo_aliado[tanque_usuario_index]
@@ -925,6 +1060,10 @@ def simular_equipos_monte_carlo(
     )
 
 
+# ====================================================================
+# SECCIÓN 9: CLASIFICACIÓN TÁCTICA DE AMENAZAS Y SINERGIAS
+# ====================================================================
+
 def _clasificar_enemigos_usuario(
     usuario: Dict[str, Any],
     aliados: List[Dict[str, Any]],
@@ -932,6 +1071,13 @@ def _clasificar_enemigos_usuario(
     usuario_idx: int,
     distancia: int,
 ) -> Dict[str, List[ElementoClasificado]]:
+    """
+    Clasifica los tanques enemigos según el perfil del jugador:
+    - Blancos prioritarios: alta probabilidad de victoria y penetración garantizada.
+    - Amenazas a evitar: alta letalidad enemiga y vulnerabilidad del blindaje propio.
+    - No representan amenaza: incapaces de penetrar el blindaje propio.
+    - Más dañinos: mayor daño esperado acumulado.
+    """
     prioritarios: List[ElementoClasificado] = []
     evitar: List[ElementoClasificado] = []
     no_amenaza: List[ElementoClasificado] = []
@@ -1006,6 +1152,10 @@ def _evaluar_companeros(
     usuario_idx: int,
     distancia: int,
 ) -> List[ElementoClasificado]:
+    """
+    Evalúa las sinergias tácticas de los compañeros de equipo con respecto al vehículo del jugador
+    (cobertura de blindaje, soporte de penetración, velocidad para flanqueo y cadencia de fuego).
+    """
     engine = get_engine()
     perfil_u = engine.construir_perfil(usuario, distancia)
     resultados: List[ElementoClasificado] = []
@@ -1046,7 +1196,12 @@ def _evaluar_companeros(
     return resultados
 
 
+# ====================================================================
+# SECCIÓN 10: SERIALIZACIÓN Y ADAPTADORES JSON PARA FASTAPI
+# ====================================================================
+
 def resultado_duelo_a_dict(resultado: ResultadoDuelo) -> Dict[str, Any]:
+    """Convierte el objeto ResultadoDuelo en un diccionario serializable para Pydantic/FastAPI."""
     return {
         "ganador": resultado.ganador,
         "perdedor": resultado.perdedor,
@@ -1063,6 +1218,7 @@ def resultado_duelo_a_dict(resultado: ResultadoDuelo) -> Dict[str, Any]:
 
 
 def resultado_equipos_a_dict(resultado: ResultadoEquipos) -> Dict[str, Any]:
+    """Convierte el objeto ResultadoEquipos en un diccionario estructurado para las respuestas de API."""
     def _lista(items: List[ElementoClasificado]) -> List[Dict[str, str]]:
         return [{"nombre": e.nombre, "nacion": e.nacion, "razon": e.razon} for e in items]
 
@@ -1082,3 +1238,4 @@ def resultado_equipos_a_dict(resultado: ResultadoEquipos) -> Dict[str, Any]:
         "detalles_aliados": resultado.detalles_aliados or [],
         "detalles_enemigos": resultado.detalles_enemigos or [],
     }
+
