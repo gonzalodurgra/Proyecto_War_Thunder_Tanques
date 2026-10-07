@@ -1,4 +1,14 @@
 
+# ====================================================================
+# API REST PRINCIPAL DE WAR THUNDER TANQUES (FastAPI)
+# ====================================================================
+# Este módulo expone los endpoints REST para:
+# - Gestión CRUD de vehículos blindados con control de roles y cambios pendientes.
+# - Consulta y agregación estadística por Battle Rating (BR) y nación.
+# - Simulación táctica de combate (1v1 y por equipos) con Monte Carlo + Red Neuronal + Gemini.
+# - Subida y servicio de imágenes estáticas de vehículos.
+# ====================================================================
+
 from fastapi import FastAPI, HTTPException, File, UploadFile, Depends
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,53 +40,53 @@ from typing import Optional
 from statistics import mean
 from bson.decimal128 import Decimal128
 
+# ====================================================================
+# SECCIÓN 1: UTILIDADES DE SERIALIZACIÓN Y PERSISTENCIA (MONGODB)
+# ====================================================================
+
 def convertir_decimal128_recursivo(dato):
     """
-    Convierte todos los Decimal128 a float de forma recursiva.
-    Funciona con diccionarios, listas y valores individuales.
+    Convierte todos los tipos Decimal128 de BSON/MongoDB a float nativo de Python de forma recursiva.
+    Funciona con estructuras anidadas (diccionarios, listas y valores primitivos)
+    asegurando una serialización JSON limpia en las respuestas de FastAPI.
     """
     if isinstance(dato, Decimal128):
-        # Convertir Decimal128 a float
         return float(dato.to_decimal())
     elif isinstance(dato, dict):
-        # Si es un diccionario, convertir cada valor
         return {clave: convertir_decimal128_recursivo(valor) for clave, valor in dato.items()}
     elif isinstance(dato, list):
-        # Si es una lista, convertir cada elemento
         return [convertir_decimal128_recursivo(elemento) for elemento in dato]
     else:
-        # Si es otro tipo, dejarlo como está
         return dato
     
-# Paso 3: Evento que se ejecuta al iniciar la aplicación
-#@app.on_event("startup")
+# ====================================================================
+# SECCIÓN 2: CICLO DE VIDA (LIFESPAN) Y CONFIGURACIÓN DE LA APP
+# ====================================================================
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Esta función se ejecuta cuando la aplicación inicia.
-    Verifica que la conexión a MongoDB funcione.
+    Gestor de contexto del ciclo de vida de la aplicación FastAPI.
+    Valida la conexión activa con MongoDB al arrancar el servidor.
     """
     print("Iniciando aplicación...")
     verificar_conexion()
     yield
     print("Deteniendo aplicación.")
 
-# Paso 1: Crear la aplicación FastAPI
+# Creación de la instancia principal de FastAPI
 app = FastAPI(
     title="API de Tanques War Thunder",
-    description="API para gestionar información de tanques del juego War Thunder",
+    description="API para gestionar información y simulación de combate de tanques de War Thunder",
     version="1.0.0",
     lifespan=lifespan
 )
 
-FRONTEND_URL = os.getenv(
-    "FRONTEND_URL",
-    "http://localhost:4200"
-)
-
+# Configuración de URLs origen para políticas CORS
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
-# Configurar Gemini
+# Inicialización del cliente Google Gemini para análisis e inferencia
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client_ai = None
 if GEMINI_API_KEY:
@@ -84,6 +94,7 @@ if GEMINI_API_KEY:
 else:
     print("⚠️ ADVERTENCIA: GEMINI_API_KEY no configurada. El endpoint de IA no funcionará.")
 
+# Orígenes permitidos para peticiones cruzadas (CORS)
 allowed_origins = [
     "http://localhost:4200",  # Desarrollo local Angular
     "http://localhost:3000",  # Desarrollo local alternativo
@@ -105,38 +116,38 @@ elif FRONTEND_URL.startswith("http://"):
 
 print(f"🌐 CORS configurado para: {allowed_origins}")
 
-# Paso 1.5: Configurar CORS para permitir peticiones desde Angular
-# EXPLICACIÓN: Angular corre en http://localhost:4200 por defecto
-# FastAPI corre en http://localhost:8000
-# Sin CORS, el navegador bloquea las peticiones entre diferentes puertos
+# Middleware de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
-    allow_headers=["*"],  # Permite todos los headers
+    allow_headers=["*"],  # Permite todos los encabezados
 )
-# Paso 1.7: Incluir el router de autenticación
-# EXPLICACIÓN: Todas las rutas de auth_router estarán bajo /auth
-app.include_router(auth_router)
-# Incluir el router de cambios pendientes
-app.include_router(pending_changes_router)
 
+# Inclusión de routers modulares
+app.include_router(auth_router)  # Rutas de autenticación (/auth)
+app.include_router(pending_changes_router)  # Rutas de moderación de cambios (/cambios-pendientes)
+
+# Montaje del directorio estático para servir imágenes locales de los tanques
 app.mount("/imagenes", StaticFiles(directory="imagenes"), name="imagenes")
 
-# Definir la carpeta donde se guardarán las imágenes
 IMAGENES_DIR = Path("imagenes")
-
-# Crear la carpeta al iniciar la aplicación (si no existe)
 IMAGENES_DIR.mkdir(exist_ok=True)
 
-# Paso 2: Obtener la colección de tanques
+# Colección principal de MongoDB
 tanks_collection = get_tanks_collection()
 
+# ====================================================================
+# SECCIÓN 3: FUNCIONES AUXILIARES DE CÁLCULO ESTADÍSTICO Y BALÍSTICA
+# ====================================================================
+
 def media(tanques, campo):
+    """Calcula la media aritmética de un campo numérico en una lista de tanques."""
     valores = [t[campo] for t in tanques if isinstance(t.get(campo), (int, float))]
     return round(sum(valores) / len(valores), 2) if valores else 0
+
 
 
 def contar_por_nacion(tanques):
@@ -311,11 +322,16 @@ def obtener_penetracion_maxima(tanque):
     
     return mejor_municion
 
+# ====================================================================
+# SECCIÓN 4: ENDPOINTS BASE Y HEALTHCHECK
+# ====================================================================
+
 # Paso 4: Ruta principal (raíz)
 @app.get("/")
 async def root():
     """
-    Ruta de bienvenida. Prueba con: http://localhost:8000/
+    Ruta de bienvenida y verificación básica de la API.
+    Retorna información de versión, documentación Swagger y orígenes CORS.
     """
     return {
         "mensaje": "Bienvenido a la API de War Thunder",
@@ -327,6 +343,10 @@ async def root():
     
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
+    """
+    Endpoint de healthcheck para sondas de monitorización y Docker Compose.
+    Verifica la conectividad activa con MongoDB.
+    """
     try:
         verificar_conexion()
         return {"status": "ok", "db": "connected"}
@@ -334,12 +354,17 @@ async def health():
         return {"status": "degraded", "db": "error"}
 
 
+# ====================================================================
+# SECCIÓN 5: ENDPOINTS CRUD DE TANQUES Y CONTROL DE CAMBIOS PENDIENTES
+# ====================================================================
+
 # Paso 5: Crear un nuevo tanque (POST)
 @app.post("/tanques/", response_model=dict, status_code=201)
 async def crear_tanque(
     tanque: Tanque,
     usuario_actual: UsuarioEnDB = Depends(obtener_usuario_activo_actual)
 ):
+
     """
     Crea un nuevo tanque en la base de datos.
     
@@ -634,14 +659,24 @@ async def eliminar_tanque(
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
-    
+
+
+# ====================================================================
+# SECCIÓN 6: ENDPOINTS DE ANÁLISIS ESTADÍSTICO Y RANKINGS
+# ====================================================================
+
 @app.get("/stats")
 async def obtener_stats(
     br_min: Optional[float] = Query(None, ge=0),
     br_max: Optional[float] = Query(None, ge=0),
     modo: str = Query("realista", regex="^(realista|arcade)$")
 ):
-    tanques = await obtener_tanques()  # Mongo o lo que uses
+    """
+    Calcula y devuelve medias estadísticas globales (blindaje, velocidad, potencia, recarga, penetración)
+    filtrando opcionalmente por rango de Battle Rating (BR) y modo de juego (arcade / realista).
+    """
+    tanques = await obtener_tanques()
+
 
     if br_min is not None or br_max is not None:
         tanques = filtrar_por_br(tanques, br_min, br_max, modo)
@@ -838,11 +873,18 @@ async def obtener_top(
             "caracteristica": caracteristica
         }
 
+
+# ====================================================================
+# SECCIÓN 7: MOTOR DE IA, ESTIMACIÓN BALÍSTICA Y SIMULACIÓN DE COMBATE
+# ====================================================================
+
 @app.get("/ia/modelos/")
 async def listar_modelos_ia():
     """
-    Retorna la lista de modelos de Gemini disponibles para la API Key actual.
+    Retorna la lista de modelos de Google Gemini disponibles para la API Key actual,
+    filtrando únicamente aquellos compatibles con generación de contenido de texto.
     """
+
     if not client_ai:
         return []
     

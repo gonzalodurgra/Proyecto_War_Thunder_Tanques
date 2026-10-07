@@ -4,6 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { TanksService, Tanque, SimulacionEquiposIAResponse, SimulacionEquiposIARequest, IAModelo } from '../../services/tanks';
 import { Router } from '@angular/router';
 
+/**
+ * COMPONENTE DE COMBATE POR EQUIPOS CON IA (BATALLAS DE ESCUADRONES)
+ * ====================================================================
+ * Este componente permite al usuario:
+ * 1. Armar dos alineaciones tácticas completas (hasta 16 vehículos aliados vs 16 enemigos).
+ * 2. Seleccionar cuál de los vehículos aliados es tripulado por el propio jugador.
+ * 3. Configurar el escenario de batalla y elegir el modelo LLM (Gemini).
+ * 4. Simular la batalla global con Monte Carlo + Red Neuronal y obtener un desglose
+ *    estratégico: probabilidad de victoria, blancos prioritarios, tanques a evitar
+ *    y sinergias con compañeros de escuadrón.
+ */
 @Component({
   selector: 'app-combat-equipos-ia',
   standalone: true,
@@ -12,39 +23,50 @@ import { Router } from '@angular/router';
   styleUrls: ['./combat-equipos-ia.css']
 })
 export class CombatEquiposIAComponent implements OnInit {
+  // ====================================================================
+  // ESTADO Y PROPIEDADES DEL COMPONENTE
+  // ====================================================================
   tanques: Tanque[] = [];
 
-  // Equipos
+  // Alineaciones de escuadrón
   equipoAliado: Tanque[] = [];
   equipoEnemigo: Tanque[] = [];
-  tanqueUsuarioIndex: number | null = null;
+  tanqueUsuarioIndex: number | null = null; // Índice del tanque del jugador en equipoAliado
 
   situacion: string = 'Encuentro de escuadrones en terreno semiurbano a 800 metros con cobertura de colinas.';
 
+  // Estados de carga y respuesta
   cargando: boolean = false;
   resultado: SimulacionEquiposIAResponse | null = null;
   error: string = '';
 
-  // Buscadores
+  // Filtros de búsqueda para selectores de aliados y enemigos
   filtroAliado: string = '';
   filtroEnemigo: string = '';
   mostrarListaAliado: boolean = false;
   mostrarListaEnemigo: boolean = false;
 
-  // Modelos de IA
+  // Modelos de IA disponibles
   modelos: IAModelo[] = [];
   modeloSeleccionado: string = 'gemini-3.1-flash-lite';
 
+  // Tema visual
   modoOscuro: boolean = false;
 
   constructor(private tanksService: TanksService, private router: Router) { }
 
+  // ====================================================================
+  // CICLO DE VIDA (INICIALIZACIÓN)
+  // ====================================================================
   ngOnInit(): void {
     this.cargarPreferenciaTema();
     this.cargarTanques();
     this.cargarModelos();
   }
 
+  /**
+   * Carga los modelos de Gemini disponibles desde el backend.
+   */
   cargarModelos(): void {
     this.tanksService.obtenerModelosIA().subscribe({
       next: (modelos) => {
@@ -57,6 +79,9 @@ export class CombatEquiposIAComponent implements OnInit {
     });
   }
 
+  /**
+   * Carga la base de datos de tanques para poblar los selectores de búsqueda.
+   */
   cargarTanques(): void {
     this.tanksService.obtenerTodosLosTanques().subscribe({
       next: (tanques) => {
@@ -69,18 +94,36 @@ export class CombatEquiposIAComponent implements OnInit {
     });
   }
 
+  // ====================================================================
+  // FILTRADO Y BÚSQUEDA DE VEHÍCULOS
+  // ====================================================================
+
+  /**
+   * Filtra los tanques para sugerencias del equipo aliado (máximo 15 resultados).
+   */
   get tanquesFiltradosAliado() {
     return this.tanques.filter(t =>
       t.nombre.toLowerCase().includes(this.filtroAliado.toLowerCase())
     ).slice(0, 15);
   }
 
+  /**
+   * Filtra los tanques para sugerencias del equipo enemigo (máximo 15 resultados).
+   */
   get tanquesFiltradosEnemigo() {
     return this.tanques.filter(t =>
       t.nombre.toLowerCase().includes(this.filtroEnemigo.toLowerCase())
     ).slice(0, 15);
   }
 
+  // ====================================================================
+  // GESTIÓN DE ALINEACIONES Y ESCUADRONES
+  // ====================================================================
+
+  /**
+   * Añade un tanque al equipo aliado (límite máximo de 16 tanques).
+   * Si es el primer tanque aliado, se asigna como el vehículo del usuario por defecto.
+   */
   agregarAliado(tanque: Tanque): void {
     if (this.equipoAliado.length >= 16) {
       this.error = 'El equipo aliado no puede superar los 16 tanques.';
@@ -98,6 +141,9 @@ export class CombatEquiposIAComponent implements OnInit {
     }
   }
 
+  /**
+   * Añade un tanque al equipo enemigo (límite máximo de 16 tanques).
+   */
   agregarEnemigo(tanque: Tanque): void {
     if (this.equipoEnemigo.length >= 16) {
       this.error = 'El equipo enemigo no puede superar los 16 tanques.';
@@ -109,6 +155,9 @@ export class CombatEquiposIAComponent implements OnInit {
     this.error = '';
   }
 
+  /**
+   * Elimina un tanque del equipo aliado y reajusta el índice del tanque del usuario.
+   */
   quitarAliado(index: number): void {
     this.equipoAliado.splice(index, 1);
 
@@ -120,14 +169,23 @@ export class CombatEquiposIAComponent implements OnInit {
     }
   }
 
+  /**
+   * Elimina un tanque del equipo enemigo.
+   */
   quitarEnemigo(index: number): void {
     this.equipoEnemigo.splice(index, 1);
   }
 
+  /**
+   * Marca el tanque aliado en la posición indicada como el vehículo del jugador.
+   */
   seleccionarComoUsuario(index: number): void {
     this.tanqueUsuarioIndex = index;
   }
 
+  /**
+   * Retorna el objeto Tanque correspondiente al vehículo del usuario.
+   */
   get tanqueUsuario(): Tanque | null {
     if (this.tanqueUsuarioIndex !== null && this.tanqueUsuarioIndex >= 0 && this.tanqueUsuarioIndex < this.equipoAliado.length) {
       return this.equipoAliado[this.tanqueUsuarioIndex];
@@ -135,11 +193,21 @@ export class CombatEquiposIAComponent implements OnInit {
     return null;
   }
 
+  /**
+   * Retorna la descripción del modelo de Gemini seleccionado.
+   */
   get descripcionModeloSeleccionado(): string {
     const modelo = this.modelos.find(m => m.id === this.modeloSeleccionado);
     return modelo ? modelo.descripcion : '';
   }
 
+  // ====================================================================
+  // EJECUCIÓN DE LA SIMULACIÓN DE EQUIPOS
+  // ====================================================================
+
+  /**
+   * Valida la composición de escuadrones y solicita la simulación por equipos al backend.
+   */
   simular(): void {
     if (this.equipoAliado.length === 0 || this.equipoEnemigo.length === 0) {
       this.error = 'Ambos equipos deben tener al menos 1 vehículo.';
@@ -179,10 +247,20 @@ export class CombatEquiposIAComponent implements OnInit {
     });
   }
 
+  /**
+   * Navega de vuelta a la lista principal de tanques.
+   */
   regresar(): void {
     this.router.navigate(['/tanques']);
   }
 
+  // ====================================================================
+  // GESTIÓN DE TEMA (CLARO / OSCURO)
+  // ====================================================================
+
+  /**
+   * Carga la preferencia de tema guardada en localStorage.
+   */
   cargarPreferenciaTema(): void {
     const temaGuardado = localStorage.getItem('tema');
     if (temaGuardado === 'oscuro') {
@@ -194,6 +272,9 @@ export class CombatEquiposIAComponent implements OnInit {
     }
   }
 
+  /**
+   * Alterna entre modo claro y oscuro y persiste la elección.
+   */
   toggleModoOscuro(): void {
     this.modoOscuro = !this.modoOscuro;
     if (this.modoOscuro) {
@@ -205,11 +286,18 @@ export class CombatEquiposIAComponent implements OnInit {
     }
   }
 
+  /**
+   * Aplica la clase CSS de modo oscuro en el elemento raíz body.
+   */
   aplicarModoOscuro(): void {
     document.body.classList.add('dark-mode');
   }
 
+  /**
+   * Elimina la clase CSS de modo oscuro del body.
+   */
   aplicarModoClaro(): void {
     document.body.classList.remove('dark-mode');
   }
 }
+

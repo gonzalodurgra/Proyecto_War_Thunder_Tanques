@@ -1,16 +1,16 @@
 """
 BOT DE DISCORD PARA WAR THUNDER
 ================================
-Este bot se comunica con la API de War Thunder para proporcionar
-estadísticas y comparaciones de tanques directamente en Discord.
+Este bot se comunica de forma asíncrona con la API REST de War Thunder
+para proporcionar estadísticas, comparativas y rankings balísticos de tanques
+directamente en servidores de Discord.
 
 REQUISITOS:
 pip install discord.py requests python-dotenv aiohttp
 
-CONFIGURACIÓN:
-Crea un archivo .env con:
+CONFIGURACIÓN (.env):
 DISCORD_TOKEN=tu_token_de_discord
-API_URL=http://localhost:8000
+BACKEND_URL=http://localhost:8000
 """
 
 import discord
@@ -25,7 +25,7 @@ import aiohttp
 import asyncio
 
 # ====================================================================
-# PASO 1: Cargar variables de entorno
+# PASO 1: Cargar variables de entorno y validar credenciales
 # ====================================================================
 load_dotenv()
 
@@ -38,25 +38,30 @@ if not DISCORD_TOKEN:
 print(f"🔗 Bot conectándose a API: {BACKEND_URL}")
 
 # ====================================================================
-# PASO 2: Configurar el bot
+# PASO 2: Configurar el bot y permisos (Intents)
 # ====================================================================
-# Intents son los permisos que necesita el bot
+# Intents requeridos para leer mensajes en canales y sincronizar comandos
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 
-# Crear el bot con prefijo ! para comandos tradicionales
+# Crear instancia del bot con prefijo '!' para comandos de texto
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # ====================================================================
-# PASO 3: Clase para manejar peticiones a la API
+# PASO 3: Clase cliente para manejar peticiones asíncronas a la API
 # ====================================================================
 class WarThunderAPI:
+    """
+    Cliente HTTP asíncrono basado en aiohttp para consumir los endpoints de la API FastAPI.
+    Implementa timeouts configurados y reintentos automáticos para evitar caídas en producción.
+    """
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip('/')
         self.session: aiohttp.ClientSession | None = None
 
     async def start(self):
+        """Inicializa la sesión de aiohttp con configuración de timeouts."""
         timeout = aiohttp.ClientTimeout(
             total=None,
             sock_connect=8,
@@ -65,10 +70,12 @@ class WarThunderAPI:
         self.session = aiohttp.ClientSession(timeout=timeout)
 
     async def close(self):
+        """Cierra la sesión HTTP al apagar el bot."""
         if self.session:
             await self.session.close()
 
     async def _get(self, endpoint: str, retries: int = 3):
+        """Realiza una petición GET con reintentos y tolerancia a fallos de red."""
         if not self.session:
             raise RuntimeError("API session not started")
 
@@ -87,15 +94,19 @@ class WarThunderAPI:
         return None
 
     async def obtener_todos_tanques(self):
+        """Obtiene la lista completa de tanques desde el backend."""
         return await self._get("/tanques/") or []
 
     async def obtener_tanque_por_id(self, tanque_id: str):
+        """Obtiene los datos de un tanque por su ID de MongoDB."""
         return await self._get(f"/tanques/{tanque_id}")
 
     async def obtener_tanques_por_nacion(self, nacion: str):
+        """Obtiene todos los tanques pertenecientes a una nación."""
         return await self._get(f"/tanques/nacion/{nacion}") or []
 
     async def buscar_tanque_por_nombre(self, nombre: str):
+        """Busca un tanque por coincidencia exacta o parcial en su nombre."""
         tanques = await self.obtener_todos_tanques()
         nombre = nombre.lower()
 
@@ -110,6 +121,7 @@ class WarThunderAPI:
         return None
     
     async def obtener_stats(self, br_min=None, br_max=None, modo="realista"):
+        """Consulta el endpoint de estadísticas globales agregadas."""
         params = {"modo": modo}
         if br_min is not None:
             params["br_min"] = br_min
@@ -121,6 +133,7 @@ class WarThunderAPI:
                 return await r.json()
             
     async def obtener_stats_nacion(self, nacion, br_min=None, br_max=None, modo="realista"):
+        """Consulta estadísticas agregadas para una nación específica."""
         params = {
             "nacion": nacion,
             "modo": modo
@@ -136,6 +149,7 @@ class WarThunderAPI:
                 return await r.json()
             
     async def obtener_top_tanques(self, caracteristica, limite, br_min=None, br_max=None, modo="realista"):
+        """Consulta el ranking de mejores vehículos según una métrica o penetración."""
         params = {
             "caracteristica": caracteristica,
             "limite": limite,
@@ -151,12 +165,13 @@ class WarThunderAPI:
             async with session.get(f"{self.base_url}/top", params=params) as r:
                 return await r.json()
 
-# Instancia de la API
+# Instancia global del cliente de API
 api = WarThunderAPI(BACKEND_URL)
 
 # ====================================================================
-# PASO 4: Funciones auxiliares para cálculos estadísticos
+# PASO 4: Funciones auxiliares para cálculos estadísticos y formateo
 # ====================================================================
+
 
 def calcular_media_caracteristica(tanques: List[Dict], caracteristica: str) -> float:
     """Calcula la media de una característica numérica."""
