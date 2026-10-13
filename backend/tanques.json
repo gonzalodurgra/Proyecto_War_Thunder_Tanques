@@ -56,9 +56,9 @@
                             49,
                             40
                         ],
-                        "masa_total": 870.0,
-                        "velocidad_bala": 870,
-                        "masa_explosivo": null
+                        "masa_explosivo": null,
+                        "masa_total": null,
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -93,8 +93,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -157,9 +158,9 @@
                             50,
                             41
                         ],
-                        "masa_total": 870.0,
-                        "velocidad_bala": 883,
-                        "masa_explosivo": null
+                        "masa_explosivo": null,
+                        "masa_total": null,
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -46942,8 +46943,9 @@
                             4,
                             4
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     },
                     {
                         "nombre": "15 mm AP",
@@ -46956,8 +46958,9 @@
                             4,
                             4
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     },
                     {
                         "nombre": "15 mm HE",
@@ -46970,8 +46973,9 @@
                             4,
                             4
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -52061,9 +52065,9 @@
                             300,
                             300
                         ],
-                        "masa_total": 2600.0,
-                        "velocidad_bala": 665,
-                        "masa_explosivo": 322.0
+                        "masa_explosivo": null,
+                        "masa_total": null,
+                        "velocidad_bala": null
                     },
                     {
                         "nombre": "OG-9",
@@ -52076,9 +52080,9 @@
                             11,
                             11
                         ],
-                        "masa_total": 3700.0,
-                        "velocidad_bala": 290,
-                        "masa_explosivo": 735.0
+                        "masa_explosivo": null,
+                        "masa_total": null,
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -56638,9 +56642,8 @@
                             12,
                             8
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -71838,9 +71841,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -88705,9 +88707,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -114896,8 +114897,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
