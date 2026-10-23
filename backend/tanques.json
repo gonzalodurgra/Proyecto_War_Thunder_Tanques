@@ -51923,8 +51923,9 @@
                             12,
                             8
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -134115,9 +134116,9 @@
                             3,
                             3
                         ],
-                        "masa_total": 11600.0,
-                        "velocidad_bala": 732,
-                        "masa_explosivo": 50.0
+                        "masa_total": 4200.0,
+                        "velocidad_bala": 1455,
+                        "masa_explosivo": null
                     },
                     {
                         "nombre": "M426",
