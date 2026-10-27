@@ -737,11 +737,11 @@
                         "tipo": "APC/HEFI-T",
                         "penetracion_mm": [
                             48,
-                            46,
-                            40,
-                            33,
-                            27,
-                            23
+                            45,
+                            34,
+                            24,
+                            17,
+                            12
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
@@ -765,11 +765,11 @@
                         "tipo": "APC",
                         "penetracion_mm": [
                             48,
-                            46,
-                            40,
-                            33,
-                            27,
-                            23
+                            45,
+                            34,
+                            24,
+                            17,
+                            12
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
@@ -11583,8 +11583,8 @@
                             433,
                             433
                         ],
-                        "masa_total": 10000.0,
-                        "velocidad_bala": 502,
+                        "masa_total": 8000.0,
+                        "velocidad_bala": 503,
                         "masa_explosivo": 1300.0
                     }
                 ]
@@ -31001,6 +31001,119 @@
                 ]
             },
             "7.92 mm MG34 machine gun": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/AP/AP-T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Jagdpanther G2",
+        "imagen_local": "imagenes/Jagdpanther_G2.jpg",
+        "rol": "Tank destroyer",
+        "nacion": "Germany",
+        "rating_arcade": 6.3,
+        "rating_realista": 6.3,
+        "tripulacion": 5,
+        "visibilidad": 100,
+        "peso": 46.0,
+        "blindaje_chasis": 80,
+        "blindaje_torreta": 80,
+        "velocidad_adelante_arcade": 50,
+        "velocidad_atras_arcade": 4,
+        "relacion_potencia_peso": 22.8,
+        "velocidad_adelante_realista": 46,
+        "velocidad_atras_realista": 3,
+        "relacion_potencia_peso_realista": 13.0,
+        "angulo_depresion": 8,
+        "angulo_elevacion": 14,
+        "recarga": 7.0,
+        "cadencia": 8.571428571428571,
+        "cargador": 1,
+        "municion_total": 49,
+        "rotacion_torreta_horizontal_arcade": 13.9,
+        "rotacion_torreta_vertical_arcade": 12.2,
+        "rotacion_torreta_horizontal_realista": 8.0,
+        "rotacion_torreta_vertical_realista": 4.0,
+        "armamento": {
+            "88 mm PaK43 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "PzGr 39/43",
+                        "tipo": "APCBC",
+                        "penetracion_mm": [
+                            237,
+                            234,
+                            222,
+                            207,
+                            193,
+                            180
+                        ],
+                        "masa_total": 10200.0,
+                        "velocidad_bala": 1000,
+                        "masa_explosivo": 64.0
+                    },
+                    {
+                        "nombre": "Sprgr.43",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            19,
+                            19,
+                            17,
+                            16,
+                            14,
+                            14
+                        ],
+                        "masa_total": 9400.0,
+                        "velocidad_bala": 820,
+                        "masa_explosivo": 1000.0
+                    },
+                    {
+                        "nombre": "Hl.Gr 39",
+                        "tipo": "HEAT",
+                        "penetracion_mm": [
+                            110,
+                            110,
+                            110,
+                            110,
+                            110,
+                            110
+                        ],
+                        "masa_total": 7600.0,
+                        "velocidad_bala": 600,
+                        "masa_explosivo": 646.0
+                    },
+                    {
+                        "nombre": "PzGr 40/43",
+                        "tipo": "APCR",
+                        "penetracion_mm": [
+                            279,
+                            273,
+                            252,
+                            227,
+                            205,
+                            185
+                        ],
+                        "masa_total": 7300.0,
+                        "velocidad_bala": 1130,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.92 mm MG34 machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -96673,8 +96786,9 @@
                             850,
                             850
                         ],
-                        "masa_total": 19000.0,
-                        "masa_explosivo": 3600.0
+                        "masa_total": 4800.0,
+                        "velocidad_bala": 1770,
+                        "masa_explosivo": null
                     },
                     {
                         "nombre": "DTB12-125",
