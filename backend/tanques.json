@@ -96786,9 +96786,8 @@
                             850,
                             850
                         ],
-                        "masa_total": 4800.0,
-                        "velocidad_bala": 1770,
-                        "masa_explosivo": null
+                        "masa_total": 19000.0,
+                        "masa_explosivo": 3600.0
                     },
                     {
                         "nombre": "DTB12-125",
