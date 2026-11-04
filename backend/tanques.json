@@ -96625,9 +96625,9 @@
                             43,
                             43
                         ],
-                        "masa_total": 4800.0,
-                        "velocidad_bala": 1770,
-                        "masa_explosivo": null
+                        "masa_total": 23200.0,
+                        "velocidad_bala": 850,
+                        "masa_explosivo": 3400.0
                     }
                 ]
             },
