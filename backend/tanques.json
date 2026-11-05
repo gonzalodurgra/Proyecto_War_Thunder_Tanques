@@ -93,8 +93,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             }
@@ -40742,6 +40743,89 @@
                     {
                         "nombre": "Default",
                         "tipo": "AP/AP/AP-T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "◆BT-7M",
+        "imagen_local": "imagenes/◆BT-7M.jpg",
+        "rol": "Light tank",
+        "nacion": "USSR",
+        "rating_arcade": 2.0,
+        "rating_realista": 2.0,
+        "tripulacion": 3,
+        "visibilidad": 83,
+        "peso": 14.7,
+        "blindaje_chasis": 20,
+        "blindaje_torreta": 15,
+        "velocidad_adelante_arcade": 69,
+        "velocidad_atras_arcade": 11,
+        "relacion_potencia_peso": 45.4,
+        "velocidad_adelante_realista": 62,
+        "velocidad_atras_realista": 10,
+        "relacion_potencia_peso_realista": 34.0,
+        "angulo_depresion": 5,
+        "angulo_elevacion": 20,
+        "recarga": 2.9,
+        "cadencia": 20.689655172413794,
+        "cargador": 1,
+        "municion_total": 188,
+        "rotacion_torreta_horizontal_arcade": 30.1,
+        "rotacion_torreta_vertical_arcade": 14.0,
+        "rotacion_torreta_horizontal_realista": 16.0,
+        "rotacion_torreta_vertical_realista": 4.0,
+        "armamento": {
+            "45 mm 20-K cannon": {
+                "municiones": [
+                    {
+                        "nombre": "BR-240",
+                        "tipo": "APHEBC",
+                        "penetracion_mm": [
+                            70,
+                            67,
+                            58,
+                            47,
+                            39,
+                            32
+                        ],
+                        "masa_total": 1400.0,
+                        "velocidad_bala": 760,
+                        "masa_explosivo": 19.0
+                    },
+                    {
+                        "nombre": "BR-240SP",
+                        "tipo": "APBC",
+                        "penetracion_mm": [
+                            73,
+                            70,
+                            60,
+                            50,
+                            41,
+                            34
+                        ],
+                        "masa_total": 1400.0,
+                        "velocidad_bala": 757,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm DT machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP-I/API-T",
                         "penetracion_mm": [
                             13,
                             12,
