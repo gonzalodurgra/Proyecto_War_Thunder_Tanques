@@ -75,8 +75,9 @@
                             2,
                             0
                         ],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -14566,9 +14567,9 @@
                             266,
                             257
                         ],
-                        "masa_total": 3700.0,
-                        "velocidad_bala": 1501,
-                        "masa_explosivo": null
+                        "masa_total": 11600.0,
+                        "velocidad_bala": 732,
+                        "masa_explosivo": 50.0
                     },
                     {
                         "nombre": "M393A2",
@@ -14785,6 +14786,137 @@
                 ]
             },
             "7.62 mm M240 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Stingray II",
+        "imagen_local": "imagenes/Stingray_II.jpg",
+        "rol": "Light tank",
+        "nacion": "USA",
+        "rating_arcade": 10.0,
+        "rating_realista": 10.0,
+        "tripulacion": 4,
+        "visibilidad": 88,
+        "peso": 26.3,
+        "blindaje_chasis": 35,
+        "blindaje_torreta": 25,
+        "velocidad_adelante_arcade": 79,
+        "velocidad_atras_arcade": 17,
+        "relacion_potencia_peso": 39.9,
+        "velocidad_adelante_realista": 71,
+        "velocidad_atras_realista": 15,
+        "relacion_potencia_peso_realista": 20.9,
+        "angulo_depresion": 7,
+        "angulo_elevacion": 20,
+        "recarga": 6.7,
+        "cadencia": 8.955223880597014,
+        "cargador": 1,
+        "municion_total": 32,
+        "rotacion_torreta_horizontal_arcade": 75.3,
+        "rotacion_torreta_vertical_arcade": 28.0,
+        "rotacion_torreta_horizontal_realista": 40.0,
+        "rotacion_torreta_vertical_realista": 8.0,
+        "armamento": {
+            "105 mm LRF cannon": {
+                "municiones": [
+                    {
+                        "nombre": "M456A2",
+                        "tipo": "HEATFS",
+                        "penetracion_mm": [
+                            400,
+                            400,
+                            400,
+                            400,
+                            400,
+                            400
+                        ],
+                        "masa_total": 10500.0,
+                        "velocidad_bala": 1174,
+                        "masa_explosivo": 970.0
+                    },
+                    {
+                        "nombre": "M393A2",
+                        "tipo": "HESH",
+                        "penetracion_mm": [
+                            127,
+                            127,
+                            127,
+                            127,
+                            127,
+                            127
+                        ],
+                        "masa_total": 11200.0,
+                        "velocidad_bala": 732,
+                        "masa_explosivo": 3000.0
+                    },
+                    {
+                        "nombre": "DM33",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            421,
+                            419,
+                            411,
+                            401,
+                            391,
+                            381
+                        ],
+                        "masa_total": 3800.0,
+                        "velocidad_bala": 1455,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "C76A1",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            353,
+                            351,
+                            344,
+                            335,
+                            326,
+                            316
+                        ],
+                        "masa_total": 3600.0,
+                        "velocidad_bala": 1509,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "12.7 mm M2HB machine gun": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/I/AP/API-T",
+                        "penetracion_mm": [
+                            31,
+                            29,
+                            21,
+                            14,
+                            9,
+                            6
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm M73 machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -15484,12 +15616,12 @@
                         "nombre": "TOW-2B",
                         "tipo": "ATGM",
                         "penetracion_mm": [
-                            300,
-                            300,
-                            300,
-                            300,
-                            300,
-                            300
+                            100,
+                            100,
+                            100,
+                            100,
+                            100,
+                            100
                         ],
                         "masa_total": 22600.0,
                         "masa_explosivo": 2400.0
@@ -15706,10 +15838,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 39.5,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 23.7,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -15870,10 +16002,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 44.3,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 26.6,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -16034,10 +16166,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 44.6,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 26.7,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -16362,10 +16494,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 40.8,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 24.5,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -17035,10 +17167,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 133,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 44.3,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 26.6,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -17259,10 +17391,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 40.9,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 24.5,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -17539,10 +17671,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 41.4,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 24.8,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -17822,10 +17954,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 41.4,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 24.8,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -18054,10 +18186,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 38.7,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 23.2,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -18371,10 +18503,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 36.9,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 22.1,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -18663,10 +18795,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 36.4,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 21.9,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -18894,10 +19026,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 36.3,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 21.8,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -19242,7 +19374,7 @@
         "tripulacion": 7,
         "visibilidad": 81,
         "peso": 28.0,
-        "blindaje_chasis": 16,
+        "blindaje_chasis": 12,
         "blindaje_torreta": 0,
         "velocidad_adelante_arcade": 7,
         "velocidad_atras_arcade": 1,
@@ -19295,11 +19427,11 @@
                     }
                 ]
             },
-            "3 x 7.72 mm Lewis machine gun 1916": {
+            "3 x 7.7 mm Lewis machine gun 1916": {
                 "municiones": [
                     {
                         "nombre": "Default",
-                        "tipo": "AI/AP-I/AP-I/AP-I/T",
+                        "tipo": "T/AP/AP",
                         "penetracion_mm": [
                             13,
                             12,
@@ -24248,8 +24380,8 @@
         }
     },
     {
-        "nombre": "M44",
-        "imagen_local": "imagenes/M44.jpg",
+        "nombre": "◄M44",
+        "imagen_local": "imagenes/◄M44.jpg",
         "rol": "Tank destroyer",
         "nacion": "Germany",
         "rating_arcade": 3.7,
@@ -32641,9 +32773,9 @@
                             320,
                             320
                         ],
-                        "masa_total": 5800.0,
-                        "velocidad_bala": 1216,
-                        "masa_explosivo": 544.0
+                        "masa_total": 5700.0,
+                        "velocidad_bala": 1249,
+                        "masa_explosivo": null
                     },
                     {
                         "nombre": "M313",
@@ -33502,7 +33634,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -34696,12 +34828,12 @@
                         "nombre": "TOW-2B",
                         "tipo": "ATGM",
                         "penetracion_mm": [
-                            300,
-                            300,
-                            300,
-                            300,
-                            300,
-                            300
+                            100,
+                            100,
+                            100,
+                            100,
+                            100,
+                            100
                         ],
                         "masa_total": 22600.0,
                         "masa_explosivo": 2400.0
@@ -36224,12 +36356,12 @@
                         "nombre": "TOW-2B",
                         "tipo": "ATGM",
                         "penetracion_mm": [
-                            300,
-                            300,
-                            300,
-                            300,
-                            300,
-                            300
+                            100,
+                            100,
+                            100,
+                            100,
+                            100,
+                            100
                         ],
                         "masa_total": 22600.0,
                         "masa_explosivo": 2400.0
@@ -37664,38 +37796,38 @@
         }
     },
     {
-        "nombre": "◄EMBT",
-        "imagen_local": "imagenes/◄EMBT.jpg",
+        "nombre": "Leopard 2 PSO",
+        "imagen_local": "imagenes/Leopard_2_PSO.jpg",
         "rol": "Medium tank",
         "nacion": "Germany",
-        "rating_arcade": 13.3,
-        "rating_realista": 13.3,
-        "tripulacion": 3,
-        "visibilidad": 89,
-        "peso": 62.0,
+        "rating_arcade": 13.0,
+        "rating_realista": 13.0,
+        "tripulacion": 4,
+        "visibilidad": 87,
+        "peso": 67.0,
         "blindaje_chasis": 80,
-        "blindaje_torreta": 80,
-        "velocidad_adelante_arcade": 68,
-        "velocidad_atras_arcade": 31,
-        "relacion_potencia_peso": 46.2,
-        "velocidad_adelante_realista": 61,
-        "velocidad_atras_realista": 28,
-        "relacion_potencia_peso_realista": 24.2,
-        "angulo_depresion": 8,
+        "blindaje_torreta": 75,
+        "velocidad_adelante_arcade": 76,
+        "velocidad_atras_arcade": 36,
+        "relacion_potencia_peso": 40.6,
+        "velocidad_adelante_realista": 68,
+        "velocidad_atras_realista": 33,
+        "relacion_potencia_peso_realista": 24.3,
+        "angulo_depresion": 9,
         "angulo_elevacion": 20,
-        "recarga": 5.0,
-        "cadencia": 12.0,
+        "recarga": 6.0,
+        "cadencia": 10.0,
         "cargador": 1,
-        "municion_total": 44,
+        "municion_total": 42,
         "rotacion_torreta_horizontal_arcade": 75.3,
-        "rotacion_torreta_vertical_arcade": 105.0,
+        "rotacion_torreta_vertical_arcade": 140.0,
         "rotacion_torreta_horizontal_realista": 40.0,
-        "rotacion_torreta_vertical_realista": 30.0,
+        "rotacion_torreta_vertical_realista": 40.0,
         "armamento": {
-            "120 mm CN120-26 F1 cannon": {
+            "120 mm Rh120 L/44 cannon": {
                 "municiones": [
                     {
-                        "nombre": "OCC 120 G1",
+                        "nombre": "DM12A1",
                         "tipo": "HEATFS",
                         "penetracion_mm": [
                             480,
@@ -37705,43 +37837,28 @@
                             480,
                             480
                         ],
-                        "masa_total": 14400.0,
-                        "velocidad_bala": 1100,
+                        "masa_total": 13500.0,
+                        "velocidad_bala": 1140,
                         "masa_explosivo": 1600.0
                     },
                     {
-                        "nombre": "OFL 120 F2",
+                        "nombre": "DM43",
                         "tipo": "APFSDS",
                         "penetracion_mm": [
-                            562,
-                            561,
-                            556,
-                            550,
-                            544,
-                            538
-                        ],
-                        "masa_total": 4400.0,
-                        "velocidad_bala": 1740,
-                        "masa_explosivo": null
-                    },
-                    {
-                        "nombre": "OFL 120 F1",
-                        "tipo": "APFSDS",
-                        "penetracion_mm": [
-                            576,
-                            574,
-                            567,
-                            557,
-                            548,
-                            538
+                            535,
+                            534,
+                            526,
+                            516,
+                            505,
+                            495
                         ],
                         "masa_total": 4000.0,
-                        "velocidad_bala": 1790,
+                        "velocidad_bala": 1660,
                         "masa_explosivo": null
                     },
                     {
-                        "nombre": "F1 HE",
-                        "tipo": "HE",
+                        "nombre": "DM11",
+                        "tipo": "HE-TF",
                         "penetracion_mm": [
                             37,
                             37,
@@ -37750,13 +37867,28 @@
                             37,
                             37
                         ],
-                        "masa_total": 16800.0,
-                        "velocidad_bala": 1050,
+                        "masa_total": 19000.0,
+                        "velocidad_bala": 980,
                         "masa_explosivo": 3000.0
+                    },
+                    {
+                        "nombre": "DM53",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            623,
+                            621,
+                            611,
+                            599,
+                            587,
+                            574
+                        ],
+                        "masa_total": 5000.0,
+                        "velocidad_bala": 1670,
+                        "masa_explosivo": null
                     }
                 ]
             },
-            "12.7 mm CRC F1 machine gun (coaxial)": {
+            "12.7 mm s.MG.50 machine gun": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -37768,6 +37900,24 @@
                             14,
                             9,
                             6
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm MG3A1 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
@@ -38058,38 +38208,38 @@
         }
     },
     {
-        "nombre": "Leopard 2 PSO",
-        "imagen_local": "imagenes/Leopard_2_PSO.jpg",
+        "nombre": "◄EMBT",
+        "imagen_local": "imagenes/◄EMBT.jpg",
         "rol": "Medium tank",
         "nacion": "Germany",
-        "rating_arcade": 13.0,
-        "rating_realista": 13.0,
-        "tripulacion": 4,
-        "visibilidad": 87,
-        "peso": 67.0,
+        "rating_arcade": 13.3,
+        "rating_realista": 13.3,
+        "tripulacion": 3,
+        "visibilidad": 89,
+        "peso": 62.0,
         "blindaje_chasis": 80,
-        "blindaje_torreta": 75,
-        "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 36,
-        "relacion_potencia_peso": 40.6,
-        "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 33,
-        "relacion_potencia_peso_realista": 24.3,
-        "angulo_depresion": 9,
+        "blindaje_torreta": 80,
+        "velocidad_adelante_arcade": 68,
+        "velocidad_atras_arcade": 31,
+        "relacion_potencia_peso": 46.2,
+        "velocidad_adelante_realista": 61,
+        "velocidad_atras_realista": 28,
+        "relacion_potencia_peso_realista": 24.2,
+        "angulo_depresion": 8,
         "angulo_elevacion": 20,
-        "recarga": 6.0,
-        "cadencia": 10.0,
+        "recarga": 5.0,
+        "cadencia": 12.0,
         "cargador": 1,
-        "municion_total": 42,
+        "municion_total": 44,
         "rotacion_torreta_horizontal_arcade": 75.3,
-        "rotacion_torreta_vertical_arcade": 140.0,
+        "rotacion_torreta_vertical_arcade": 105.0,
         "rotacion_torreta_horizontal_realista": 40.0,
-        "rotacion_torreta_vertical_realista": 40.0,
+        "rotacion_torreta_vertical_realista": 30.0,
         "armamento": {
-            "120 mm Rh120 L/44 cannon": {
+            "120 mm CN120-26 F1 cannon": {
                 "municiones": [
                     {
-                        "nombre": "DM12A1",
+                        "nombre": "OCC 120 G1",
                         "tipo": "HEATFS",
                         "penetracion_mm": [
                             480,
@@ -38099,28 +38249,43 @@
                             480,
                             480
                         ],
-                        "masa_total": 13500.0,
-                        "velocidad_bala": 1140,
+                        "masa_total": 14400.0,
+                        "velocidad_bala": 1100,
                         "masa_explosivo": 1600.0
                     },
                     {
-                        "nombre": "DM43",
+                        "nombre": "OFL 120 F2",
                         "tipo": "APFSDS",
                         "penetracion_mm": [
-                            535,
-                            534,
-                            526,
-                            516,
-                            505,
-                            495
+                            562,
+                            561,
+                            556,
+                            550,
+                            544,
+                            538
                         ],
-                        "masa_total": 4000.0,
-                        "velocidad_bala": 1660,
+                        "masa_total": 4400.0,
+                        "velocidad_bala": 1740,
                         "masa_explosivo": null
                     },
                     {
-                        "nombre": "DM11",
-                        "tipo": "HE-TF",
+                        "nombre": "OFL 120 F1",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            576,
+                            574,
+                            567,
+                            557,
+                            548,
+                            538
+                        ],
+                        "masa_total": 4000.0,
+                        "velocidad_bala": 1790,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "F1 HE",
+                        "tipo": "HE",
                         "penetracion_mm": [
                             37,
                             37,
@@ -38129,28 +38294,13 @@
                             37,
                             37
                         ],
-                        "masa_total": 19000.0,
-                        "velocidad_bala": 980,
+                        "masa_total": 16800.0,
+                        "velocidad_bala": 1050,
                         "masa_explosivo": 3000.0
-                    },
-                    {
-                        "nombre": "DM53",
-                        "tipo": "APFSDS",
-                        "penetracion_mm": [
-                            623,
-                            621,
-                            611,
-                            599,
-                            587,
-                            574
-                        ],
-                        "masa_total": 5000.0,
-                        "velocidad_bala": 1670,
-                        "masa_explosivo": null
                     }
                 ]
             },
-            "12.7 mm s.MG.50 machine gun": {
+            "12.7 mm CRC F1 machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -38167,78 +38317,6 @@
                         "masa_explosivo": null
                     }
                 ]
-            },
-            "7.62 mm MG3A1 machine gun (coaxial)": {
-                "municiones": [
-                    {
-                        "nombre": "Default",
-                        "tipo": "AP/T",
-                        "penetracion_mm": [
-                            13,
-                            12,
-                            7,
-                            3,
-                            2,
-                            0
-                        ],
-                        "masa_total": null,
-                        "masa_explosivo": null
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "nombre": "IRIS-T SLM (TADS)",
-        "imagen_local": "imagenes/IRIS-T_SLM_(TADS).jpg",
-        "rol": "SPAA",
-        "nacion": "Germany",
-        "rating_arcade": 13.3,
-        "rating_realista": 13.3,
-        "tripulacion": 3,
-        "visibilidad": 250,
-        "peso": 27.5,
-        "blindaje_chasis": 0,
-        "blindaje_torreta": 0,
-        "velocidad_adelante_arcade": 87,
-        "velocidad_atras_arcade": 15,
-        "relacion_potencia_peso": 28.0,
-        "velocidad_adelante_realista": 80,
-        "velocidad_atras_realista": 13,
-        "relacion_potencia_peso_realista": 16.0
-    },
-    {
-        "nombre": "IRIS-T SLM (TEL)",
-        "imagen_local": "imagenes/IRIS-T_SLM_(TEL).jpg",
-        "rol": "SPAA",
-        "nacion": "Germany",
-        "rating_arcade": null,
-        "rating_realista": null,
-        "tripulacion": 3,
-        "visibilidad": 250,
-        "peso": 27.5,
-        "blindaje_chasis": 0,
-        "blindaje_torreta": 0,
-        "velocidad_adelante_arcade": 87,
-        "velocidad_atras_arcade": 15,
-        "relacion_potencia_peso": 28.0,
-        "velocidad_adelante_realista": 80,
-        "velocidad_atras_realista": 13,
-        "relacion_potencia_peso_realista": 16.0,
-        "cadencia": 120,
-        "cargador": 1,
-        "municion_total": 8,
-        "armamento": {
-            "IRIS-T SLM SAM": {
-                "municiones": [
-                    {
-                        "nombre": "IRIS-T SLM",
-                        "tipo": "AAM",
-                        "penetracion_mm": [],
-                        "masa_total": 155000.0,
-                        "masa_explosivo": 4500.0
-                    }
-                ]
             }
         }
     },
@@ -38251,17 +38329,17 @@
         "rating_realista": 13.3,
         "tripulacion": 4,
         "visibilidad": 87,
-        "peso": 66.5,
+        "peso": 66.3,
         "blindaje_chasis": 80,
         "blindaje_torreta": 80,
-        "velocidad_adelante_arcade": 68,
-        "velocidad_atras_arcade": 31,
-        "relacion_potencia_peso": 37.6,
-        "velocidad_adelante_realista": 61,
-        "velocidad_atras_realista": 28,
+        "velocidad_adelante_arcade": 70,
+        "velocidad_atras_arcade": 32,
+        "relacion_potencia_peso": 37.7,
+        "velocidad_adelante_realista": 63,
+        "velocidad_atras_realista": 29,
         "relacion_potencia_peso_realista": 22.6,
-        "angulo_depresion": 9,
-        "angulo_elevacion": 20,
+        "angulo_depresion": 7,
+        "angulo_elevacion": 17,
         "recarga": 6.0,
         "cadencia": 10.0,
         "cargador": 1,
@@ -38354,6 +38432,173 @@
                 ]
             },
             "7.62 mm MG3A1 machine gun": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "IRIS-T SLM (TADS)",
+        "imagen_local": "imagenes/IRIS-T_SLM_(TADS).jpg",
+        "rol": "SPAA",
+        "nacion": "Germany",
+        "rating_arcade": 13.3,
+        "rating_realista": 13.3,
+        "tripulacion": 3,
+        "visibilidad": 250,
+        "peso": 27.5,
+        "blindaje_chasis": 0,
+        "blindaje_torreta": 0,
+        "velocidad_adelante_arcade": 87,
+        "velocidad_atras_arcade": 15,
+        "relacion_potencia_peso": 28.0,
+        "velocidad_adelante_realista": 80,
+        "velocidad_atras_realista": 13,
+        "relacion_potencia_peso_realista": 16.0
+    },
+    {
+        "nombre": "IRIS-T SLM (TEL)",
+        "imagen_local": "imagenes/IRIS-T_SLM_(TEL).jpg",
+        "rol": "SPAA",
+        "nacion": "Germany",
+        "rating_arcade": null,
+        "rating_realista": null,
+        "tripulacion": 3,
+        "visibilidad": 250,
+        "peso": 27.5,
+        "blindaje_chasis": 0,
+        "blindaje_torreta": 0,
+        "velocidad_adelante_arcade": 87,
+        "velocidad_atras_arcade": 15,
+        "relacion_potencia_peso": 28.0,
+        "velocidad_adelante_realista": 80,
+        "velocidad_atras_realista": 13,
+        "relacion_potencia_peso_realista": 16.0,
+        "cadencia": 120,
+        "cargador": 1,
+        "municion_total": 8,
+        "armamento": {
+            "IRIS-T SLM SAM": {
+                "municiones": [
+                    {
+                        "nombre": "IRIS-T SLM",
+                        "tipo": "AAM",
+                        "penetracion_mm": [],
+                        "masa_total": 155000.0,
+                        "masa_explosivo": 4500.0
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Leopard 2A8",
+        "imagen_local": "imagenes/Leopard_2A8.jpg",
+        "rol": "Medium tank",
+        "nacion": "Germany",
+        "rating_arcade": 13.3,
+        "rating_realista": 13.3,
+        "tripulacion": 4,
+        "visibilidad": 87,
+        "peso": 69.0,
+        "blindaje_chasis": 80,
+        "blindaje_torreta": 80,
+        "velocidad_adelante_arcade": 67,
+        "velocidad_atras_arcade": 30,
+        "relacion_potencia_peso": 36.3,
+        "velocidad_adelante_realista": 60,
+        "velocidad_atras_realista": 27,
+        "relacion_potencia_peso_realista": 21.7,
+        "angulo_depresion": 7,
+        "angulo_elevacion": 17,
+        "recarga": 6.0,
+        "cadencia": 10.0,
+        "cargador": 1,
+        "municion_total": 37,
+        "rotacion_torreta_horizontal_arcade": 75.3,
+        "rotacion_torreta_vertical_arcade": 140.0,
+        "rotacion_torreta_horizontal_realista": 40.0,
+        "rotacion_torreta_vertical_realista": 40.0,
+        "armamento": {
+            "120 mm Rh120 L/55 A1 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "DM12A1",
+                        "tipo": "HEATFS",
+                        "penetracion_mm": [
+                            480,
+                            480,
+                            480,
+                            480,
+                            480,
+                            480
+                        ],
+                        "masa_total": 13500.0,
+                        "velocidad_bala": 1190,
+                        "masa_explosivo": 1600.0
+                    },
+                    {
+                        "nombre": "DM43",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            564,
+                            562,
+                            555,
+                            545,
+                            535,
+                            525
+                        ],
+                        "masa_total": 4000.0,
+                        "velocidad_bala": 1750,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "DM11",
+                        "tipo": "HE-TF",
+                        "penetracion_mm": [
+                            37,
+                            37,
+                            37,
+                            37,
+                            37,
+                            37
+                        ],
+                        "masa_total": 19000.0,
+                        "velocidad_bala": 1015,
+                        "masa_explosivo": 3000.0
+                    },
+                    {
+                        "nombre": "DM53",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            653,
+                            650,
+                            641,
+                            629,
+                            617,
+                            605
+                        ],
+                        "masa_total": 5000.0,
+                        "velocidad_bala": 1750,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm MG3A1 machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -50371,9 +50616,9 @@
         "cadencia": 2.884615384615384,
         "cargador": 1,
         "municion_total": 35,
-        "rotacion_torreta_horizontal_arcade": 22.4,
+        "rotacion_torreta_horizontal_arcade": 42.2,
         "rotacion_torreta_vertical_arcade": 10.4,
-        "rotacion_torreta_horizontal_realista": 14.0,
+        "rotacion_torreta_horizontal_realista": 26.4,
         "rotacion_torreta_vertical_realista": 4.0,
         "armamento": {
             "122 mm D-25T cannon": {
@@ -57440,65 +57685,65 @@
         }
     },
     {
-        "nombre": "BMPT",
-        "imagen_local": "imagenes/BMPT.jpg",
-        "rol": "Tank destroyer",
+        "nombre": "BTR-90",
+        "imagen_local": "imagenes/BTR-90.jpg",
+        "rol": "Light tank",
         "nacion": "USSR",
-        "rating_arcade": 12.0,
-        "rating_realista": 12.0,
-        "tripulacion": 5,
-        "visibilidad": 75,
-        "peso": 48.2,
-        "blindaje_chasis": 60,
-        "blindaje_torreta": 0,
-        "velocidad_adelante_arcade": 65,
-        "velocidad_atras_arcade": 5,
-        "relacion_potencia_peso": 36.3,
-        "velocidad_adelante_realista": 60,
-        "velocidad_atras_realista": 4,
-        "relacion_potencia_peso_realista": 20.7,
+        "rating_arcade": 10.3,
+        "rating_realista": 10.3,
+        "tripulacion": 3,
+        "visibilidad": 129,
+        "peso": 22.5,
+        "blindaje_chasis": 12,
+        "blindaje_torreta": 15,
+        "velocidad_adelante_arcade": 111,
+        "velocidad_atras_arcade": 111,
+        "relacion_potencia_peso": 43.2,
+        "velocidad_adelante_realista": 100,
+        "velocidad_atras_realista": 100,
+        "relacion_potencia_peso_realista": 22.7,
         "angulo_depresion": 5,
-        "angulo_elevacion": 25,
-        "recarga": 0.5,
-        "cadencia": 120.0,
-        "cargador": 1,
-        "municion_total": 4,
-        "rotacion_torreta_vertical_arcade": 30.5,
-        "rotacion_torreta_vertical_realista": 10.0,
+        "angulo_elevacion": 10,
+        "recarga": 20.0,
+        "cadencia": 120,
+        "cargador": 4,
+        "municion_total": 8,
+        "rotacion_torreta_vertical_arcade": 52.5,
+        "rotacion_torreta_vertical_realista": 15.0,
         "armamento": {
-            "9M120 anti-tank guided missile": {
+            "9M133 anti-tank guided missile": {
                 "municiones": [
                     {
-                        "nombre": "9M120-1",
+                        "nombre": "9M133",
                         "tipo": "ATGM (tandem)",
                         "penetracion_mm": [
-                            800,
-                            800,
-                            800,
-                            800,
-                            800,
-                            800
+                            1200,
+                            1200,
+                            1200,
+                            1200,
+                            1200,
+                            1200
                         ],
-                        "masa_total": 33500.0,
-                        "masa_explosivo": 2800.0
+                        "masa_total": 26000.0,
+                        "masa_explosivo": 4000.0
                     },
                     {
-                        "nombre": "9M120-1F",
-                        "tipo": "ATGM-HE",
+                        "nombre": "9M133FM-3",
+                        "tipo": "ATGM-VT",
                         "penetracion_mm": [
-                            55,
-                            55,
-                            55,
-                            55,
-                            55,
-                            55
+                            61,
+                            61,
+                            61,
+                            61,
+                            61,
+                            61
                         ],
-                        "masa_total": 33500.0,
-                        "masa_explosivo": 4500.0
+                        "masa_total": 28000.0,
+                        "masa_explosivo": 6000.0
                     }
                 ]
             },
-            "2 x 30 mm AG-30M automatic grenade launcher": {
+            "30 mm AG-30M automatic grenade launcher": {
                 "municiones": [
                     {
                         "nombre": "VOG-30",
@@ -57517,7 +57762,7 @@
                     }
                 ]
             },
-            "2 x 30 mm 2A42 automatic cannon": {
+            "30 mm 2A42 automatic cannon": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -57576,22 +57821,22 @@
                         "masa_explosivo": null
                     },
                     {
-                        "nombre": "30 mm HEI-PD",
-                        "tipo": "HE-TF/HE-TF/HE-TF/HE-TF",
+                        "nombre": "30 mm APDS-FS",
+                        "tipo": "APFSDS/APFSDS/APFSDS",
                         "penetracion_mm": [
-                            8,
-                            8,
-                            6,
-                            5,
-                            4,
-                            3
+                            101,
+                            100,
+                            95,
+                            88,
+                            81,
+                            75
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
                     }
                 ]
             },
-            "7.62 mm PKT machine gun (coaxial)": {
+            "7.62 mm PKTM machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -58007,6 +58252,178 @@
         }
     },
     {
+        "nombre": "BMPT",
+        "imagen_local": "imagenes/BMPT.jpg",
+        "rol": "Tank destroyer",
+        "nacion": "USSR",
+        "rating_arcade": 12.0,
+        "rating_realista": 12.0,
+        "tripulacion": 5,
+        "visibilidad": 75,
+        "peso": 48.2,
+        "blindaje_chasis": 60,
+        "blindaje_torreta": 0,
+        "velocidad_adelante_arcade": 65,
+        "velocidad_atras_arcade": 5,
+        "relacion_potencia_peso": 36.3,
+        "velocidad_adelante_realista": 60,
+        "velocidad_atras_realista": 4,
+        "relacion_potencia_peso_realista": 20.7,
+        "angulo_depresion": 5,
+        "angulo_elevacion": 25,
+        "recarga": 0.5,
+        "cadencia": 120.0,
+        "cargador": 1,
+        "municion_total": 4,
+        "rotacion_torreta_vertical_arcade": 30.5,
+        "rotacion_torreta_vertical_realista": 10.0,
+        "armamento": {
+            "9M120 anti-tank guided missile": {
+                "municiones": [
+                    {
+                        "nombre": "9M120-1",
+                        "tipo": "ATGM (tandem)",
+                        "penetracion_mm": [
+                            800,
+                            800,
+                            800,
+                            800,
+                            800,
+                            800
+                        ],
+                        "masa_total": 33500.0,
+                        "masa_explosivo": 2800.0
+                    },
+                    {
+                        "nombre": "9M120-1F",
+                        "tipo": "ATGM-HE",
+                        "penetracion_mm": [
+                            55,
+                            55,
+                            55,
+                            55,
+                            55,
+                            55
+                        ],
+                        "masa_total": 33500.0,
+                        "masa_explosivo": 4500.0
+                    }
+                ]
+            },
+            "2 x 30 mm AG-30M automatic grenade launcher": {
+                "municiones": [
+                    {
+                        "nombre": "VOG-30",
+                        "tipo": "VOG",
+                        "penetracion_mm": [
+                            3,
+                            3,
+                            3,
+                            3,
+                            3,
+                            3
+                        ],
+                        "masa_total": 275.0,
+                        "velocidad_bala": 185,
+                        "masa_explosivo": 42.0
+                    }
+                ]
+            },
+            "2 x 30 mm 2A42 automatic cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP-T/HEF-I",
+                        "penetracion_mm": [
+                            65,
+                            63,
+                            53,
+                            44,
+                            36,
+                            29
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm HEI",
+                        "tipo": "HEF-I/HEF-I/HEF-I/AP-T",
+                        "penetracion_mm": [
+                            65,
+                            63,
+                            53,
+                            44,
+                            36,
+                            29
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm AP-T",
+                        "tipo": "AP-T/AP-T/AP-T/HEF-T",
+                        "penetracion_mm": [
+                            65,
+                            63,
+                            53,
+                            44,
+                            36,
+                            29
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm APDS",
+                        "tipo": "APDS/APDS/APDS/APDS/HEF-T",
+                        "penetracion_mm": [
+                            82,
+                            81,
+                            79,
+                            75,
+                            72,
+                            69
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm HEI-PD",
+                        "tipo": "HE-TF/HE-TF/HE-TF/HE-TF",
+                        "penetracion_mm": [
+                            8,
+                            8,
+                            6,
+                            5,
+                            4,
+                            3
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm PKT machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP-I/API-T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
         "nombre": "2S6",
         "imagen_local": "imagenes/2S6.jpg",
         "rol": "SPAA",
@@ -58289,7 +58706,7 @@
                     }
                 ]
             },
-            "7.62 mm PKT machine gun (coaxial)": {
+            "7.62 mm PKTM machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -59357,7 +59774,7 @@
                     }
                 ]
             },
-            "7.62 mm PKT machine gun (coaxial)": {
+            "7.62 mm PKTM machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -60227,7 +60644,7 @@
                     }
                 ]
             },
-            "7.62 mm PKT machine gun (coaxial)": {
+            "7.62 mm PKTM machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -60372,7 +60789,7 @@
                     }
                 ]
             },
-            "7.62 mm PKT machine gun (coaxial)": {
+            "7.62 mm PKTM machine gun (coaxial)": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -60979,7 +61396,7 @@
                     }
                 ]
             },
-            "weapons/170mm_tkb_1055_container": {
+            "AAM TKB-1055": {
                 "municiones": []
             }
         }
@@ -60993,15 +61410,15 @@
         "rating_realista": 1.0,
         "tripulacion": 4,
         "visibilidad": 93,
-        "peso": 13.8,
+        "peso": 14.5,
         "blindaje_chasis": 14,
         "blindaje_torreta": 14,
         "velocidad_adelante_arcade": 54,
         "velocidad_atras_arcade": 9,
-        "relacion_potencia_peso": 47.0,
+        "relacion_potencia_peso": 44.8,
         "velocidad_adelante_realista": 48,
         "velocidad_atras_realista": 8,
-        "relacion_potencia_peso_realista": 24.6,
+        "relacion_potencia_peso_realista": 23.4,
         "angulo_depresion": 15,
         "angulo_elevacion": 20,
         "recarga": 2.8,
@@ -61420,8 +61837,8 @@
         "velocidad_adelante_realista": 8,
         "velocidad_atras_realista": 1,
         "relacion_potencia_peso_realista": 5.0,
-        "angulo_depresion": 6,
-        "angulo_elevacion": 12,
+        "angulo_depresion": 15,
+        "angulo_elevacion": 20,
         "recarga": 3.0,
         "cadencia": 20.0,
         "cargador": 1,
@@ -61494,15 +61911,15 @@
         "rating_realista": 1.3,
         "tripulacion": 4,
         "visibilidad": 93,
-        "peso": 14.5,
+        "peso": 15.0,
         "blindaje_chasis": 30,
         "blindaje_torreta": 14,
         "velocidad_adelante_arcade": 54,
         "velocidad_atras_arcade": 9,
-        "relacion_potencia_peso": 44.8,
+        "relacion_potencia_peso": 43.3,
         "velocidad_adelante_realista": 48,
         "velocidad_atras_realista": 8,
-        "relacion_potencia_peso_realista": 23.4,
+        "relacion_potencia_peso_realista": 22.7,
         "angulo_depresion": 15,
         "angulo_elevacion": 20,
         "recarga": 2.8,
@@ -62025,15 +62442,15 @@
         "rating_realista": 1.0,
         "tripulacion": 4,
         "visibilidad": 93,
-        "peso": 13.8,
+        "peso": 14.5,
         "blindaje_chasis": 14,
         "blindaje_torreta": 14,
         "velocidad_adelante_arcade": 54,
         "velocidad_atras_arcade": 9,
-        "relacion_potencia_peso": 47.0,
+        "relacion_potencia_peso": 44.8,
         "velocidad_adelante_realista": 48,
         "velocidad_atras_realista": 8,
-        "relacion_potencia_peso_realista": 24.6,
+        "relacion_potencia_peso_realista": 23.4,
         "angulo_depresion": 15,
         "angulo_elevacion": 20,
         "recarga": 2.8,
@@ -62138,15 +62555,15 @@
         "rating_realista": 1.3,
         "tripulacion": 4,
         "visibilidad": 93,
-        "peso": 14.5,
+        "peso": 15.0,
         "blindaje_chasis": 30,
         "blindaje_torreta": 14,
         "velocidad_adelante_arcade": 54,
         "velocidad_atras_arcade": 9,
-        "relacion_potencia_peso": 44.8,
+        "relacion_potencia_peso": 43.3,
         "velocidad_adelante_realista": 48,
         "velocidad_atras_realista": 8,
-        "relacion_potencia_peso_realista": 23.4,
+        "relacion_potencia_peso_realista": 22.7,
         "angulo_depresion": 15,
         "angulo_elevacion": 20,
         "recarga": 2.8,
@@ -70559,11 +70976,11 @@
         "peso": 38.1,
         "blindaje_chasis": 80,
         "blindaje_torreta": 80,
-        "velocidad_adelante_arcade": 54,
-        "velocidad_atras_arcade": 12,
+        "velocidad_adelante_arcade": 56,
+        "velocidad_atras_arcade": 11,
         "relacion_potencia_peso": 35.5,
-        "velocidad_adelante_realista": 48,
-        "velocidad_atras_realista": 11,
+        "velocidad_adelante_realista": 50,
+        "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 18.6,
         "angulo_depresion": 7,
         "angulo_elevacion": 20,
@@ -70729,13 +71146,14 @@
         "relacion_potencia_peso_realista": 13.6,
         "angulo_depresion": 10,
         "angulo_elevacion": 80,
+        "recarga": 4.0,
         "cadencia": 650,
         "cargador": 340,
-        "municion_total": 680,
-        "rotacion_torreta_horizontal_arcade": 156.7,
-        "rotacion_torreta_vertical_arcade": 152.5,
-        "rotacion_torreta_horizontal_realista": 90.0,
-        "rotacion_torreta_vertical_realista": 50.0,
+        "municion_total": 620,
+        "rotacion_torreta_horizontal_arcade": 139.3,
+        "rotacion_torreta_vertical_arcade": 122.0,
+        "rotacion_torreta_horizontal_realista": 80.0,
+        "rotacion_torreta_vertical_realista": 40.0,
         "armamento": {
             "2 x 30 mm HSS 831L cannon": {
                 "municiones": [
@@ -71323,12 +71741,12 @@
         "peso": 56.0,
         "blindaje_chasis": 86,
         "blindaje_torreta": 280,
-        "velocidad_adelante_arcade": 54,
-        "velocidad_atras_arcade": 13,
-        "relacion_potencia_peso": 22.5,
-        "velocidad_adelante_realista": 49,
-        "velocidad_atras_realista": 11,
-        "relacion_potencia_peso_realista": 11.8,
+        "velocidad_adelante_arcade": 45,
+        "velocidad_atras_arcade": 10,
+        "relacion_potencia_peso": 22.1,
+        "velocidad_adelante_realista": 41,
+        "velocidad_atras_realista": 9,
+        "relacion_potencia_peso_realista": 11.6,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
         "recarga": 7.5,
@@ -71457,11 +71875,11 @@
         "peso": 55.0,
         "blindaje_chasis": 86,
         "blindaje_torreta": 280,
-        "velocidad_adelante_arcade": 53,
-        "velocidad_atras_arcade": 12,
+        "velocidad_adelante_arcade": 48,
+        "velocidad_atras_arcade": 11,
         "relacion_potencia_peso": 26.4,
-        "velocidad_adelante_realista": 48,
-        "velocidad_atras_realista": 11,
+        "velocidad_adelante_realista": 43,
+        "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 13.8,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -71591,11 +72009,11 @@
         "peso": 38.7,
         "blindaje_chasis": 80,
         "blindaje_torreta": 80,
-        "velocidad_adelante_arcade": 55,
-        "velocidad_atras_arcade": 13,
+        "velocidad_adelante_arcade": 54,
+        "velocidad_atras_arcade": 11,
         "relacion_potencia_peso": 35.5,
-        "velocidad_adelante_realista": 50,
-        "velocidad_atras_realista": 12,
+        "velocidad_adelante_realista": 48,
+        "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 18.6,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -72133,11 +72551,11 @@
         "peso": 55.0,
         "blindaje_chasis": 86,
         "blindaje_torreta": 25,
-        "velocidad_adelante_arcade": 52,
-        "velocidad_atras_arcade": 12,
+        "velocidad_adelante_arcade": 47,
+        "velocidad_atras_arcade": 11,
         "relacion_potencia_peso": 26.4,
-        "velocidad_adelante_realista": 48,
-        "velocidad_atras_realista": 11,
+        "velocidad_adelante_realista": 43,
+        "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 13.8,
         "angulo_depresion": 10,
         "angulo_elevacion": 85,
@@ -72481,11 +72899,11 @@
         "peso": 57.2,
         "blindaje_chasis": 86,
         "blindaje_torreta": 280,
-        "velocidad_adelante_arcade": 53,
-        "velocidad_atras_arcade": 12,
+        "velocidad_adelante_arcade": 48,
+        "velocidad_atras_arcade": 11,
         "relacion_potencia_peso": 25.3,
-        "velocidad_adelante_realista": 48,
-        "velocidad_atras_realista": 11,
+        "velocidad_adelante_realista": 43,
+        "velocidad_atras_realista": 10,
         "relacion_potencia_peso_realista": 13.3,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -72744,10 +73162,10 @@
         "blindaje_chasis": 76,
         "blindaje_torreta": 152,
         "velocidad_adelante_arcade": 64,
-        "velocidad_atras_arcade": 24,
+        "velocidad_atras_arcade": 28,
         "relacion_potencia_peso": 31.8,
         "velocidad_adelante_realista": 58,
-        "velocidad_atras_realista": 21,
+        "velocidad_atras_realista": 25,
         "relacion_potencia_peso_realista": 16.7,
         "angulo_depresion": 10,
         "angulo_elevacion": 18,
@@ -72778,7 +73196,7 @@
                         "masa_explosivo": 970.0
                     },
                     {
-                        "nombre": "DM63",
+                        "nombre": "FS Mk.3",
                         "tipo": "APFSDS",
                         "penetracion_mm": [
                             430,
@@ -72793,7 +73211,7 @@
                         "masa_explosivo": null
                     },
                     {
-                        "nombre": "M111",
+                        "nombre": "FS Mk.1",
                         "tipo": "APFSDS",
                         "penetracion_mm": [
                             338,
@@ -73300,11 +73718,11 @@
         "blindaje_chasis": 80,
         "blindaje_torreta": 80,
         "velocidad_adelante_arcade": 54,
-        "velocidad_atras_arcade": 12,
-        "relacion_potencia_peso": 30.4,
+        "velocidad_atras_arcade": 11,
+        "relacion_potencia_peso": 32.5,
         "velocidad_adelante_realista": 48,
-        "velocidad_atras_realista": 11,
-        "relacion_potencia_peso_realista": 16.0,
+        "velocidad_atras_realista": 10,
+        "relacion_potencia_peso_realista": 17.1,
         "angulo_depresion": 7,
         "angulo_elevacion": 20,
         "recarga": 5.0,
@@ -73543,10 +73961,10 @@
         "blindaje_chasis": 86,
         "blindaje_torreta": 280,
         "velocidad_adelante_arcade": 62,
-        "velocidad_atras_arcade": 41,
+        "velocidad_atras_arcade": 40,
         "relacion_potencia_peso": 43.2,
         "velocidad_adelante_realista": 56,
-        "velocidad_atras_realista": 37,
+        "velocidad_atras_realista": 36,
         "relacion_potencia_peso_realista": 22.7,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -74055,6 +74473,104 @@
         }
     },
     {
+        "nombre": "Optimering",
+        "imagen_local": "imagenes/Optimering.jpg",
+        "rol": "Medium tank",
+        "nacion": "Great Britain",
+        "rating_arcade": 10.0,
+        "rating_realista": 10.0,
+        "tripulacion": 4,
+        "visibilidad": 129,
+        "peso": 64.4,
+        "blindaje_chasis": 76,
+        "blindaje_torreta": 152,
+        "velocidad_adelante_arcade": 64,
+        "velocidad_atras_arcade": 28,
+        "relacion_potencia_peso": 31.1,
+        "velocidad_adelante_realista": 58,
+        "velocidad_atras_realista": 25,
+        "relacion_potencia_peso_realista": 16.3,
+        "angulo_depresion": 10,
+        "angulo_elevacion": 18,
+        "recarga": 5.0,
+        "cadencia": 12.0,
+        "cargador": 1,
+        "municion_total": 57,
+        "rotacion_torreta_horizontal_arcade": 42.4,
+        "rotacion_torreta_vertical_arcade": 35.0,
+        "rotacion_torreta_horizontal_realista": 22.5,
+        "rotacion_torreta_vertical_realista": 10.0,
+        "armamento": {
+            "105 mm GT-8 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "M456",
+                        "tipo": "HEATFS",
+                        "penetracion_mm": [
+                            400,
+                            400,
+                            400,
+                            400,
+                            400,
+                            400
+                        ],
+                        "masa_total": 10500.0,
+                        "velocidad_bala": 1174,
+                        "masa_explosivo": 970.0
+                    },
+                    {
+                        "nombre": "FS Mk.3",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            430,
+                            428,
+                            420,
+                            411,
+                            401,
+                            391
+                        ],
+                        "masa_total": 4400.0,
+                        "velocidad_bala": 1455,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "FS Mk.1",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            338,
+                            336,
+                            330,
+                            323,
+                            315,
+                            307
+                        ],
+                        "masa_total": 4200.0,
+                        "velocidad_bala": 1455,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm Browning MG4 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
         "nombre": "Challenger Mk.2",
         "imagen_local": "imagenes/Challenger_Mk.2.jpg",
         "rol": "Medium tank",
@@ -74067,10 +74583,10 @@
         "blindaje_chasis": 80,
         "blindaje_torreta": 110,
         "velocidad_adelante_arcade": 62,
-        "velocidad_atras_arcade": 41,
+        "velocidad_atras_arcade": 40,
         "relacion_potencia_peso": 38.7,
         "velocidad_adelante_realista": 56,
-        "velocidad_atras_realista": 37,
+        "velocidad_atras_realista": 36,
         "relacion_potencia_peso_realista": 20.3,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -74183,10 +74699,10 @@
         "blindaje_chasis": 80,
         "blindaje_torreta": 110,
         "velocidad_adelante_arcade": 62,
-        "velocidad_atras_arcade": 41,
+        "velocidad_atras_arcade": 40,
         "relacion_potencia_peso": 37.4,
         "velocidad_adelante_realista": 56,
-        "velocidad_atras_realista": 37,
+        "velocidad_atras_realista": 36,
         "relacion_potencia_peso_realista": 19.6,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -74442,12 +74958,12 @@
                         "nombre": "TOW-2B",
                         "tipo": "ATGM",
                         "penetracion_mm": [
-                            300,
-                            300,
-                            300,
-                            300,
-                            300,
-                            300
+                            100,
+                            100,
+                            100,
+                            100,
+                            100,
+                            100
                         ],
                         "masa_total": 22600.0,
                         "masa_explosivo": 2400.0
@@ -75712,10 +76228,10 @@
         "blindaje_chasis": 80,
         "blindaje_torreta": 110,
         "velocidad_adelante_arcade": 62,
-        "velocidad_atras_arcade": 41,
+        "velocidad_atras_arcade": 40,
         "relacion_potencia_peso": 39.4,
         "velocidad_adelante_realista": 56,
-        "velocidad_atras_realista": 37,
+        "velocidad_atras_realista": 36,
         "relacion_potencia_peso_realista": 20.6,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -76554,10 +77070,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 40.9,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 24.5,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -76801,10 +77317,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 36.3,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 21.8,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -84116,6 +84632,157 @@
         }
     },
     {
+        "nombre": "BMP-3F",
+        "imagen_local": "imagenes/BMP-3F.jpg",
+        "rol": "Light tank",
+        "nacion": "Japan",
+        "rating_arcade": 9.0,
+        "rating_realista": 9.0,
+        "tripulacion": 3,
+        "visibilidad": 78,
+        "peso": 18.7,
+        "blindaje_chasis": 60,
+        "blindaje_torreta": 50,
+        "velocidad_adelante_arcade": 78,
+        "velocidad_atras_arcade": 23,
+        "relacion_potencia_peso": 51.0,
+        "velocidad_adelante_realista": 70,
+        "velocidad_atras_realista": 20,
+        "relacion_potencia_peso_realista": 26.7,
+        "recarga": 4.0,
+        "cadencia": 15.0,
+        "cargador": 1,
+        "municion_total": 48,
+        "armamento": {
+            "100 mm 2A70 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "3OF32",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            31,
+                            31,
+                            31,
+                            31,
+                            31,
+                            31
+                        ],
+                        "masa_total": 15600.0,
+                        "velocidad_bala": 250,
+                        "masa_explosivo": 1700.0
+                    },
+                    {
+                        "nombre": "3OF70",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            36,
+                            36,
+                            36,
+                            36,
+                            36,
+                            36
+                        ],
+                        "masa_total": 13400.0,
+                        "velocidad_bala": 355,
+                        "masa_explosivo": 2300.0
+                    },
+                    {
+                        "nombre": "9M117",
+                        "tipo": "ATGM",
+                        "penetracion_mm": [
+                            600,
+                            600,
+                            600,
+                            600,
+                            600,
+                            600
+                        ],
+                        "masa_total": 18800.0,
+                        "masa_explosivo": 3000.0
+                    },
+                    {
+                        "nombre": "9M117M1",
+                        "tipo": "ATGM (tandem)",
+                        "penetracion_mm": [
+                            750,
+                            750,
+                            750,
+                            750,
+                            750,
+                            750
+                        ],
+                        "masa_total": 18800.0,
+                        "masa_explosivo": 3000.0
+                    }
+                ]
+            },
+            "30 mm 2A72 automatic cannon": {
+                "municiones": [
+                    {
+                        "nombre": "30 mm HEI",
+                        "tipo": "HEF-I/HEF-I/HEF-I/AP-T",
+                        "penetracion_mm": [
+                            65,
+                            63,
+                            53,
+                            44,
+                            36,
+                            29
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm APDS",
+                        "tipo": "APDS/APDS/APDS/APDS/HEF-T",
+                        "penetracion_mm": [
+                            82,
+                            81,
+                            79,
+                            75,
+                            72,
+                            69
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "30 mm AP-T",
+                        "tipo": "AP-T/AP-T/AP-T/HEF-T",
+                        "penetracion_mm": [
+                            65,
+                            63,
+                            53,
+                            44,
+                            36,
+                            29
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm PKT machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP-I/API-T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
         "nombre": "▄M60A3 TTS",
         "imagen_local": "imagenes/▄M60A3_TTS.jpg",
         "rol": "Medium tank",
@@ -90852,7 +91519,7 @@
                         ],
                         "masa_total": 45500.0,
                         "velocidad_bala": 897,
-                        "masa_explosivo": 8000.0
+                        "masa_explosivo": 8200.0
                     },
                     {
                         "nombre": "DDB01 HE(VT)",
@@ -90867,7 +91534,7 @@
                         ],
                         "masa_total": 45500.0,
                         "velocidad_bala": 897,
-                        "masa_explosivo": 8000.0
+                        "masa_explosivo": 8200.0
                     },
                     {
                         "nombre": "BEA1-155",
@@ -91218,7 +91885,7 @@
         "velocidad_adelante_realista": 64,
         "velocidad_atras_realista": 8,
         "relacion_potencia_peso_realista": 21.7,
-        "angulo_depresion": 5,
+        "angulo_depresion": 4,
         "angulo_elevacion": 22,
         "recarga": 7.4,
         "cadencia": 8.108108108108107,
@@ -93139,12 +93806,12 @@
                         "nombre": "TOW-2B",
                         "tipo": "ATGM",
                         "penetracion_mm": [
-                            300,
-                            300,
-                            300,
-                            300,
-                            300,
-                            300
+                            100,
+                            100,
+                            100,
+                            100,
+                            100,
+                            100
                         ],
                         "masa_total": 22600.0,
                         "masa_explosivo": 2400.0
@@ -93913,9 +94580,9 @@
         "cadencia": 60,
         "cargador": 4,
         "municion_total": 12,
-        "rotacion_torreta_horizontal_arcade": 26.1,
+        "rotacion_torreta_horizontal_arcade": 34.8,
         "rotacion_torreta_vertical_arcade": 30.5,
-        "rotacion_torreta_horizontal_realista": 15.0,
+        "rotacion_torreta_horizontal_realista": 20.0,
         "rotacion_torreta_vertical_realista": 10.0,
         "armamento": {
             "HJ-9 anti-tank guided missile": {
@@ -94240,7 +94907,7 @@
         "angulo_elevacion": 60,
         "recarga": 10.0,
         "cadencia": 200,
-        "cargador": 90,
+        "cargador": 70,
         "municion_total": 420,
         "rotacion_torreta_horizontal_arcade": 104.8,
         "rotacion_torreta_vertical_arcade": 70.0,
@@ -94316,6 +94983,143 @@
                     {
                         "nombre": "Default",
                         "tipo": "AP/AP/T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "ZBD04",
+        "imagen_local": "imagenes/ZBD04.jpg",
+        "rol": "Light tank",
+        "nacion": "China",
+        "rating_arcade": 9.3,
+        "rating_realista": 9.3,
+        "tripulacion": 3,
+        "visibilidad": 89,
+        "peso": 21.5,
+        "blindaje_chasis": 30,
+        "blindaje_torreta": 65,
+        "velocidad_adelante_arcade": 78,
+        "velocidad_atras_arcade": 7,
+        "relacion_potencia_peso": 48.8,
+        "velocidad_adelante_realista": 70,
+        "velocidad_atras_realista": 6,
+        "relacion_potencia_peso_realista": 25.6,
+        "recarga": 5.2,
+        "cadencia": 11.538461538461537,
+        "cargador": 1,
+        "municion_total": 56,
+        "armamento": {
+            "100 mm ZPL04 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "3OF32",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            31,
+                            31,
+                            31,
+                            31,
+                            31,
+                            31
+                        ],
+                        "masa_total": 15600.0,
+                        "velocidad_bala": 250,
+                        "masa_explosivo": 1700.0
+                    },
+                    {
+                        "nombre": "3OF70",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            36,
+                            36,
+                            36,
+                            36,
+                            36,
+                            36
+                        ],
+                        "masa_total": 13400.0,
+                        "velocidad_bala": 355,
+                        "masa_explosivo": 2300.0
+                    },
+                    {
+                        "nombre": "APS03",
+                        "tipo": "ATGM (tandem)",
+                        "penetracion_mm": [
+                            600,
+                            600,
+                            600,
+                            600,
+                            600,
+                            600
+                        ],
+                        "masa_total": 18800.0,
+                        "masa_explosivo": 3000.0
+                    }
+                ]
+            },
+            "30 mm ZPZ02 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "APDS/HEF-I/APDS/HEF-I",
+                        "penetracion_mm": [
+                            85,
+                            84,
+                            81,
+                            77,
+                            74,
+                            70
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "DTY02-30",
+                        "tipo": "HEF-I/APDS/HEF-I/HEF-I",
+                        "penetracion_mm": [
+                            85,
+                            84,
+                            81,
+                            77,
+                            74,
+                            70
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "DTC04-30",
+                        "tipo": "APDS/APDS/APDS/APDS",
+                        "penetracion_mm": [
+                            85,
+                            84,
+                            81,
+                            77,
+                            74,
+                            70
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "5.8 mm QJT machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/T",
                         "penetracion_mm": [
                             13,
                             12,
@@ -95781,8 +96585,8 @@
         "velocidad_adelante_realista": 70,
         "velocidad_atras_realista": 17,
         "relacion_potencia_peso_realista": 26.2,
-        "recarga": 4.0,
-        "cadencia": 15.0,
+        "recarga": 5.2,
+        "cadencia": 11.538461538461537,
         "cargador": 1,
         "municion_total": 50,
         "armamento": {
@@ -96178,11 +96982,13 @@
         "velocidad_adelante_realista": 50,
         "velocidad_atras_realista": 7,
         "relacion_potencia_peso_realista": 17.3,
-        "angulo_depresion": 5,
+        "angulo_depresion": 0,
         "angulo_elevacion": 30,
         "cadencia": 120,
         "cargador": 1,
         "municion_total": 4,
+        "rotacion_torreta_vertical_arcade": 52.5,
+        "rotacion_torreta_vertical_realista": 15.0,
         "armamento": {
             "QN502CDD": {
                 "municiones": [
@@ -97763,10 +98569,10 @@
         "blindaje_chasis": 133,
         "blindaje_torreta": 139,
         "velocidad_adelante_arcade": 76,
-        "velocidad_atras_arcade": 45,
+        "velocidad_atras_arcade": 42,
         "relacion_potencia_peso": 40.8,
         "velocidad_adelante_realista": 68,
-        "velocidad_atras_realista": 40,
+        "velocidad_atras_realista": 38,
         "relacion_potencia_peso_realista": 24.5,
         "angulo_depresion": 10,
         "angulo_elevacion": 20,
@@ -98823,6 +99629,104 @@
                         "masa_total": 1400.0,
                         "velocidad_bala": 630,
                         "masa_explosivo": 30.0
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "V-4/40",
+        "imagen_local": "imagenes/V-4_40.jpg",
+        "rol": "Light tank",
+        "nacion": "Italy",
+        "rating_arcade": 1.3,
+        "rating_realista": 1.3,
+        "tripulacion": 4,
+        "visibilidad": 69,
+        "peso": 11.5,
+        "blindaje_chasis": 20,
+        "blindaje_torreta": 33,
+        "velocidad_adelante_arcade": 36,
+        "velocidad_atras_arcade": 6,
+        "relacion_potencia_peso": 29.8,
+        "velocidad_adelante_realista": 33,
+        "velocidad_atras_realista": 5,
+        "relacion_potencia_peso_realista": 15.7,
+        "angulo_depresion": 10,
+        "angulo_elevacion": 25,
+        "recarga": 2.8,
+        "cadencia": 21.42857142857143,
+        "cargador": 1,
+        "municion_total": 40,
+        "rotacion_torreta_horizontal_arcade": 26.4,
+        "rotacion_torreta_vertical_arcade": 14.0,
+        "rotacion_torreta_horizontal_realista": 14.0,
+        "rotacion_torreta_vertical_realista": 4.0,
+        "armamento": {
+            "40 mm 37/42M cannon": {
+                "municiones": [
+                    {
+                        "nombre": "36M",
+                        "tipo": "APHEBC",
+                        "penetracion_mm": [
+                            62,
+                            60,
+                            51,
+                            42,
+                            34,
+                            28
+                        ],
+                        "masa_total": 965.0,
+                        "velocidad_bala": 800,
+                        "masa_explosivo": 17.0
+                    },
+                    {
+                        "nombre": "39M",
+                        "tipo": "HE",
+                        "penetracion_mm": [
+                            8,
+                            8,
+                            7,
+                            6,
+                            5,
+                            5
+                        ],
+                        "masa_total": 965.0,
+                        "velocidad_bala": 800,
+                        "masa_explosivo": 63.0
+                    },
+                    {
+                        "nombre": "43M",
+                        "tipo": "APBC",
+                        "penetracion_mm": [
+                            72,
+                            69,
+                            60,
+                            50,
+                            42,
+                            35
+                        ],
+                        "masa_total": 1000.0,
+                        "velocidad_bala": 800,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "2 x 8 mm 34/40M machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/AP/I",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -100414,6 +101318,83 @@
                             3,
                             2,
                             0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Lancia 3Ro (Flak.)",
+        "imagen_local": "imagenes/Lancia_3Ro_(Flak.).jpg",
+        "rol": "SPAA",
+        "nacion": "Italy",
+        "rating_arcade": 3.0,
+        "rating_realista": 3.0,
+        "tripulacion": 4,
+        "visibilidad": 96,
+        "peso": 8.5,
+        "blindaje_chasis": 0,
+        "blindaje_torreta": 0,
+        "velocidad_adelante_arcade": 49,
+        "velocidad_atras_arcade": 12,
+        "relacion_potencia_peso": 19.2,
+        "velocidad_adelante_realista": 45,
+        "velocidad_atras_realista": 11,
+        "relacion_potencia_peso_realista": 10.9,
+        "angulo_depresion": 3,
+        "angulo_elevacion": 90,
+        "recarga": 3.0,
+        "cadencia": 480,
+        "cargador": 20,
+        "municion_total": 2640,
+        "rotacion_torreta_horizontal_arcade": 104.5,
+        "rotacion_torreta_vertical_arcade": 61.0,
+        "rotacion_torreta_horizontal_realista": 60.0,
+        "rotacion_torreta_vertical_realista": 20.0,
+        "armamento": {
+            "4 x 20 mm FlaK38 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/HEFI-T/HEFI-T/HEFI-T",
+                        "penetracion_mm": [
+                            37,
+                            34,
+                            23,
+                            14,
+                            9,
+                            5
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "20 mm Sprgr.",
+                        "tipo": "HEFI-T",
+                        "penetracion_mm": [
+                            5,
+                            4,
+                            4,
+                            4,
+                            4,
+                            4
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "20 mm PzGr.",
+                        "tipo": "API-T",
+                        "penetracion_mm": [
+                            37,
+                            34,
+                            23,
+                            14,
+                            9,
+                            5
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
@@ -104614,15 +105595,15 @@
         "rating_realista": 7.7,
         "tripulacion": 5,
         "visibilidad": 95,
-        "peso": 57.7,
+        "peso": 55.0,
         "blindaje_chasis": 30,
         "blindaje_torreta": 30,
         "velocidad_adelante_arcade": 66,
         "velocidad_atras_arcade": 66,
-        "relacion_potencia_peso": 30.3,
+        "relacion_potencia_peso": 31.8,
         "velocidad_adelante_realista": 60,
         "velocidad_atras_realista": 60,
-        "relacion_potencia_peso_realista": 17.3,
+        "relacion_potencia_peso_realista": 18.2,
         "angulo_depresion": 2,
         "angulo_elevacion": 65,
         "recarga": 5.0,
@@ -107604,12 +108585,12 @@
                         "nombre": "TOW-2B",
                         "tipo": "ATGM",
                         "penetracion_mm": [
-                            300,
-                            300,
-                            300,
-                            300,
-                            300,
-                            300
+                            100,
+                            100,
+                            100,
+                            100,
+                            100,
+                            100
                         ],
                         "masa_total": 22600.0,
                         "masa_explosivo": 2400.0
@@ -107757,12 +108738,12 @@
                         "nombre": "TOW-2B",
                         "tipo": "ATGM",
                         "penetracion_mm": [
-                            300,
-                            300,
-                            300,
-                            300,
-                            300,
-                            300
+                            100,
+                            100,
+                            100,
+                            100,
+                            100,
+                            100
                         ],
                         "masa_total": 22600.0,
                         "masa_explosivo": 2400.0
@@ -109276,14 +110257,14 @@
         "peso": 67.5,
         "blindaje_chasis": 80,
         "blindaje_torreta": 80,
-        "velocidad_adelante_arcade": 68,
-        "velocidad_atras_arcade": 31,
+        "velocidad_adelante_arcade": 70,
+        "velocidad_atras_arcade": 32,
         "relacion_potencia_peso": 37.1,
-        "velocidad_adelante_realista": 61,
-        "velocidad_atras_realista": 28,
+        "velocidad_adelante_realista": 63,
+        "velocidad_atras_realista": 29,
         "relacion_potencia_peso_realista": 22.2,
-        "angulo_depresion": 9,
-        "angulo_elevacion": 20,
+        "angulo_depresion": 7,
+        "angulo_elevacion": 17,
         "recarga": 6.0,
         "cadencia": 10.0,
         "cargador": 1,
@@ -113447,9 +114428,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             }
@@ -115469,9 +116449,9 @@
         "cadencia": 8.955223880597014,
         "cargador": 1,
         "municion_total": 47,
-        "rotacion_torreta_horizontal_arcade": 56.5,
+        "rotacion_torreta_horizontal_arcade": 45.2,
         "rotacion_torreta_vertical_arcade": 21.0,
-        "rotacion_torreta_horizontal_realista": 30.0,
+        "rotacion_torreta_horizontal_realista": 24.0,
         "rotacion_torreta_vertical_realista": 6.0,
         "armamento": {
             "105 mm CN105 F1 cannon": {
@@ -115518,7 +116498,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -116066,9 +117046,9 @@
         "cadencia": 8.955223880597014,
         "cargador": 1,
         "municion_total": 50,
-        "rotacion_torreta_horizontal_arcade": 56.5,
+        "rotacion_torreta_horizontal_arcade": 45.2,
         "rotacion_torreta_vertical_arcade": 21.0,
-        "rotacion_torreta_horizontal_realista": 30.0,
+        "rotacion_torreta_horizontal_realista": 24.0,
         "rotacion_torreta_vertical_realista": 6.0,
         "armamento": {
             "105 mm CN105 F1 cannon": {
@@ -116115,7 +117095,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -116520,9 +117500,9 @@
         "cadencia": 8.955223880597014,
         "cargador": 1,
         "municion_total": 47,
-        "rotacion_torreta_horizontal_arcade": 56.5,
+        "rotacion_torreta_horizontal_arcade": 45.2,
         "rotacion_torreta_vertical_arcade": 21.0,
-        "rotacion_torreta_horizontal_realista": 30.0,
+        "rotacion_torreta_horizontal_realista": 24.0,
         "rotacion_torreta_vertical_realista": 6.0,
         "armamento": {
             "105 mm CN105 F1 cannon": {
@@ -116584,7 +117564,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -116651,9 +117631,9 @@
         "cadencia": 8.955223880597014,
         "cargador": 1,
         "municion_total": 47,
-        "rotacion_torreta_horizontal_arcade": 56.5,
+        "rotacion_torreta_horizontal_arcade": 45.2,
         "rotacion_torreta_vertical_arcade": 21.0,
-        "rotacion_torreta_horizontal_realista": 30.0,
+        "rotacion_torreta_horizontal_realista": 24.0,
         "rotacion_torreta_vertical_realista": 6.0,
         "armamento": {
             "105 mm CN105 F1 cannon": {
@@ -116715,7 +117695,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -116846,7 +117826,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -117059,6 +118039,97 @@
                             34,
                             27,
                             21
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Cheetah PRTL",
+        "imagen_local": "imagenes/Cheetah_PRTL.jpg",
+        "rol": "SPAA",
+        "nacion": "France",
+        "rating_arcade": 8.7,
+        "rating_realista": 8.7,
+        "tripulacion": 3,
+        "visibilidad": 250,
+        "peso": 47.5,
+        "blindaje_chasis": 79,
+        "blindaje_torreta": 30,
+        "velocidad_adelante_arcade": 71,
+        "velocidad_atras_arcade": 27,
+        "relacion_potencia_peso": 30.5,
+        "velocidad_adelante_realista": 65,
+        "velocidad_atras_realista": 25,
+        "relacion_potencia_peso_realista": 17.5,
+        "angulo_depresion": 5,
+        "angulo_elevacion": 85,
+        "recarga": 1.0,
+        "cadencia": 550,
+        "cargador": 320,
+        "municion_total": 680,
+        "rotacion_torreta_horizontal_arcade": 156.7,
+        "rotacion_torreta_vertical_arcade": 128.1,
+        "rotacion_torreta_horizontal_realista": 90.0,
+        "rotacion_torreta_vertical_realista": 42.0,
+        "armamento": {
+            "2 x 35 mm Oerlikon KDA cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/HEI-T",
+                        "penetracion_mm": [
+                            68,
+                            66,
+                            57,
+                            47,
+                            39,
+                            32
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "DM11A1",
+                        "tipo": "HEI-T/HEI-T/HEI-T/API-T",
+                        "penetracion_mm": [
+                            68,
+                            66,
+                            57,
+                            47,
+                            39,
+                            32
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "DM13",
+                        "tipo": "API-T/API-T/API-T/HEI-T",
+                        "penetracion_mm": [
+                            68,
+                            66,
+                            57,
+                            47,
+                            39,
+                            32
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "DM23",
+                        "tipo": "APDS",
+                        "penetracion_mm": [
+                            127,
+                            125,
+                            118,
+                            110,
+                            102,
+                            95
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
@@ -117385,7 +118456,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -117858,7 +118929,7 @@
                             3
                         ],
                         "masa_total": 11400.0,
-                        "velocidad_bala": 700,
+                        "velocidad_bala": 695,
                         "masa_explosivo": 50.0
                     }
                 ]
@@ -120951,6 +122022,101 @@
         "rotacion_torreta_vertical_realista": 15.0,
         "armamento": {
             "20 mm Pvlvkan m/40 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP-T/HEFI-T/HEFI-T",
+                        "penetracion_mm": [
+                            38,
+                            36,
+                            27,
+                            20,
+                            14,
+                            10
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "slsgr m/42",
+                        "tipo": "HEFI-T",
+                        "penetracion_mm": [
+                            5,
+                            4,
+                            4,
+                            4,
+                            4,
+                            4
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "slpgr m/42",
+                        "tipo": "AP-T",
+                        "penetracion_mm": [
+                            38,
+                            36,
+                            27,
+                            19,
+                            13,
+                            9
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "8 mm ksp m/36 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/AP/I",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Pbil m/39",
+        "imagen_local": "imagenes/Pbil_m_39.jpg",
+        "rol": "Light tank",
+        "nacion": "Sweden",
+        "rating_arcade": 2.0,
+        "rating_realista": 2.0,
+        "tripulacion": 6,
+        "visibilidad": 73,
+        "peso": 8.1,
+        "blindaje_chasis": 12,
+        "blindaje_torreta": 12,
+        "velocidad_adelante_arcade": 78,
+        "velocidad_atras_arcade": 78,
+        "relacion_potencia_peso": 31.9,
+        "velocidad_adelante_realista": 70,
+        "velocidad_atras_realista": 70,
+        "relacion_potencia_peso_realista": 16.7,
+        "angulo_depresion": 10,
+        "angulo_elevacion": 25,
+        "recarga": 1.0,
+        "cadencia": 360,
+        "cargador": 36,
+        "municion_total": 252,
+        "rotacion_torreta_horizontal_arcade": 26.4,
+        "rotacion_torreta_vertical_arcade": 52.5,
+        "rotacion_torreta_horizontal_realista": 14.0,
+        "rotacion_torreta_vertical_realista": 15.0,
+        "armamento": {
+            "20 mm lvakan m/40B cannon": {
                 "municiones": [
                     {
                         "nombre": "Default",
@@ -126689,7 +127855,7 @@
         "rotacion_torreta_horizontal_realista": 25.0,
         "rotacion_torreta_vertical_realista": 15.0,
         "armamento": {
-            "105 mm kan Bofors cannon": {
+            "weapons/105mm_Bofors_Ikv_user_cannon": {
                 "municiones": [
                     {
                         "nombre": "slpprj m/66",
@@ -129683,6 +130849,137 @@
                             14,
                             9,
                             6
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "nombre": "Leopard 2A8NO",
+        "imagen_local": "imagenes/Leopard_2A8NO.jpg",
+        "rol": "Medium tank",
+        "nacion": "Sweden",
+        "rating_arcade": 13.3,
+        "rating_realista": 13.3,
+        "tripulacion": 4,
+        "visibilidad": 87,
+        "peso": 69.0,
+        "blindaje_chasis": 35,
+        "blindaje_torreta": 25,
+        "velocidad_adelante_arcade": 67,
+        "velocidad_atras_arcade": 30,
+        "relacion_potencia_peso": 36.3,
+        "velocidad_adelante_realista": 60,
+        "velocidad_atras_realista": 27,
+        "relacion_potencia_peso_realista": 21.7,
+        "angulo_depresion": 7,
+        "angulo_elevacion": 17,
+        "recarga": 6.0,
+        "cadencia": 10.0,
+        "cargador": 1,
+        "municion_total": 37,
+        "rotacion_torreta_horizontal_arcade": 75.3,
+        "rotacion_torreta_vertical_arcade": 140.0,
+        "rotacion_torreta_horizontal_realista": 40.0,
+        "rotacion_torreta_vertical_realista": 40.0,
+        "armamento": {
+            "120 mm Rh120 L/55 A1 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "DM12A1",
+                        "tipo": "HEATFS",
+                        "penetracion_mm": [
+                            480,
+                            480,
+                            480,
+                            480,
+                            480,
+                            480
+                        ],
+                        "masa_total": 13500.0,
+                        "velocidad_bala": 1190,
+                        "masa_explosivo": 1600.0
+                    },
+                    {
+                        "nombre": "DM43",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            564,
+                            562,
+                            555,
+                            545,
+                            535,
+                            525
+                        ],
+                        "masa_total": 4000.0,
+                        "velocidad_bala": 1750,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "DM11",
+                        "tipo": "HE-TF",
+                        "penetracion_mm": [
+                            37,
+                            37,
+                            37,
+                            37,
+                            37,
+                            37
+                        ],
+                        "masa_total": 19000.0,
+                        "velocidad_bala": 1015,
+                        "masa_explosivo": 3000.0
+                    },
+                    {
+                        "nombre": "DM53",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            653,
+                            650,
+                            641,
+                            629,
+                            617,
+                            605
+                        ],
+                        "masa_total": 5000.0,
+                        "velocidad_bala": 1750,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm MG3A1 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm FN MAG 60-40 machine gun": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/AP/T",
+                        "penetracion_mm": [
+                            13,
+                            12,
+                            7,
+                            3,
+                            2,
+                            0
                         ],
                         "masa_total": null,
                         "masa_explosivo": null
