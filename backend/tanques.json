@@ -75,9 +75,8 @@
                             2,
                             0
                         ],
-                        "masa_explosivo": null,
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -14567,9 +14566,9 @@
                             266,
                             257
                         ],
-                        "masa_total": 11600.0,
-                        "velocidad_bala": 732,
-                        "masa_explosivo": 50.0
+                        "masa_total": 3700.0,
+                        "velocidad_bala": 1501,
+                        "masa_explosivo": null
                     },
                     {
                         "nombre": "M393A2",
@@ -32773,9 +32772,9 @@
                             320,
                             320
                         ],
-                        "masa_total": 5700.0,
-                        "velocidad_bala": 1249,
-                        "masa_explosivo": null
+                        "masa_total": 5800.0,
+                        "velocidad_bala": 1216,
+                        "masa_explosivo": 544.0
                     },
                     {
                         "nombre": "M313",
