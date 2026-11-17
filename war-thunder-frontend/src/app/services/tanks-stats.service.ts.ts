@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as aq from 'arquero';
-import { Tanque } from './tanks';
+import { Tanque, Municion } from './tanks';
 
 // ====================================================================
 // PASO 1: Definir interfaces para las estadísticas con DECILES
@@ -377,6 +377,134 @@ export class TanksStatsService {
   }
 
   // ====================================================================
+  // PRIORIDAD DE MUNICIONES SEGÚN TIPO Y EXPLOSIVO
+  // ====================================================================
+  // Prioridad (menor número = mayor prioridad):
+  // 1: APHE y variantes (APHEBC, APHECBC); APCBC con explosivo
+  // 2: APFSDS
+  // 3: ATGM
+  // 4: HEATFS
+  // 5: APDS
+  // 6: AP y variantes sólidas (APC, APBC, APCBC) sin explosivo
+  // 7: HEAT
+  // 8: HESH
+  // 9: APCR
+  // 10: HE
+  // 99: Otros
+  obtenerPrioridadTipoMunicion(municion: Municion): number {
+    const rawTipo = (municion.tipo || '').toUpperCase().trim();
+    const nombre = (municion.nombre || '').toUpperCase().trim();
+    const tieneExplosivo = (municion.masa_explosivo !== null && municion.masa_explosivo !== undefined && municion.masa_explosivo > 0);
+
+    // 1. APHE y sus variantes (APHEBC, APHECBC); APCBC con explosivo
+    if (
+      rawTipo.includes('APHE') ||
+      rawTipo.includes('SAPHE') ||
+      rawTipo.includes('SAPCBC') ||
+      (rawTipo.includes('APCBC') && tieneExplosivo) ||
+      (rawTipo.includes('APBC') && tieneExplosivo) ||
+      (rawTipo.includes('APC') && tieneExplosivo)
+    ) {
+      return 1;
+    }
+
+    // 2. APFSDS
+    if (rawTipo.includes('APFSDS')) {
+      return 2;
+    }
+
+    // 3. ATGM
+    if (rawTipo.includes('ATGM') || nombre.includes('ATGM')) {
+      return 3;
+    }
+
+    // 4. HEATFS
+    if (rawTipo.includes('HEATFS') || rawTipo.includes('HEAT-FS')) {
+      return 4;
+    }
+
+    // 5. APDS
+    if (rawTipo.includes('APDS')) {
+      return 5;
+    }
+
+    // 6. AP y variantes (APC, APBC, APCBC) sin explosivo (sólidas)
+    if (
+      rawTipo.includes('APCBC') ||
+      rawTipo.includes('APBC') ||
+      rawTipo.includes('APC') ||
+      rawTipo.includes('AP-T') ||
+      rawTipo.includes('AP/T') ||
+      rawTipo.startsWith('AP') ||
+      rawTipo.includes('/AP')
+    ) {
+      return 6;
+    }
+
+    // 7. HEAT
+    if (rawTipo.includes('HEAT')) {
+      return 7;
+    }
+
+    // 8. HESH
+    if (rawTipo.includes('HESH')) {
+      return 8;
+    }
+
+    // 9. APCR / HVAP
+    if (rawTipo.includes('APCR') || rawTipo.includes('HVAP')) {
+      return 9;
+    }
+
+    // 10. HE y sus variantes (HE-VT, HE-TF, HE-OR, etc.)
+    if (rawTipo.startsWith('HE') || rawTipo.includes('/HE') || rawTipo.includes('-HE')) {
+      return 10;
+    }
+
+    return 99;
+  }
+
+  /**
+   * Selecciona la mejor munición de un tanque según la jerarquía de tipos de munición.
+   * A igual prioridad de tipo, desempata la que tenga mayor penetración a 0m.
+   */
+  obtenerPenetracionPriorizadaTanque(tanque: Tanque): number | null {
+    let mejorMunicion: Municion | null = null;
+    let mejorPrioridad = 999;
+    let mejorPenetracion0m = -1;
+
+    [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
+      if (setup) {
+        Object.values(setup).forEach(arma => {
+          arma.municiones.forEach(municion => {
+            if (municion.penetracion_mm && municion.penetracion_mm.length > 0) {
+              const pen0 = municion.penetracion_mm[0];
+              if (typeof pen0 === 'number' && !isNaN(pen0)) {
+                const prioridad = this.obtenerPrioridadTipoMunicion(municion);
+
+                // Si encontramos un tipo de bala con mayor prioridad (menor número)
+                if (prioridad < mejorPrioridad) {
+                  mejorPrioridad = prioridad;
+                  mejorPenetracion0m = pen0;
+                  mejorMunicion = municion;
+                } else if (prioridad === mejorPrioridad) {
+                  // Mismo tipo o categoría: desempata la mayor penetración a 0m
+                  if (pen0 > mejorPenetracion0m) {
+                    mejorPenetracion0m = pen0;
+                    mejorMunicion = municion;
+                  }
+                }
+              }
+            }
+          });
+        });
+      }
+    });
+
+    return mejorPenetracion0m >= 0 ? mejorPenetracion0m : null;
+  }
+
+  // ====================================================================
   // NUEVO MÉTODO: Calcular rangos de penetración por rating
   // ====================================================================
   // EXPLICACIÓN: Este método agrupa las penetraciones por rating del tanque
@@ -402,31 +530,13 @@ export class TanksStatsService {
         modo === 'rating_arcade' ? t.rating_arcade === rating : t.rating_realista === rating
       );
 
-      // Extraer la munición con mayor penetración a 0m de cada tanque de este rating
+      // Extraer la munición priorizada de cada tanque de este rating
       const penetracionesDelRating: any[] = [];
 
       tanquesDelRating.forEach(tanque => {
-        let maxPenTanque: number | null = null;
-
-        [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
-          if (setup) {
-            Object.values(setup).forEach(arma => {
-              arma.municiones.forEach(municion => {
-                if (municion.penetracion_mm && municion.penetracion_mm.length > 0) {
-                  const pen0 = municion.penetracion_mm[0];
-                  if (typeof pen0 === 'number' && !isNaN(pen0)) {
-                    if (maxPenTanque === null || pen0 > maxPenTanque) {
-                      maxPenTanque = pen0;
-                    }
-                  }
-                }
-              });
-            });
-          }
-        });
-
-        if (maxPenTanque !== null) {
-          penetracionesDelRating.push(maxPenTanque);
+        const penTanque = this.obtenerPenetracionPriorizadaTanque(tanque);
+        if (penTanque !== null) {
+          penetracionesDelRating.push(penTanque);
         }
       });
 
@@ -482,27 +592,9 @@ export class TanksStatsService {
       const todasLasPenetraciones: any[] = [];
 
       todosLosTanques.forEach(tanque => {
-        let maxPenTanque: number | null = null;
-
-        [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
-          if (setup) {
-            Object.values(setup).forEach(arma => {
-              arma.municiones.forEach(municion => {
-                if (municion.penetracion_mm && municion.penetracion_mm.length > 0) {
-                  const pen0 = municion.penetracion_mm[0];
-                  if (typeof pen0 === 'number' && !isNaN(pen0)) {
-                    if (maxPenTanque === null || pen0 > maxPenTanque) {
-                      maxPenTanque = pen0;
-                    }
-                  }
-                }
-              });
-            });
-          }
-        });
-
-        if (maxPenTanque !== null) {
-          todasLasPenetraciones.push(maxPenTanque);
+        const penTanque = this.obtenerPenetracionPriorizadaTanque(tanque);
+        if (penTanque !== null) {
+          todasLasPenetraciones.push(penTanque);
         }
       });
 
