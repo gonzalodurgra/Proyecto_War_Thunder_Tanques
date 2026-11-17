@@ -64,9 +64,13 @@ export class TankListComponent implements OnInit {
   mostrarEstadisticasAvanzadas: boolean = false;
 
   // ====================================================================
-  // Variables para modo de juego
+  // Variables para modo de juego y nivel de matchmaking (Downtier / Uptier)
   // ====================================================================
   modoActual: string = 'rating_arcade'; // Por defecto Arcade
+
+  // Nivel de paso seleccionado para el modal de detalles (-3 a +3, donde 0 es BR base)
+  pasoMatchmakingActual: number = 0;
+  opcionesMatchmaking: { paso: number; delta: number; brDestino: number; label: string }[] = [];
 
   modoOscuro: boolean = false
 
@@ -350,14 +354,76 @@ export class TankListComponent implements OnInit {
   // ====================================================================
   seleccionarTanque(tanque: Tanque): void {
     this.tanqueSeleccionado = tanque;
-    
-    // Calcular colores para este tanque usando su rating específico
-    this.coloresTanque = this.statsService.obtenerColoresTanque(tanque, true);
-    
-    console.log('🎨 Colores calculados para:', tanque.nombre);
-    console.log('Rating Arcade:', tanque.rating_arcade);
-    console.log('Rating Realista:', tanque.rating_realista);
-    console.log('Colores:', this.coloresTanque);
+    this.pasoMatchmakingActual = 0; // Reiniciar a BR base al abrir
+
+    this.actualizarOpcionesYColoresModal();
+  }
+
+  /**
+   * Obtiene el Battle Rating base del tanque actual según el modo (arcade o realista).
+   */
+  obtenerRatingBaseTanque(): number | null {
+    if (!this.tanqueSeleccionado) return null;
+    return this.modoActual === 'rating_arcade'
+      ? this.tanqueSeleccionado.rating_arcade ?? null
+      : this.tanqueSeleccionado.rating_realista ?? null;
+  }
+
+  /**
+   * Obtiene el Battle Rating efectivo seleccionado en el modal (según el nivel de downtier/uptier).
+   */
+  obtenerRatingEfectivoModal(): number | null {
+    const base = this.obtenerRatingBaseTanque();
+    if (base === null) return null;
+
+    const opcion = this.opcionesMatchmaking.find(o => o.paso === this.pasoMatchmakingActual);
+    return opcion ? opcion.brDestino : base;
+  }
+
+  /**
+   * Recalcula las opciones de matchmaking disponibles para el tanque y actualiza los colores.
+   */
+  actualizarOpcionesYColoresModal(): void {
+    if (!this.tanqueSeleccionado) return;
+
+    const base = this.obtenerRatingBaseTanque();
+    if (base !== null) {
+      this.opcionesMatchmaking = this.statsService.obtenerOpcionesNivelesMatchmaking(base);
+
+      // Si el paso actual no está en las opciones disponibles, fijar a 0
+      if (!this.opcionesMatchmaking.some(o => o.paso === this.pasoMatchmakingActual)) {
+        this.pasoMatchmakingActual = 0;
+      }
+    } else {
+      this.opcionesMatchmaking = [];
+      this.pasoMatchmakingActual = 0;
+    }
+
+    const ratingEfectivo = this.obtenerRatingEfectivoModal();
+
+    if (this.modoActual === 'rating_arcade') {
+      this.coloresTanque = this.statsService.obtenerColoresTanque(
+        this.tanqueSeleccionado,
+        true,
+        ratingEfectivo,
+        null
+      );
+    } else {
+      this.coloresTanque = this.statsService.obtenerColoresTanque(
+        this.tanqueSeleccionado,
+        true,
+        null,
+        ratingEfectivo
+      );
+    }
+  }
+
+  /**
+   * Cambia el nivel de matchmaking (downtier / uptier) dentro del modal de un tanque.
+   */
+  cambiarPasoMatchmaking(paso: number): void {
+    this.pasoMatchmakingActual = paso;
+    this.actualizarOpcionesYColoresModal();
   }
 
   // ====================================================================
@@ -506,10 +572,11 @@ export class TankListComponent implements OnInit {
     valor: number,
     invertir: boolean = false
   ): string {
+    const rating = this.obtenerRatingEfectivoModal() ?? tanque.rating_arcade;
     return this.statsService.obtenerColor(
       nombreEstadistica as any,
       valor,
-      tanque.rating_arcade,
+      rating,
       invertir
     );
   }
@@ -522,10 +589,13 @@ export class TankListComponent implements OnInit {
     nombreEstadistica: string,
     valor: number
   ): number {
+    const rating = this.obtenerRatingEfectivoModal() ?? (
+      this.modoActual === 'rating_arcade' ? tanque.rating_arcade : tanque.rating_realista
+    );
     return this.statsService.obtenerPercentil(
       nombreEstadistica as any,
       valor,
-      tanque.rating_arcade
+      rating
     );
   }
 
@@ -537,10 +607,8 @@ export class TankListComponent implements OnInit {
       return this.statsService.obtenerColorPenetracion(penetracionMm, this.tanques);
     }
     
-    // Usar el rating del tanque seleccionado según el modo actual
-    const rating = this.modoActual === 'rating_arcade' 
-      ? this.tanqueSeleccionado.rating_arcade 
-      : this.tanqueSeleccionado.rating_realista;
+    // Usar el rating efectivo (con downtier/uptier si está activo)
+    const rating = this.obtenerRatingEfectivoModal();
     
     return this.statsService.obtenerColorPenetracion(penetracionMm, this.tanques, rating);
   }
@@ -551,9 +619,7 @@ export class TankListComponent implements OnInit {
   obtenerPercentilPenetracion(penetracionMm: number): number {
     if (!this.tanqueSeleccionado) return 50;
     
-    const rating = this.modoActual === 'rating_arcade'
-      ? this.tanqueSeleccionado.rating_arcade
-      : this.tanqueSeleccionado.rating_realista;
+    const rating = this.obtenerRatingEfectivoModal();
     
     return this.statsService.obtenerPercentilPenetracion(penetracionMm, rating);
   }

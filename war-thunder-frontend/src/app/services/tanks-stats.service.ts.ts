@@ -128,10 +128,11 @@ export class TanksStatsService {
   }
 
   // ====================================================================
-  // MÉTODO: Calcular rangos POR RATING
+  // MÉTODO: Calcular rangos POR RATING (con ventana de Matchmaking: ±1.0 BR / ±3 niveles)
   // ====================================================================
-  // EXPLICACIÓN: Este método agrupa los tanques por su rating y calcula
-  // los deciles para cada grupo por separado
+  // EXPLICACIÓN: Para cada rating, se evalúa contra todos los vehículos que puede enfrentar:
+  // desde downtier total (rating - 1.0, 3 niveles) hasta uptier total (rating + 1.0, 3 niveles),
+  // respetando el mínimo (1.0) y máximo de War Thunder.
 
   calcularRangosPorRating(tanques: Tanque[], modo: string): EstadisticasPorRating[] {
     // PASO 1: Agrupar tanques por rating usando Arquero
@@ -144,20 +145,16 @@ export class TanksStatsService {
       .orderby(modo)
       .array(modo);
 
-    // PASO 2: Para cada rating, calcular sus propios rangos
+    // PASO 2: Para cada rating, calcular sus propios rangos considerando el rango de matchmaking
     const estadisticasPorRating: EstadisticasPorRating[] = [];
-    let tanquesDelRating: Tanque[] = []
+
     ratingsUnicos.forEach(rating => {
-      // Filtrar tanques de este rating
-      if (modo == "rating_arcade") {
-        tanquesDelRating = tanques.filter(t => t.rating_arcade === rating);
-      }
-      else {
-        tanquesDelRating = tanques.filter(t => t.rating_realista === rating);
-      }
-      if (tanquesDelRating.length > 0) {
-        // Calcular rangos para este rating específico
-        const rangos = this.calcularRangosParaGrupo(tanquesDelRating);
+      // Filtrar tanques dentro de la ventana de matchmaking [rating - 1.0, rating + 1.0] (±3 pasos de BR)
+      const tanquesDelRango = this.obtenerTanquesRangoMatchmaking(tanques, rating, modo);
+
+      if (tanquesDelRango.length > 0) {
+        // Calcular rangos para el grupo completo de combate de este rating
+        const rangos = this.calcularRangosParaGrupo(tanquesDelRango);
 
         // Guardar en el Map para acceso rápido
         this.rangosPorRating.set(rating, rangos);
@@ -166,7 +163,7 @@ export class TanksStatsService {
         estadisticasPorRating.push({
           rating: rating,
           rangos: rangos,
-          cantidad_tanques: tanquesDelRating.length
+          cantidad_tanques: tanquesDelRango.length
         });
       }
     });
@@ -306,9 +303,20 @@ export class TanksStatsService {
   // MÉTODO: Obtener colores para todas las estadísticas de un tanque
   // ====================================================================
 
-  obtenerColoresTanque(tanque: Tanque, usarRatingEspecifico: boolean = true): { [key: string]: string } {
-    const rating_arcade = usarRatingEspecifico ? tanque.rating_arcade : null;
-    const rating_realista = usarRatingEspecifico ? tanque.rating_realista : null;
+  obtenerColoresTanque(
+    tanque: Tanque,
+    usarRatingEspecifico: boolean = true,
+    ratingCustomArcade: number | null = null,
+    ratingCustomRealista: number | null = null
+  ): { [key: string]: string } {
+    const rating_arcade = ratingCustomArcade !== null
+      ? ratingCustomArcade
+      : (usarRatingEspecifico ? tanque.rating_arcade : null);
+
+    const rating_realista = ratingCustomRealista !== null
+      ? ratingCustomRealista
+      : (usarRatingEspecifico ? tanque.rating_realista : null);
+
     return {
       tripulacion_arcade: this.obtenerColor('tripulacion', tanque.tripulacion, rating_arcade),
       visibilidad_arcade: this.obtenerColor('visibilidad', tanque.visibilidad, rating_arcade, true),
@@ -377,8 +385,95 @@ export class TanksStatsService {
   }
 
   // ====================================================================
-  // PRIORIDAD DE MUNICIONES SEGÚN TIPO Y EXPLOSIVO
+  // LISTA DE BATTLE RATINGS OFICIALES DE WAR THUNDER (Pasos de 0.3 / 0.4)
   // ====================================================================
+  private readonly BATTLE_RATINGS_OFICIALES = [
+    1.0, 1.3, 1.7, 2.0, 2.3, 2.7, 3.0, 3.3, 3.7, 4.0, 4.3, 4.7, 5.0, 5.3, 5.7, 6.0,
+    6.3, 6.7, 7.0, 7.3, 7.7, 8.0, 8.3, 8.7, 9.0, 9.3, 9.7, 10.0, 10.3, 10.7, 11.0,
+    11.3, 11.7, 12.0, 12.3, 12.7, 13.0, 13.3
+  ];
+
+  /**
+   * Obtiene los niveles disponibles de downtier / uptier relativos para un rating dado.
+   * Retorna una lista con la diferencia de pasos (-3 a +3), la diferencia numérica y el BR de destino.
+   * Por ejemplo: [{ paso: -3, delta: -1.0, brDestino: 2.7, label: '-1.0 (Downtier total)' }, ...]
+   */
+  obtenerOpcionesNivelesMatchmaking(rating: number): { paso: number; delta: number; brDestino: number; label: string }[] {
+    const brRedondeado = Math.round(rating * 10) / 10;
+    const index = this.BATTLE_RATINGS_OFICIALES.findIndex(
+      br => Math.abs(br - brRedondeado) < 0.05
+    );
+
+    if (index === -1) {
+      return [{ paso: 0, delta: 0, brDestino: brRedondeado, label: 'BR Base (0.0)' }];
+    }
+
+    const opciones: { paso: number; delta: number; brDestino: number; label: string }[] = [];
+    const minIndex = Math.max(0, index - 3);
+    const maxIndex = Math.min(this.BATTLE_RATINGS_OFICIALES.length - 1, index + 3);
+
+    for (let i = minIndex; i <= maxIndex; i++) {
+      const paso = i - index; // -3, -2, -1, 0, +1, +2, +3
+      const brDestino = this.BATTLE_RATINGS_OFICIALES[i];
+      const delta = Math.round((brDestino - brRedondeado) * 10) / 10;
+
+      let label = '';
+      if (paso === -3) label = `Downtier total (${delta > 0 ? '+' : ''}${delta.toFixed(1)})`;
+      else if (paso === -2) label = `Downtier -2 (${delta.toFixed(1)})`;
+      else if (paso === -1) label = `Downtier -1 (${delta.toFixed(1)})`;
+      else if (paso === 0) label = `BR Base (${brDestino.toFixed(1)})`;
+      else if (paso === 1) label = `Uptier +1 (+${delta.toFixed(1)})`;
+      else if (paso === 2) label = `Uptier +2 (+${delta.toFixed(1)})`;
+      else if (paso === 3) label = `Uptier total (+${delta.toFixed(1)})`;
+
+      opciones.push({
+        paso,
+        delta,
+        brDestino,
+        label
+      });
+    }
+
+    return opciones;
+  }
+
+  /**
+   * Obtiene la lista de Battle Ratings que forman el rango de matchmaking [BR - 1.0, BR + 1.0]
+   * (3 niveles de downtier, BR actual, y 3 niveles de uptier, hasta ±1.0 BR).
+   * Respeta los límites mínimos (1.0) y máximos de War Thunder.
+   */
+  obtenerBrsEmparejamiento(rating: number): number[] {
+    const brRedondeado = Math.round(rating * 10) / 10;
+    const index = this.BATTLE_RATINGS_OFICIALES.findIndex(
+      br => Math.abs(br - brRedondeado) < 0.05
+    );
+
+    // Si el rating está en la lista oficial, tomar ±3 pasos (downtier 3 niveles a uptier 3 niveles)
+    if (index !== -1) {
+      const minIndex = Math.max(0, index - 3);
+      const maxIndex = Math.min(this.BATTLE_RATINGS_OFICIALES.length - 1, index + 3);
+      return this.BATTLE_RATINGS_OFICIALES.slice(minIndex, maxIndex + 1);
+    }
+
+    // Si es un valor no estándar, filtrar por rango numérico [rating - 1.05, rating + 1.05]
+    return this.BATTLE_RATINGS_OFICIALES.filter(
+      br => br >= rating - 1.05 && br <= rating + 1.05
+    );
+  }
+
+  /**
+   * Filtra los tanques que entran en el rango de matchmaking (±1.0 BR / ±3 niveles) de un rating dado.
+   */
+  obtenerTanquesRangoMatchmaking(tanques: Tanque[], rating: number, modo: string): Tanque[] {
+    const brsValidos = new Set(this.obtenerBrsEmparejamiento(rating));
+
+    return tanques.filter(t => {
+      const r = modo === 'rating_arcade' ? t.rating_arcade : t.rating_realista;
+      if (r === null || r === undefined) return false;
+      const rRedondeado = Math.round(r * 10) / 10;
+      return brsValidos.has(rRedondeado);
+    });
+  }
   // Prioridad (menor número = mayor prioridad):
   // 1: APHE y variantes (APHEBC, APHECBC); APCBC con explosivo
   // 2: APFSDS
@@ -523,25 +618,23 @@ export class TanksStatsService {
       if (rating) ratingsUnicos.add(rating);
     });
 
-    // Para cada rating, calcular rangos de penetración
+    // Para cada rating, calcular rangos de penetración considerando la ventana de matchmaking (±1.0 BR / ±3 niveles)
     ratingsUnicos.forEach(rating => {
-      // Filtrar tanques de este rating
-      const tanquesDelRating = tanques.filter(t =>
-        modo === 'rating_arcade' ? t.rating_arcade === rating : t.rating_realista === rating
-      );
+      // Filtrar tanques en el rango de matchmaking [rating - 1.0, rating + 1.0]
+      const tanquesDelRango = this.obtenerTanquesRangoMatchmaking(tanques, rating, modo);
 
-      // Extraer la munición priorizada de cada tanque de este rating
-      const penetracionesDelRating: any[] = [];
+      // Extraer la munición priorizada de cada tanque de este rango
+      const penetracionesDelRango: any[] = [];
 
-      tanquesDelRating.forEach(tanque => {
+      tanquesDelRango.forEach(tanque => {
         const penTanque = this.obtenerPenetracionPriorizadaTanque(tanque);
         if (penTanque !== null) {
-          penetracionesDelRating.push(penTanque);
+          penetracionesDelRango.push(penTanque);
         }
       });
 
       // Limpiar y calcular estadísticas
-      const penetracionesLimpias = this.limpiarPenetraciones(penetracionesDelRating);
+      const penetracionesLimpias = this.limpiarPenetraciones(penetracionesDelRango);
 
       if (penetracionesLimpias.length > 0) {
         const tablaPenetraciones = aq.from(

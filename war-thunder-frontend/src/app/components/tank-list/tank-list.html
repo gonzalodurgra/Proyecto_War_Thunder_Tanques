@@ -279,6 +279,27 @@
         </div>
       </div>
 
+      <!-- Selector de nivel de Matchmaking (Downtier / Uptier de -1.0 a +1.0) -->
+      @if (opcionesMatchmaking.length > 0) {
+      <div class="matchmaking-container">
+        <span class="matchmaking-label">⚔️ Entorno de Batalla (Matchmaking):</span>
+        <div class="matchmaking-selector">
+          @for (opc of opcionesMatchmaking; track opc.paso) {
+          <button
+            class="btn-matchmaking"
+            [class.active]="pasoMatchmakingActual === opc.paso"
+            [class.downtier]="opc.paso < 0"
+            [class.base]="opc.paso === 0"
+            [class.uptier]="opc.paso > 0"
+            (click)="cambiarPasoMatchmaking(opc.paso)"
+            [title]="'Comparar frente a BR ' + opc.brDestino.toFixed(1)">
+            {{ opc.paso === 0 ? 'BR Base ' + opc.brDestino.toFixed(1) : (opc.delta > 0 ? '+' : '') + opc.delta.toFixed(1) }}
+          </button>
+          }
+        </div>
+      </div>
+      }
+
       <!-- Toggle para estadísticas avanzadas -->
       <div class="stats-toggle">
         <button class="btn-toggle-stats" (click)="toggleEstadisticasAvanzadas()">
