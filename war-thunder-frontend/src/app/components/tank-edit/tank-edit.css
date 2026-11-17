@@ -365,6 +365,14 @@ input[type="file"]:disabled {
 /* GRID DE PENETRACIONES */
 /* ================================================================== */
 
+.penetracion-matriz-title {
+  font-weight: 700;
+  color: #4f46e5;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+}
+
 .penetracion-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -374,6 +382,18 @@ input[type="file"]:disabled {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   border-radius: 8px;
   border: 2px dashed #dee2e6;
+}
+
+.penetracion-grid-18 {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: #fbfbfe;
+}
+
+@media (max-width: 600px) {
+  .penetracion-grid-18 {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .penetracion-item {

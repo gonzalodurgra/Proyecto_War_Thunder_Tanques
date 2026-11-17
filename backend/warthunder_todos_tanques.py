@@ -61,16 +61,14 @@ async def extraer_datos_municion(fila, pagina):
     if len(celdas) < 2:
         return None  # Fila vacía o incompleta
     
-    penetraciones = celdas[2:]
-    
-    penetraciones = [int(penetracion) for penetracion in penetraciones if penetracion != "—"]
     shell = {
         "nombre": celdas[0],
         "tipo": celdas[1],
-        "penetracion_mm": penetraciones,
-    }
+        "penetracion_mm": [],
+    }    
     
-    # Intentar extraer datos del popover, necesario para masa de bala, velocidad de bala y masa de explosivo
+    # Intentar extraer datos del popover, necesario para masa de bala, velocidad de bala, masa de explosivo
+    # y la tabla completa de 18 penetraciones (6 distancias x 3 ángulos)
     try:
         boton_info = fila.locator("button").first
         await boton_info.click()
@@ -105,6 +103,31 @@ async def extraer_datos_municion(fila, pagina):
         else:
             shell["masa_explosivo"] = masa_explosivo
 
+        # Extraer tabla completa de 18 penetraciones según ángulo y distancia
+        try:
+            form_text = popover.locator(".form-text").first
+            if await form_text.count() > 0:
+                await form_text.click()
+                await pagina.wait_for_timeout(300)
+                
+                # Localizar el popover hermano recién abierto que contiene la tabla
+                popover_tabla = pagina.locator(".game-unit_popover, .popover").last
+                tds = await popover_tabla.locator("td").all_inner_texts()
+                
+                penetraciones_18 = []
+                for val in tds:
+                    texto_val = limpiar_texto(val)
+                    if texto_val in ["—", "-", "N/A", ""]:
+                        penetraciones_18.append(0)
+                    else:
+                        num = "".join(ch for ch in texto_val if ch.isdigit())
+                        penetraciones_18.append(int(num) if num else 0)
+                
+                if len(penetraciones_18) == 18:
+                    shell["penetracion_mm"] = penetraciones_18
+        except Exception:
+            print("No se pudo abrir popover de penetraciones")  # Si no se puede abrir el segundo popover, se mantienen las penetraciones de la fila principal
+
         # Cerrar popover
         try:
             await boton_info.click()
@@ -117,6 +140,8 @@ async def extraer_datos_municion(fila, pagina):
         shell["masa_explosivo"] = None
         shell["masa_total"] = None
         shell["velocidad_bala"] = None
+        
+    # penetraciones = [int(penetracion) for penetracion in penetraciones if penetracion != "—"]
     return shell
 
 

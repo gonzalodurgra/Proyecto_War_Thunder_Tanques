@@ -616,6 +616,56 @@
               <strong>{{ municion.nombre }}</strong>
               <span class="municion-tipo-badge">{{ municion.tipo }}</span>
             </p>
+            @if (municion.penetracion_mm.length === 18) {
+            <table class="tabla-penetracion-matriz">
+              <thead>
+                <tr>
+                  <th>Dist.</th>
+                  <th>0°</th>
+                  <th>30°</th>
+                  <th>60°</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-dist">0m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">{{ municion.penetracion_mm[0] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">{{ municion.penetracion_mm[1] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">{{ municion.penetracion_mm[2] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">100m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">{{ municion.penetracion_mm[3] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">{{ municion.penetracion_mm[4] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">{{ municion.penetracion_mm[5] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">500m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[6])">{{ municion.penetracion_mm[6] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[7])">{{ municion.penetracion_mm[7] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[8])">{{ municion.penetracion_mm[8] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">1000m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[9])">{{ municion.penetracion_mm[9] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[10])">{{ municion.penetracion_mm[10] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[11])">{{ municion.penetracion_mm[11] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">1500m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[12])">{{ municion.penetracion_mm[12] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[13])">{{ municion.penetracion_mm[13] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[14])">{{ municion.penetracion_mm[14] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">2000m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[15])">{{ municion.penetracion_mm[15] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[16])">{{ municion.penetracion_mm[16] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[17])">{{ municion.penetracion_mm[17] }}mm</td>
+                </tr>
+              </tbody>
+            </table>
+            } @else {
             <ul class="penetracion-lista-coloreada">
               <li>
                 <span class="distancia">0m:</span>
@@ -654,6 +704,7 @@
                 </span>
               </li>
             </ul>
+            }
           </div>
           }
         </div>
@@ -676,6 +727,56 @@
               <strong>{{ municion.nombre }}</strong>
               <span class="municion-tipo-badge">{{ municion.tipo }}</span>
             </p>
+            @if (municion.penetracion_mm.length === 18) {
+            <table class="tabla-penetracion-matriz">
+              <thead>
+                <tr>
+                  <th>Dist.</th>
+                  <th>0°</th>
+                  <th>30°</th>
+                  <th>60°</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-dist">0m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">{{ municion.penetracion_mm[0] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">{{ municion.penetracion_mm[1] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">{{ municion.penetracion_mm[2] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">100m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">{{ municion.penetracion_mm[3] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">{{ municion.penetracion_mm[4] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">{{ municion.penetracion_mm[5] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">500m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[6])">{{ municion.penetracion_mm[6] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[7])">{{ municion.penetracion_mm[7] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[8])">{{ municion.penetracion_mm[8] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">1000m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[9])">{{ municion.penetracion_mm[9] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[10])">{{ municion.penetracion_mm[10] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[11])">{{ municion.penetracion_mm[11] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">1500m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[12])">{{ municion.penetracion_mm[12] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[13])">{{ municion.penetracion_mm[13] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[14])">{{ municion.penetracion_mm[14] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">2000m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[15])">{{ municion.penetracion_mm[15] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[16])">{{ municion.penetracion_mm[16] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[17])">{{ municion.penetracion_mm[17] }}mm</td>
+                </tr>
+              </tbody>
+            </table>
+            } @else {
             <ul class="penetracion-lista-coloreada">
               <li>
                 <span class="distancia">0m:</span>
@@ -714,6 +815,7 @@
                 </span>
               </li>
             </ul>
+            }
           </div>
           }
         </div>
@@ -736,6 +838,56 @@
               <strong>{{ municion.nombre }}</strong>
               <span class="municion-tipo-badge">{{ municion.tipo }}</span>
             </p>
+            @if (municion.penetracion_mm.length === 18) {
+            <table class="tabla-penetracion-matriz">
+              <thead>
+                <tr>
+                  <th>Dist.</th>
+                  <th>0°</th>
+                  <th>30°</th>
+                  <th>60°</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-dist">0m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[0])">{{ municion.penetracion_mm[0] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[1])">{{ municion.penetracion_mm[1] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[2])">{{ municion.penetracion_mm[2] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">100m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[3])">{{ municion.penetracion_mm[3] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[4])">{{ municion.penetracion_mm[4] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[5])">{{ municion.penetracion_mm[5] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">500m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[6])">{{ municion.penetracion_mm[6] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[7])">{{ municion.penetracion_mm[7] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[8])">{{ municion.penetracion_mm[8] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">1000m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[9])">{{ municion.penetracion_mm[9] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[10])">{{ municion.penetracion_mm[10] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[11])">{{ municion.penetracion_mm[11] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">1500m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[12])">{{ municion.penetracion_mm[12] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[13])">{{ municion.penetracion_mm[13] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[14])">{{ municion.penetracion_mm[14] }}mm</td>
+                </tr>
+                <tr>
+                  <td class="col-dist">2000m</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[15])">{{ municion.penetracion_mm[15] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[16])">{{ municion.penetracion_mm[16] }}mm</td>
+                  <td [style.color]="obtenerColorPenetracion(municion.penetracion_mm[17])">{{ municion.penetracion_mm[17] }}mm</td>
+                </tr>
+              </tbody>
+            </table>
+            } @else {
             <ul class="penetracion-lista-coloreada">
               <li>
                 <span class="distancia">0m:</span>
@@ -774,6 +926,7 @@
                 </span>
               </li>
             </ul>
+            }
           </div>
           }
         </div>
