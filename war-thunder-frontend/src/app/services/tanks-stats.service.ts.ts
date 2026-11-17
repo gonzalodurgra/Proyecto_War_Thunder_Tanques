@@ -27,7 +27,7 @@ export interface RangosEstadisticas {
   visibilidad: RangoEstadistica;
   blindaje_chasis: RangoEstadistica;
   blindaje_torreta: RangoEstadistica;
-  
+
   velocidad_adelante_arcade: RangoEstadistica;
   velocidad_adelante_realista: RangoEstadistica;
 
@@ -45,7 +45,7 @@ export interface RangosEstadisticas {
 
   rotacion_torreta_horizontal_arcade: RangoEstadistica;
   rotacion_torreta_horizontal_realista: RangoEstadistica;
-  
+
   rotacion_torreta_vertical_arcade: RangoEstadistica;
   rotacion_torreta_vertical_realista: RangoEstadistica;
 }
@@ -74,7 +74,7 @@ export class TanksStatsService {
   // ====================================================================
   // MÉTODO: Calcular rangos GLOBALES (todos los tanques)
   // ====================================================================
-  
+
   calcularRangosGlobales(tanques: Tanque[]): RangosEstadisticas {
     tanques = this.limpiarTanques(tanques)
     const tabla = aq.from(tanques);
@@ -132,11 +132,11 @@ export class TanksStatsService {
   // ====================================================================
   // EXPLICACIÓN: Este método agrupa los tanques por su rating y calcula
   // los deciles para cada grupo por separado
-  
+
   calcularRangosPorRating(tanques: Tanque[], modo: string): EstadisticasPorRating[] {
     // PASO 1: Agrupar tanques por rating usando Arquero
     const tabla = aq.from(tanques);
-    
+
     // Obtener ratings únicos
     const ratingsUnicos = tabla
       .groupby(modo)
@@ -149,19 +149,19 @@ export class TanksStatsService {
     let tanquesDelRating: Tanque[] = []
     ratingsUnicos.forEach(rating => {
       // Filtrar tanques de este rating
-      if(modo == "rating_arcade"){
+      if (modo == "rating_arcade") {
         tanquesDelRating = tanques.filter(t => t.rating_arcade === rating);
       }
-      else{
+      else {
         tanquesDelRating = tanques.filter(t => t.rating_realista === rating);
       }
       if (tanquesDelRating.length > 0) {
         // Calcular rangos para este rating específico
         const rangos = this.calcularRangosParaGrupo(tanquesDelRating);
-        
+
         // Guardar en el Map para acceso rápido
         this.rangosPorRating.set(rating, rangos);
-        
+
         // Agregar a la lista de resultados
         estadisticasPorRating.push({
           rating: rating,
@@ -177,7 +177,7 @@ export class TanksStatsService {
   // ====================================================================
   // MÉTODO AUXILIAR: Calcular rangos para un grupo específico de tanques
   // ====================================================================
-  
+
   private calcularRangosParaGrupo(tanques: Tanque[]): RangosEstadisticas {
     tanques = this.limpiarTanques(tanques)
     const tabla = aq.from(tanques);
@@ -231,23 +231,23 @@ export class TanksStatsService {
   // ====================================================================
   // MÉTODO: Obtener color según el valor (10 niveles de color)
   // ====================================================================
-  
+
   obtenerColor(
     nombreEstadistica: keyof RangosEstadisticas,
     valor: number,
     rating: number | null = null,
     invertir: boolean = false
   ): string {
-    
+
     // Decidir qué rangos usar: por rating o globales
     let rango: RangoEstadistica | undefined;
-    
+
     if (rating && this.rangosPorRating.has(rating)) {
       rango = this.rangosPorRating.get(rating)![nombreEstadistica];
     } else if (this.rangosGlobales) {
       rango = this.rangosGlobales[nombreEstadistica];
     }
-    
+
     if (!rango) {
       console.warn('Rangos no calculados. Llama primero a calcularRangos()');
       return '#808080'; // Gris por defecto
@@ -305,7 +305,7 @@ export class TanksStatsService {
   // ====================================================================
   // MÉTODO: Obtener colores para todas las estadísticas de un tanque
   // ====================================================================
-  
+
   obtenerColoresTanque(tanque: Tanque, usarRatingEspecifico: boolean = true): { [key: string]: string } {
     const rating_arcade = usarRatingEspecifico ? tanque.rating_arcade : null;
     const rating_realista = usarRatingEspecifico ? tanque.rating_realista : null;
@@ -344,21 +344,21 @@ export class TanksStatsService {
   // ====================================================================
   // EXPLICACIÓN: Este método devuelve en qué percentil está un valor
   // Por ejemplo: si devuelve 85, significa que el tanque es mejor que el 85% de los tanques
-  
+
   obtenerPercentil(
     nombreEstadistica: keyof RangosEstadisticas,
     valor: number,
     rating: number | null = null
   ): number {
-    
+
     let rango: RangoEstadistica | undefined;
-    
+
     if (rating && this.rangosPorRating.has(rating)) {
       rango = this.rangosPorRating.get(rating)![nombreEstadistica];
     } else if (this.rangosGlobales) {
       rango = this.rangosGlobales[nombreEstadistica];
     }
-    
+
     if (!rango) {
       return 50; // Valor medio por defecto
     }
@@ -381,13 +381,13 @@ export class TanksStatsService {
   // ====================================================================
   // EXPLICACIÓN: Este método agrupa las penetraciones por rating del tanque
   // y calcula los deciles para cada grupo
-  
+
   calcularRangosPenetracionPorRating(tanques: Tanque[], modo: string): void {
     console.log('📊 Calculando rangos de penetración por rating...');
-    
+
     // Limpiar rangos anteriores
     this.rangosPenetracionPorRating.clear();
-    
+
     // Obtener ratings únicos
     const ratingsUnicos = new Set<number>();
     tanques.forEach(tanque => {
@@ -398,19 +398,19 @@ export class TanksStatsService {
     // Para cada rating, calcular rangos de penetración
     ratingsUnicos.forEach(rating => {
       // Filtrar tanques de este rating
-      const tanquesDelRating = tanques.filter(t => 
+      const tanquesDelRating = tanques.filter(t =>
         modo === 'rating_arcade' ? t.rating_arcade === rating : t.rating_realista === rating
       );
 
       // Extraer todas las penetraciones de estos tanques
       const penetracionesDelRating: any[] = [];
-      
+
       tanquesDelRating.forEach(tanque => {
         [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
           if (setup) {
             Object.values(setup).forEach(arma => {
               arma.municiones.forEach(municion => {
-                penetracionesDelRating.push(...municion.penetracion_mm);
+                penetracionesDelRating.push(municion.penetracion_mm[0]);
               });
             });
           }
@@ -419,7 +419,7 @@ export class TanksStatsService {
 
       // Limpiar y calcular estadísticas
       const penetracionesLimpias = this.limpiarPenetraciones(penetracionesDelRating);
-      
+
       if (penetracionesLimpias.length > 0) {
         const tablaPenetraciones = aq.from(
           penetracionesLimpias.map(p => ({ penetracion: p }))
@@ -443,7 +443,7 @@ export class TanksStatsService {
 
         // Guardar en el Map
         this.rangosPenetracionPorRating.set(rating, stats);
-        
+
         console.log(`✅ Rating ${rating}: ${penetracionesLimpias.length} penetraciones procesadas`);
       }
     })
@@ -451,19 +451,19 @@ export class TanksStatsService {
   // ====================================================================
   // MÉTODO: Obtener color para penetración de munición
   // ====================================================================
-  
+
   obtenerColorPenetracion(
-    penetracionMm: number, 
+    penetracionMm: number,
     todosLosTanques: Tanque[],
     rating: number | null = null
   ): string {
-    
+
     let stats: RangoEstadistica | undefined;
 
     // PASO 1: Intentar usar rangos específicos del rating
     if (rating && this.rangosPenetracionPorRating.has(rating)) {
       stats = this.rangosPenetracionPorRating.get(rating);
-    } 
+    }
     // PASO 2: Si no hay rangos por rating, calcular globales
     else {
       const todasLasPenetraciones: any[] = [];
@@ -523,12 +523,12 @@ export class TanksStatsService {
   // ====================================================================
   // NUEVO MÉTODO: Obtener percentil de penetración
   // ====================================================================
-  
+
   obtenerPercentilPenetracion(
     penetracionMm: number,
     rating: number | null = null
   ): number {
-    
+
     let stats: RangoEstadistica | undefined;
 
     if (rating && this.rangosPenetracionPorRating.has(rating)) {
