@@ -402,19 +402,32 @@ export class TanksStatsService {
         modo === 'rating_arcade' ? t.rating_arcade === rating : t.rating_realista === rating
       );
 
-      // Extraer todas las penetraciones de estos tanques
+      // Extraer la munición con mayor penetración a 0m de cada tanque de este rating
       const penetracionesDelRating: any[] = [];
 
       tanquesDelRating.forEach(tanque => {
+        let maxPenTanque: number | null = null;
+
         [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
           if (setup) {
             Object.values(setup).forEach(arma => {
               arma.municiones.forEach(municion => {
-                penetracionesDelRating.push(municion.penetracion_mm[0]);
+                if (municion.penetracion_mm && municion.penetracion_mm.length > 0) {
+                  const pen0 = municion.penetracion_mm[0];
+                  if (typeof pen0 === 'number' && !isNaN(pen0)) {
+                    if (maxPenTanque === null || pen0 > maxPenTanque) {
+                      maxPenTanque = pen0;
+                    }
+                  }
+                }
               });
             });
           }
         });
+
+        if (maxPenTanque !== null) {
+          penetracionesDelRating.push(maxPenTanque);
+        }
       });
 
       // Limpiar y calcular estadísticas
@@ -469,15 +482,28 @@ export class TanksStatsService {
       const todasLasPenetraciones: any[] = [];
 
       todosLosTanques.forEach(tanque => {
+        let maxPenTanque: number | null = null;
+
         [tanque.armamento, tanque.setup_1, tanque.setup_2].forEach(setup => {
           if (setup) {
             Object.values(setup).forEach(arma => {
               arma.municiones.forEach(municion => {
-                todasLasPenetraciones.push(...municion.penetracion_mm);
+                if (municion.penetracion_mm && municion.penetracion_mm.length > 0) {
+                  const pen0 = municion.penetracion_mm[0];
+                  if (typeof pen0 === 'number' && !isNaN(pen0)) {
+                    if (maxPenTanque === null || pen0 > maxPenTanque) {
+                      maxPenTanque = pen0;
+                    }
+                  }
+                }
               });
             });
           }
         });
+
+        if (maxPenTanque !== null) {
+          todasLasPenetraciones.push(maxPenTanque);
+        }
       });
 
       const penetracionesLimpias = this.limpiarPenetraciones(todasLasPenetraciones);
