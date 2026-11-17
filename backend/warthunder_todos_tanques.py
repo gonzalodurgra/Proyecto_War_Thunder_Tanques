@@ -111,22 +111,43 @@ async def extraer_datos_municion(fila, pagina):
                 await pagina.wait_for_timeout(300)
                 
                 # Localizar el popover hermano recién abierto que contiene la tabla
-                popover_tabla = pagina.locator(".game-unit_popover, .popover").last
-                tds = await popover_tabla.locator("td").all_inner_texts()
+                popover_tabla = pagina.locator(".game-unit_popover:visible, .popover:visible").last
                 
-                penetraciones_18 = []
-                for val in tds:
-                    texto_val = limpiar_texto(val)
-                    if texto_val in ["—", "-", "N/A", ""]:
-                        penetraciones_18.append(0)
-                    else:
+                # Caso A: Proyectiles con carga hueca (HEAT, HEATFS, ATGM) -> Extraer "Cumulative jet"
+                # Su penetración es idéntica en todas las distancias y varía únicamente por el ángulo (0°, 30°, 60°)
+                cum_jet_loc = popover_tabla.locator("xpath=.//*[contains(text(), 'Cumulative jet')]/following::table[1]")
+                if await cum_jet_loc.count() > 0:
+                    tds_cum = await cum_jet_loc.first.locator("td").all_inner_texts()
+                    angulos = []
+                    for val in tds_cum:
+                        texto_val = limpiar_texto(val)
                         num = "".join(ch for ch in texto_val if ch.isdigit())
-                        penetraciones_18.append(int(num) if num else 0)
-                
-                if len(penetraciones_18) == 18:
-                    shell["penetracion_mm"] = penetraciones_18
+                        angulos.append(int(num) if num else 0)
+                    if len(angulos) == 3:
+                        # Replicar los 3 ángulos para las 6 distancias estándar (0m, 100m, 500m, 1000m, 1500m, 2000m)
+                        penetraciones_18 = []
+                        for _ in range(6):
+                            penetraciones_18.extend(angulos)
+                        shell["penetracion_mm"] = penetraciones_18
+                else:
+                    # Caso B: Proyectiles cinéticos convencionales (AP, APHE, APCR, APDS, APFSDS, etc.)
+                    tablas = popover_tabla.locator("table")
+                    num_tablas = await tablas.count()
+                    for idx_t in range(num_tablas):
+                        tds = await tablas.nth(idx_t).locator("td").all_inner_texts()
+                        nums_tds = []
+                        for val in tds:
+                            texto_val = limpiar_texto(val)
+                            if texto_val in ["—", "-", "N/A", ""]:
+                                nums_tds.append(0)
+                            else:
+                                num = "".join(ch for ch in texto_val if ch.isdigit())
+                                nums_tds.append(int(num) if num else 0)
+                        if len(nums_tds) == 18:
+                            shell["penetracion_mm"] = nums_tds
+                            break
         except Exception:
-            print("No se pudo abrir popover de penetraciones")  # Si no se puede abrir el segundo popover, se mantienen las penetraciones de la fila principal
+            pass  # Si no se puede abrir el segundo popover, se mantienen las penetraciones de la fila principal
 
         # Cerrar popover
         try:
