@@ -20,15 +20,15 @@ import { ImageUploadService } from '../../services/image-upload';
   imports: [CommonModule, FormsModule]
 })
 export class TankEditComponent implements OnInit {
-  
+
   // ====================================================================
   // PROPIEDADES
   // ====================================================================
-  
+
   tanque: Tanque = this.crearTanqueVacio();
   tanqueId: string | null = null;
   modoEdicion: boolean = false; // false = crear, true = editar
-  
+
   cargando: boolean = false;
   guardando: boolean = false;
   error: string = '';
@@ -37,11 +37,11 @@ export class TankEditComponent implements OnInit {
   archivoSeleccionado: File | null = null;
   subiendoImagen: boolean = false;
   mensajeImagen: string = '';
-  
+
   // ====================================================================
   // CONSTRUCTOR
   // ====================================================================
-  
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -55,7 +55,7 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // INICIALIZACIÓN
   // ====================================================================
-  
+
   ngOnInit(): void {
     // Verificar autenticación
     if (!this.authService.isLoggedIn()) {
@@ -63,7 +63,7 @@ export class TankEditComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     // Obtener el ID del tanque de la URL (si existe)
     this.tanqueId = this.route.snapshot.paramMap.get('id');
     if (this.tanqueId) {
@@ -84,10 +84,10 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // MÉTODO: Cargar tanque existente
   // ====================================================================
-  
+
   cargarTanque(): void {
     if (!this.tanqueId) return;
-    
+
     this.cargando = true;
     this.error = '';
     this.tanksService.obtenerTanquePorId(this.tanqueId).subscribe({
@@ -110,16 +110,16 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // MÉTODO: Guardar tanque (crear o actualizar)
   // ====================================================================
-  
+
   guardarTanque(): void {
     // Validar campos obligatorios
     if (!this.validarTanque()) {
       return;
     }
-    
+
     this.guardando = true;
     this.error = '';
-    
+
     if (this.modoEdicion && this.tanqueId) {
       // Actualizar tanque existente
       this.actualizarTanque();
@@ -132,7 +132,7 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // MÉTODO: Crear nuevo tanque
   // ====================================================================
-  
+
   crearTanque(): void {
     this.tanksService.crearTanque(this.tanque).subscribe({
       next: (response) => {
@@ -143,7 +143,7 @@ export class TankEditComponent implements OnInit {
       error: (err) => {
         console.error('Error al crear tanque:', err);
         this.guardando = false;
-        
+
         if (err.status === 401) {
           this.error = 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.';
           setTimeout(() => this.router.navigate(['/login']), 2000);
@@ -157,10 +157,10 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // MÉTODO: Actualizar tanque existente
   // ====================================================================
-  
+
   actualizarTanque(): void {
     if (!this.tanqueId) return;
-    
+
     this.tanksService.actualizarTanque(this.tanqueId, this.tanque).subscribe({
       next: (response) => {
         console.log('Tanque actualizado:', response);
@@ -170,7 +170,7 @@ export class TankEditComponent implements OnInit {
       error: (err) => {
         console.error('Error al actualizar tanque:', err);
         this.guardando = false;
-        
+
         if (err.status === 401) {
           this.error = 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.';
           setTimeout(() => this.router.navigate(['/login']), 2000);
@@ -184,18 +184,18 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // MÉTODO: Validar tanque
   // ====================================================================
-  
+
   validarTanque(): boolean {
     if (!this.tanque.nombre || this.tanque.nombre.trim() === '') {
       this.error = 'El nombre del tanque es obligatorio';
       return false;
     }
-    
+
     if (!this.tanque.nacion || this.tanque.nacion.trim() === '') {
       this.error = 'La nación es obligatoria';
       return false;
     }
-    
+
     if (!this.tanque.rol || this.tanque.rol.trim() === '') {
       this.error = 'El rol es obligatorio';
       return false;
@@ -216,10 +216,10 @@ export class TankEditComponent implements OnInit {
       this.error = 'El blindaje frontal de la torreta es obligatorio';
       return false;
     }
-    if(!this.tanque.velocidad_adelante_arcade || this.tanque.velocidad_adelante_arcade === null){
+    if (!this.tanque.velocidad_adelante_arcade || this.tanque.velocidad_adelante_arcade === null) {
       this.error = "La velocidad punta es obligatoria"
     }
-    if(!this.tanque.velocidad_atras_arcade || this.tanque.velocidad_atras_arcade === null){
+    if (!this.tanque.velocidad_atras_arcade || this.tanque.velocidad_atras_arcade === null) {
       this.error = "La velocidad marcha atrás es obligatoria"
     }
     return true;
@@ -228,7 +228,7 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // MÉTODO: Cancelar y volver
   // ====================================================================
-  
+
   cancelar(): void {
     if (confirm('¿Estás seguro? Los cambios no guardados se perderán.')) {
       this.router.navigate(['/tanques']);
@@ -238,7 +238,7 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // MÉTODO: Crear tanque vacío con valores por defecto
   // ====================================================================
-  
+
   crearTanqueVacio(): Tanque {
     return {
       nombre: '',
@@ -251,7 +251,13 @@ export class TankEditComponent implements OnInit {
       visibilidad: 0,
       peso: 0,
       blindaje_chasis: 0,
+      blindaje_chasis_lateral: 0,
+      blindaje_chasis_trasero: 0,
       blindaje_torreta: 0,
+      blindaje_torreta_lateral: 0,
+      blindaje_torreta_trasero: 0,
+      blindaje_efectivo_chasis: 0,
+      blindaje_efectivo_torreta: 0,
       velocidad_adelante_arcade: 0,
       velocidad_adelante_realista: 0,
       velocidad_atras_arcade: 0,
@@ -289,7 +295,7 @@ export class TankEditComponent implements OnInit {
 
   crearArmaVacia(): Arma {
     return {
-      municiones: [ this.crearMunicionVacia() ]
+      municiones: [this.crearMunicionVacia()]
     };
   }
 
@@ -334,8 +340,8 @@ export class TankEditComponent implements OnInit {
 
     this.tanque.armamento![armaKey].municiones[index].penetracion_mm =
       texto.split(',')
-          .map(v => parseInt(v.trim(), 10))
-          .filter(v => !isNaN(v));
+        .map(v => parseInt(v.trim(), 10))
+        .filter(v => !isNaN(v));
   }
 
   prepararEstructuraArmamento() {
@@ -364,7 +370,7 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // NUEVO MÉTODO: Cuando el usuario selecciona una imagen
   // ====================================================================
-  
+
   /**
    * Se ejecuta cuando el usuario selecciona un archivo
    * 
@@ -379,29 +385,29 @@ export class TankEditComponent implements OnInit {
   onImagenSeleccionada(event: any): void {
     // PASO 1: Obtener el archivo del input
     const archivo: File = event.target.files[0];
-    
+
     // PASO 2: Verificar que se seleccionó algo
     if (!archivo) {
       return;
     }
-    
+
     // PASO 3: Verificar que sea una imagen
     if (!archivo.type.startsWith('image/')) {
       this.mensajeImagen = '⚠️ Por favor selecciona una imagen válida';
       return;
     }
-    
+
     // PASO 4: Guardar el archivo seleccionado
     this.archivoSeleccionado = archivo;
     this.mensajeImagen = `✅ Imagen seleccionada: ${archivo.name}`;
-    
+
     console.log('Imagen seleccionada:', archivo.name, 'Tamaño:', archivo.size, 'bytes');
   }
 
   // ====================================================================
   // NUEVO MÉTODO: Subir la imagen al servidor
   // ====================================================================
-  
+
   /**
    * Sube la imagen seleccionada al servidor
    * 
@@ -418,37 +424,37 @@ export class TankEditComponent implements OnInit {
       this.mensajeImagen = '⚠️ Por favor selecciona una imagen primero';
       return;
     }
-    
+
     // PASO 2: Activar indicador de carga
     this.subiendoImagen = true;
     this.mensajeImagen = '⏳ Subiendo imagen...';
-    
+
     // PASO 3: Llamar al servicio para subir la imagen
     this.imageUploadService.subirImagenTanque(this.archivoSeleccionado).subscribe({
-      
+
       // Si la subida es EXITOSA
       next: (respuesta) => {
         console.log('Imagen subida:', respuesta);
-        
+
         // PASO 4: Actualizar el campo imagen_local del tanque
         // Guardamos la ruta relativa que devuelve el servidor
         this.tanque.imagen_local = respuesta.ruta;
-        
+
         // PASO 5: Mostrar mensaje de éxito
         this.mensajeImagen = `✅ ${respuesta.mensaje}`;
         this.subiendoImagen = false;
-        
+
         // Limpiar la selección
         this.archivoSeleccionado = null;
-        
+
         // Forzar detección de cambios para actualizar la vista previa
         this.cd.detectChanges();
       },
-      
+
       // Si hay un ERROR
       error: (error) => {
         console.error('Error al subir imagen:', error);
-        
+
         this.mensajeImagen = `❌ Error: ${error.error?.detail || 'No se pudo subir la imagen'}`;
         this.subiendoImagen = false;
       }
@@ -458,7 +464,7 @@ export class TankEditComponent implements OnInit {
   // ====================================================================
   // NUEVO MÉTODO: Obtener URL completa de la imagen
   // ====================================================================
-  
+
   /**
    * Obtiene la URL completa de la imagen para mostrarla
    * 
@@ -468,7 +474,7 @@ export class TankEditComponent implements OnInit {
     if (!this.tanque.imagen_local) {
       return null;
     }
-    
+
     return this.imageUploadService.obtenerUrlImagen(this.tanque.imagen_local);
   }
 }

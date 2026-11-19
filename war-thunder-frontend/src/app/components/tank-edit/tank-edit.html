@@ -173,15 +173,55 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="blindaje_chasis">Blindaje Chasis (mm)</label>
+          <label for="blindaje_chasis">Blindaje Chasis Frontal (mm)</label>
           <input type="number" id="blindaje_chasis" name="blindaje_chasis" [(ngModel)]="tanque.blindaje_chasis" min="0"
             [disabled]="guardando">
         </div>
 
         <div class="form-group">
-          <label for="blindaje_torreta">Blindaje Torreta (mm)</label>
+          <label for="blindaje_chasis_lateral">Blindaje Chasis Lateral (mm)</label>
+          <input type="number" id="blindaje_chasis_lateral" name="blindaje_chasis_lateral" [(ngModel)]="tanque.blindaje_chasis_lateral" min="0"
+            [disabled]="guardando">
+        </div>
+
+        <div class="form-group">
+          <label for="blindaje_chasis_trasero">Blindaje Chasis Trasero (mm)</label>
+          <input type="number" id="blindaje_chasis_trasero" name="blindaje_chasis_trasero" [(ngModel)]="tanque.blindaje_chasis_trasero" min="0"
+            [disabled]="guardando">
+        </div>
+
+        <div class="form-group">
+          <label for="blindaje_efectivo_chasis">Blindaje Efectivo Chasis (mm)</label>
+          <input type="number" id="blindaje_efectivo_chasis" name="blindaje_efectivo_chasis"
+            [(ngModel)]="tanque.blindaje_efectivo_chasis" min="0" placeholder="Pendiente + posición diamante"
+            [disabled]="guardando">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="blindaje_torreta">Blindaje Torreta Frontal (mm)</label>
           <input type="number" id="blindaje_torreta" name="blindaje_torreta" [(ngModel)]="tanque.blindaje_torreta"
             min="0" [disabled]="guardando">
+        </div>
+
+        <div class="form-group">
+          <label for="blindaje_torreta_lateral">Blindaje Torreta Lateral (mm)</label>
+          <input type="number" id="blindaje_torreta_lateral" name="blindaje_torreta_lateral" [(ngModel)]="tanque.blindaje_torreta_lateral"
+            min="0" [disabled]="guardando">
+        </div>
+
+        <div class="form-group">
+          <label for="blindaje_torreta_trasero">Blindaje Torreta Trasero (mm)</label>
+          <input type="number" id="blindaje_torreta_trasero" name="blindaje_torreta_trasero" [(ngModel)]="tanque.blindaje_torreta_trasero"
+            min="0" [disabled]="guardando">
+        </div>
+
+        <div class="form-group">
+          <label for="blindaje_efectivo_torreta">Blindaje Efectivo Torreta (mm)</label>
+          <input type="number" id="blindaje_efectivo_torreta" name="blindaje_efectivo_torreta"
+            [(ngModel)]="tanque.blindaje_efectivo_torreta" min="0" placeholder="Pendiente + posición diamante"
+            [disabled]="guardando">
         </div>
       </div>
     </div>

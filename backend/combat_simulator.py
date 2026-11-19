@@ -432,19 +432,20 @@ class CombatSimulatorEngine:
             float(tanque.get("blindaje_chasis") or 0),
             float(tanque.get("blindaje_torreta") or 0),
         )
+        blindaje_ef = obtener_blindaje_efectivo_tanque(tanque)
         velocidad_torreta = float(tanque.get("velocidad_torreta") or tanque.get("rotacion_torreta") or 30)
         angulo_elevacion_max = float(tanque.get("angulo_elevacion_max") or 30)
         angulo_depresion_max = float(tanque.get("angulo_depresion_max") or 10)
         tripulacion = float(tanque.get("tripulacion") or 0.75)
         tiempo_apuntado_base = 0.5 + 4.0 / velocidad_torreta + (30 - angulo_elevacion_max) * 0.02 + (15 - angulo_depresion_max) * 0.02
-        supervivencia_base = 0.8 + (blindaje / 300.0) * 0.6 + (tripulacion - 0.5) * 0.4
+        supervivencia_base = 0.8 + (blindaje_ef / 350.0) * 0.6 + (tripulacion - 0.5) * 0.4
         return PerfilCombate(
             nombre=tanque.get("nombre", "Desconocido"),
             nacion=tanque.get("nacion", "N/A"),
             br=float(tanque.get("rating_realista") or 0),
             blindaje_chasis=float(tanque.get("blindaje_chasis") or 0),
             blindaje_torreta=float(tanque.get("blindaje_torreta") or 0),
-            blindaje_efectivo=blindaje * float(tanque.get("slope_factor_ia", SLOPE_FACTOR)),
+            blindaje_efectivo=blindaje_ef,
             velocidad=float(tanque.get("velocidad_adelante_realista") or 0),
             intervalo_disparo=intervalo_disparo(tanque),
             cargador=int(tanque.get("cargador") or 1),
@@ -470,6 +471,33 @@ def get_engine() -> CombatSimulatorEngine:
     if _engine is None:
         _engine = CombatSimulatorEngine()
     return _engine
+
+
+def obtener_blindaje_efectivo_tanque(tanque: Dict[str, Any]) -> float:
+    """
+    Calcula el blindaje efectivo global de un tanque para simulación de combate.
+    Si se introdujeron manualmente blindaje_efectivo_chasis y/o blindaje_efectivo_torreta
+    (que tienen en cuenta pendiente y posición de diamante), se priorizan directamente.
+    Si no existen, se estima aplicando el factor de inclinación SLOPE_FACTOR o slope_factor_ia.
+    """
+    ef_chasis = tanque.get("blindaje_efectivo_chasis")
+    ef_torreta = tanque.get("blindaje_efectivo_torreta")
+
+    if ef_chasis is not None and ef_torreta is not None:
+        return max(float(ef_chasis), float(ef_torreta))
+    elif ef_chasis is not None:
+        raw_torreta = float(tanque.get("blindaje_torreta") or 0) * float(tanque.get("slope_factor_ia", SLOPE_FACTOR))
+        return max(float(ef_chasis), raw_torreta)
+    elif ef_torreta is not None:
+        raw_chasis = float(tanque.get("blindaje_chasis") or 0) * float(tanque.get("slope_factor_ia", SLOPE_FACTOR))
+        return max(raw_chasis, float(ef_torreta))
+
+    # Estimación por defecto
+    blindaje_nominal = max(
+        float(tanque.get("blindaje_chasis") or 0),
+        float(tanque.get("blindaje_torreta") or 0),
+    )
+    return blindaje_nominal * float(tanque.get("slope_factor_ia", SLOPE_FACTOR))
 
 
 # ====================================================================
@@ -616,10 +644,7 @@ def obtener_penetracion_maxima(
     mejor = MunicionOptima("N/A", "N/A", "N/A", 0.0, 0.0, 0.0)
     blindaje_referencia = blindaje_objetivo
     if blindaje_referencia is None:
-        blindaje_referencia = max(
-            float(tanque.get("blindaje_chasis") or 0),
-            float(tanque.get("blindaje_torreta") or 0),
-        ) * SLOPE_FACTOR
+        blindaje_referencia = obtener_blindaje_efectivo_tanque(tanque)
 
     for nombre_arma, municion in iterar_municiones(tanque):
         pen_list = municion.get("penetracion_mm") or []
@@ -786,14 +811,8 @@ def simular_duelo_monte_carlo(
     """
     engine = get_engine()
     distancia = parse_distancia_combate(situacion)
-    blindaje_v2 = max(
-        float(tanque2.get("blindaje_chasis") or 0),
-        float(tanque2.get("blindaje_torreta") or 0),
-    ) * SLOPE_FACTOR
-    blindaje_v1 = max(
-        float(tanque1.get("blindaje_chasis") or 0),
-        float(tanque1.get("blindaje_torreta") or 0),
-    ) * SLOPE_FACTOR
+    blindaje_v2 = obtener_blindaje_efectivo_tanque(tanque2)
+    blindaje_v1 = obtener_blindaje_efectivo_tanque(tanque1)
     p1 = engine.construir_perfil(tanque1, distancia, blindaje_v2)
     p2 = engine.construir_perfil(tanque2, distancia, blindaje_v1)
 
@@ -889,14 +908,8 @@ def _simular_pareja(
 ) -> Dict[str, float]:
     """Simula un sub-duelo directo entre dos tanques para evaluar emparejamientos tácticos."""
     engine = get_engine()
-    pa = engine.construir_perfil(tanque_a, distancia, max(
-        float(tanque_b.get("blindaje_chasis") or 0),
-        float(tanque_b.get("blindaje_torreta") or 0),
-    ) * SLOPE_FACTOR)
-    pb = engine.construir_perfil(tanque_b, distancia, max(
-        float(tanque_a.get("blindaje_chasis") or 0),
-        float(tanque_a.get("blindaje_torreta") or 0),
-    ) * SLOPE_FACTOR)
+    pa = engine.construir_perfil(tanque_a, distancia, obtener_blindaje_efectivo_tanque(tanque_b))
+    pb = engine.construir_perfil(tanque_b, distancia, obtener_blindaje_efectivo_tanque(tanque_a))
     rng = random.Random(hash((pa.nombre, pb.nombre, distancia, n)) & 0xFFFFFFFF)
     wins_a = 0
     dmg_to_b = 0.0

@@ -31,6 +31,12 @@ async def actualizar_tanques_semanal():
         tanque_existente = tanks_collection.find_one({"nombre": nombre, "nacion": nacion})
         
         if tanque_existente:
+            # Preservar blindajes efectivos introducidos manualmente (no modificables por el scraper)
+            if "blindaje_efectivo_chasis" in tanque_existente and tanque_existente["blindaje_efectivo_chasis"] is not None:
+                tanque_nuevo["blindaje_efectivo_chasis"] = tanque_existente["blindaje_efectivo_chasis"]
+            if "blindaje_efectivo_torreta" in tanque_existente and tanque_existente["blindaje_efectivo_torreta"] is not None:
+                tanque_nuevo["blindaje_efectivo_torreta"] = tanque_existente["blindaje_efectivo_torreta"]
+
             # Preservar slope_factor_ia
             if "slope_factor_ia" in tanque_existente:
                 tanque_nuevo["slope_factor_ia"] = tanque_existente["slope_factor_ia"]

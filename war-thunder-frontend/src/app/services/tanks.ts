@@ -36,7 +36,13 @@ export interface Tanque {
   visibilidad: number;
   peso: number;
   blindaje_chasis: number;
+  blindaje_chasis_lateral?: number | null;
+  blindaje_chasis_trasero?: number | null;
   blindaje_torreta: number;
+  blindaje_torreta_lateral?: number | null;
+  blindaje_torreta_trasero?: number | null;
+  blindaje_efectivo_chasis?: number | null;
+  blindaje_efectivo_torreta?: number | null;
   velocidad_adelante_arcade: number;
   velocidad_adelante_realista: number;
   velocidad_atras_arcade: number;

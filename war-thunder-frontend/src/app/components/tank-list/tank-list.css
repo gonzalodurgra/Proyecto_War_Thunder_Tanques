@@ -1844,6 +1844,19 @@ h1 {
   border-color: #d97706;
 }
 
+/* Badge para blindaje efectivo */
+.blindaje-efectivo-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #4f46e5;
+  background-color: rgba(99, 102, 241, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
 /* Toggle de estadísticas avanzadas */
 .stats-toggle {
   text-align: center;

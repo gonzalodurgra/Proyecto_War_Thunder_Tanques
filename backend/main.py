@@ -1017,6 +1017,33 @@ Si no sabes, haz tu mejor estimación realista basada en municiones similares de
     return _parsear_json_gemini(response.text)
 
 
+def _estimar_blindajes_efectivos_gemini(tanque: dict, modelo: str) -> dict:
+    prompt = f"""
+Eres un experto balístico y de blindajes de War Thunder. Necesito estimar el blindaje efectivo (en milímetros) frente a proyectiles enemigos para el tanque '{tanque.get('nombre')}' ({tanque.get('nacion')}).
+Datos disponibles:
+- Blindaje chasis nominal: {tanque.get('blindaje_chasis', 0)} mm
+- Blindaje torreta nominal: {tanque.get('blindaje_torreta', 0)} mm
+- Battle Rating realista: {tanque.get('rating_realista', 'N/A')}
+
+Debes calcular y estimar el blindaje efectivo teniendo en cuenta:
+1. La geometría, pendiente e inclinación real del glacis frontal y torreta de este vehículo en War Thunder.
+2. La angulación en 'posición de diamante' (angling ~30°-45°) típica utilizada por los jugadores para maximizar el grosor relativo y la probabilidad de rebote.
+
+Debes devolver un JSON con esta estructura exacta:
+{{
+    "blindaje_efectivo_chasis": <numero entero en mm, ej: 145>,
+    "blindaje_efectivo_torreta": <numero entero en mm, ej: 160>
+}}
+No devuelvas texto ni markdown adicional, solo el JSON puro.
+"""
+    response = client_ai.models.generate_content(model=modelo, contents=prompt)
+    data = _parsear_json_gemini(response.text)
+    return {
+        "blindaje_efectivo_chasis": int(data.get("blindaje_efectivo_chasis") or 0),
+        "blindaje_efectivo_torreta": int(data.get("blindaje_efectivo_torreta") or 0),
+    }
+
+
 def _estimar_slope_factor_gemini(tanque: dict, modelo: str) -> float:
     prompt = f"""
 Eres un experto en blindaje de tanques de War Thunder. El simulador necesita un 'slope factor' (factor de efectividad del blindaje inclinado) para el tanque '{tanque.get('nombre')}' ({tanque.get('nacion')}).
@@ -1039,6 +1066,20 @@ async def _procesar_tanque_con_ia(tanque: dict, modelo: str) -> dict:
     
     modificado = False
     
+    # 1. Si no tiene blindaje_efectivo_chasis o blindaje_efectivo_torreta, estimarlo con IA teniendo en cuenta pendiente y diamante
+    if tanque.get("blindaje_efectivo_chasis") is None or tanque.get("blindaje_efectivo_torreta") is None:
+        try:
+            ef_dict = _estimar_blindajes_efectivos_gemini(tanque, modelo)
+            if tanque.get("blindaje_efectivo_chasis") is None and ef_dict.get("blindaje_efectivo_chasis"):
+                tanque["blindaje_efectivo_chasis"] = ef_dict["blindaje_efectivo_chasis"]
+                modificado = True
+            if tanque.get("blindaje_efectivo_torreta") is None and ef_dict.get("blindaje_efectivo_torreta"):
+                tanque["blindaje_efectivo_torreta"] = ef_dict["blindaje_efectivo_torreta"]
+                modificado = True
+        except Exception as e:
+            print(f"Error estimando blindaje efectivo: {e}")
+
+    # 2. Slope factor IA
     if "slope_factor_ia" not in tanque:
         try:
             sf = _estimar_slope_factor_gemini(tanque, modelo)

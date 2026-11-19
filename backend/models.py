@@ -51,7 +51,13 @@ class Tanque(BaseModel):
     visibilidad: int
     peso: float
     blindaje_chasis: int
+    blindaje_chasis_lateral: Optional[int] = None  # Blindaje lateral del chasis en mm
+    blindaje_chasis_trasero: Optional[int] = None  # Blindaje trasero del chasis en mm
     blindaje_torreta: int
+    blindaje_torreta_lateral: Optional[int] = None  # Blindaje lateral de la torreta en mm
+    blindaje_torreta_trasero: Optional[int] = None  # Blindaje trasero de la torreta en mm
+    blindaje_efectivo_chasis: Optional[int] = None  # Blindaje efectivo del chasis (inclinación + angulación/diamante)
+    blindaje_efectivo_torreta: Optional[int] = None  # Blindaje efectivo de la torreta (inclinación + angulación/diamante)
     velocidad_adelante_arcade: int
     velocidad_adelante_realista: int
     velocidad_atras_arcade: int

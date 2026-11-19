@@ -357,14 +357,25 @@
         <div class="detalle-seccion">
           <h3>🛡️ Blindaje</h3>
 
-          <!-- Blindaje chasis con color -->
+          <!-- Blindaje chasis con color, lateral/trasero y blindaje efectivo -->
           <p>
             <strong>Blindaje chasis:</strong>
             <span
               [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_chasis_arcade']: coloresTanque['blindaje_chasis_realista']"
               class="stat-colored">
-              {{ tanqueSeleccionado.blindaje_chasis }} mm
+              {{ tanqueSeleccionado.blindaje_chasis }}
+              @if (tanqueSeleccionado.blindaje_chasis_lateral !== undefined && tanqueSeleccionado.blindaje_chasis_lateral !== null) {
+                / {{ tanqueSeleccionado.blindaje_chasis_lateral }}
+              }
+              @if (tanqueSeleccionado.blindaje_chasis_trasero !== undefined && tanqueSeleccionado.blindaje_chasis_trasero !== null) {
+                / {{ tanqueSeleccionado.blindaje_chasis_trasero }}
+              } mm
             </span>
+            @if (tanqueSeleccionado.blindaje_efectivo_chasis) {
+            <span class="blindaje-efectivo-badge" title="Blindaje efectivo (inclinación + posición diamante)">
+              (Efec: {{ tanqueSeleccionado.blindaje_efectivo_chasis }} mm)
+            </span>
+            }
             @if (mostrarEstadisticasAvanzadas) {
             <span class="percentil-badge">
               {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_chasis',
@@ -373,14 +384,25 @@
             }
           </p>
 
-          <!-- Blindaje torreta con color -->
+          <!-- Blindaje torreta con color, lateral/trasero y blindaje efectivo -->
           <p>
             <strong>Blindaje torreta:</strong>
             <span
               [style.color]="modoActual === 'rating_arcade' ? coloresTanque['blindaje_torreta_arcade']: coloresTanque['blindaje_torreta_realista']"
               class="stat-colored">
-              {{ tanqueSeleccionado.blindaje_torreta }} mm
+              {{ tanqueSeleccionado.blindaje_torreta }}
+              @if (tanqueSeleccionado.blindaje_torreta_lateral !== undefined && tanqueSeleccionado.blindaje_torreta_lateral !== null) {
+                / {{ tanqueSeleccionado.blindaje_torreta_lateral }}
+              }
+              @if (tanqueSeleccionado.blindaje_torreta_trasero !== undefined && tanqueSeleccionado.blindaje_torreta_trasero !== null) {
+                / {{ tanqueSeleccionado.blindaje_torreta_trasero }}
+              } mm
             </span>
+            @if (tanqueSeleccionado.blindaje_efectivo_torreta) {
+            <span class="blindaje-efectivo-badge" title="Blindaje efectivo (inclinación + posición diamante)">
+              (Efec: {{ tanqueSeleccionado.blindaje_efectivo_torreta }} mm)
+            </span>
+            }
             @if (mostrarEstadisticasAvanzadas) {
             <span class="percentil-badge">
               {{ formatearPercentil(obtenerPercentil(tanqueSeleccionado, 'blindaje_torreta',

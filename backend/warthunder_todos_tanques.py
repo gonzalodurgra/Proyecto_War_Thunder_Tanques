@@ -308,11 +308,23 @@ async def fetch_data(pagina):
     # === BLINDAJE ===
     blindaje_chasis_text = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Hull') + .game-unit_chars-value")
     if blindaje_chasis_text:
-        datos["blindaje_chasis"] = int(blindaje_chasis_text.split("/")[0].strip())
+        partes_chasis = [p.strip() for p in blindaje_chasis_text.replace("\xa0mm", "").replace("mm", "").split("/") if p.strip()]
+        if len(partes_chasis) >= 1 and partes_chasis[0].isdigit():
+            datos["blindaje_chasis"] = int(partes_chasis[0])
+        if len(partes_chasis) >= 2 and partes_chasis[1].isdigit():
+            datos["blindaje_chasis_lateral"] = int(partes_chasis[1])
+        if len(partes_chasis) >= 3 and partes_chasis[2].isdigit():
+            datos["blindaje_chasis_trasero"] = int(partes_chasis[2])
         
     blindaje_torreta_text = await coger_texto(pagina, ".game-unit_chars-subline span:has-text('Turret') + .game-unit_chars-value")
     if blindaje_torreta_text:
-        datos["blindaje_torreta"] = int(blindaje_torreta_text.split("/")[0].strip())
+        partes_torreta = [p.strip() for p in blindaje_torreta_text.replace("\xa0mm", "").replace("mm", "").split("/") if p.strip()]
+        if len(partes_torreta) >= 1 and partes_torreta[0].isdigit():
+            datos["blindaje_torreta"] = int(partes_torreta[0])
+        if len(partes_torreta) >= 2 and partes_torreta[1].isdigit():
+            datos["blindaje_torreta_lateral"] = int(partes_torreta[1])
+        if len(partes_torreta) >= 3 and partes_torreta[2].isdigit():
+            datos["blindaje_torreta_trasero"] = int(partes_torreta[2])
     
     # === MOVILIDAD (VELOCIDADES) ===
     if await pagina.locator(".game-unit_chars-subline span:has-text('Forward') + .game-unit_chars-value .text-success").count() > 0:
