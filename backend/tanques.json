@@ -18544,28 +18544,10 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [
-                            31,
-                            23,
-                            12,
-                            29,
-                            21,
-                            11,
-                            21,
-                            16,
-                            8,
-                            14,
-                            12,
-                            6,
-                            9,
-                            8,
-                            4,
-                            6,
-                            6,
-                            3
-                        ],
+                        "penetracion_mm": [],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -24496,10 +24478,28 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [],
-                        "masa_explosivo": null,
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -130423,28 +130423,10 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [
-                            31,
-                            23,
-                            12,
-                            29,
-                            21,
-                            11,
-                            21,
-                            16,
-                            8,
-                            14,
-                            12,
-                            6,
-                            9,
-                            8,
-                            4,
-                            6,
-                            6,
-                            3
-                        ],
+                        "penetracion_mm": [],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -130626,10 +130608,28 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [],
-                        "masa_explosivo": null,
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -131535,28 +131535,10 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [
-                            31,
-                            23,
-                            12,
-                            29,
-                            21,
-                            11,
-                            21,
-                            16,
-                            8,
-                            14,
-                            12,
-                            6,
-                            9,
-                            8,
-                            4,
-                            6,
-                            6,
-                            3
-                        ],
+                        "penetracion_mm": [],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -171422,10 +171404,28 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [],
-                        "masa_explosivo": null,
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -183613,28 +183613,9 @@
                     {
                         "nombre": "DM53",
                         "tipo": "APFSDS",
-                        "penetracion_mm": [
-                            623,
-                            526,
-                            360,
-                            621,
-                            524,
-                            359,
-                            611,
-                            516,
-                            353,
-                            599,
-                            506,
-                            346,
-                            587,
-                            495,
-                            339,
-                            574,
-                            484,
-                            332
-                        ],
-                        "masa_total": 5000.0,
-                        "velocidad_bala": 1670,
+                        "penetracion_mm": [],
+                        "masa_total": 4300.0,
+                        "velocidad_bala": 1640,
                         "masa_explosivo": null
                     }
                 ]
@@ -196320,28 +196301,10 @@
                     {
                         "nombre": "Default",
                         "tipo": "AP/T",
-                        "penetracion_mm": [
-                            13,
-                            10,
-                            5,
-                            12,
-                            9,
-                            5,
-                            7,
-                            6,
-                            3,
-                            3,
-                            3,
-                            1,
-                            2,
-                            1,
-                            1,
-                            0,
-                            0,
-                            0
-                        ],
+                        "penetracion_mm": [],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
