@@ -95,6 +95,7 @@ if nn is None:
 
 BASE_DIR = Path(__file__).resolve().parent
 DISTANCIAS_REF = [0, 100, 500, 1000, 1500, 2000]  # Distancias discretas de la wiki oficial (metros)
+ANGULOS_REF = [0, 30, 60]  # Ángulos discretos de impacto en la wiki oficial (grados)
 MODELO_PATH = Path(os.getenv("COMBAT_MODEL_PT_PATH", str(BASE_DIR / "combat_model.pt")))
 MODELO_ONNX_PATH = Path(os.getenv("COMBAT_MODEL_ONNX_PATH", str(BASE_DIR / "combat_model.onnx")))
 SLOPE_FACTOR = 1.35  # Multiplicador base de blindaje efectivo para superficies inclinadas
@@ -525,26 +526,70 @@ def parse_distancia_combate(situacion: str) -> int:
     return 500
 
 
-def penetracion_a_distancia(penetracion_mm: List[float], distancia: int) -> float:
+def penetracion_a_distancia(penetracion_mm: List[float], distancia: int, angulo: float = 0.0) -> float:
     """
-    Calcula la penetración balística interpolando linealmente entre los valores de referencia
-    [0m, 100m, 500m, 1000m, 1500m, 2000m].
+    Calcula la penetración balística interpolando entre las distancias de referencia
+    [0m, 100m, 500m, 1000m, 1500m, 2000m] y los ángulos de impacto [0°, 30°, 60°].
+    Si penetracion_mm tiene 18 elementos (matriz 6 distancias x 3 ángulos),
+    realiza interpolación bilineal (distancia y ángulo).
+    Si tiene solo 6 elementos (cinética pura 0°), interpola la distancia y aplica
+    la caída geométrica de penetración según el ángulo: cos(angulo).
     """
     if not penetracion_mm:
         return 0.0
+
+    angulo_clamped = max(0.0, min(60.0, float(angulo)))
+
+    # Caso matriz completa de 18 penetraciones (6 distancias x 3 ángulos: 0°, 30°, 60°)
+    if len(penetracion_mm) >= 18:
+        def _get_pen_a_distancia_para_col(col_idx: int) -> float:
+            col_valores = [float(penetracion_mm[row * 3 + col_idx]) for row in range(6)]
+            if distancia <= DISTANCIAS_REF[0]:
+                return col_valores[0]
+            if distancia >= DISTANCIAS_REF[-1]:
+                return col_valores[-1]
+            for i in range(len(DISTANCIAS_REF) - 1):
+                d0, d1 = DISTANCIAS_REF[i], DISTANCIAS_REF[i + 1]
+                if d0 <= distancia <= d1:
+                    t = (distancia - d0) / (d1 - d0)
+                    return col_valores[i] + t * (col_valores[i + 1] - col_valores[i])
+            return col_valores[-1]
+
+        pen_0 = _get_pen_a_distancia_para_col(0)
+        pen_30 = _get_pen_a_distancia_para_col(1)
+        pen_60 = _get_pen_a_distancia_para_col(2)
+
+        if angulo_clamped <= 0.0:
+            return pen_0
+        elif angulo_clamped <= 30.0:
+            t = angulo_clamped / 30.0
+            return pen_0 + t * (pen_30 - pen_0)
+        else:
+            t = (angulo_clamped - 30.0) / 30.0
+            return pen_30 + t * (pen_60 - pen_30)
+
+    # Caso lista estándar de 6 valores (solo 0°)
     valores = [float(v) for v in penetracion_mm[:6]]
     while len(valores) < 6:
         valores.append(valores[-1] if valores else 0.0)
+
     if distancia <= DISTANCIAS_REF[0]:
-        return valores[0]
-    if distancia >= DISTANCIAS_REF[-1]:
-        return valores[-1]
-    for i in range(len(DISTANCIAS_REF) - 1):
-        d0, d1 = DISTANCIAS_REF[i], DISTANCIAS_REF[i + 1]
-        if d0 <= distancia <= d1:
-            t = (distancia - d0) / (d1 - d0)
-            return valores[i] + t * (valores[i + 1] - valores[i])
-    return valores[-1]
+        pen_base = valores[0]
+    elif distancia >= DISTANCIAS_REF[-1]:
+        pen_base = valores[-1]
+    else:
+        pen_base = valores[-1]
+        for i in range(len(DISTANCIAS_REF) - 1):
+            d0, d1 = DISTANCIAS_REF[i], DISTANCIAS_REF[i + 1]
+            if d0 <= distancia <= d1:
+                t = (distancia - d0) / (d1 - d0)
+                pen_base = valores[i] + t * (valores[i + 1] - valores[i])
+                break
+
+    if angulo_clamped > 0.0:
+        rad = np.radians(angulo_clamped)
+        return pen_base * float(np.cos(rad))
+    return pen_base
 
 
 def intervalo_disparo(tanque: Dict[str, Any]) -> float:
@@ -636,9 +681,10 @@ def obtener_penetracion_maxima(
     tanque: Dict[str, Any],
     distancia: int,
     blindaje_objetivo: Optional[float] = None,
+    angulo: float = 0.0,
 ) -> MunicionOptima:
     """
-    Selecciona la munición óptima combinando penetración efectiva a la distancia dada
+    Selecciona la munición óptima combinando penetración efectiva a la distancia y ángulo dados
     y daño destructivo esperado contra el blindaje objetivo del oponente.
     """
     mejor = MunicionOptima("N/A", "N/A", "N/A", 0.0, 0.0, 0.0)
@@ -650,7 +696,7 @@ def obtener_penetracion_maxima(
         pen_list = municion.get("penetracion_mm") or []
         if not pen_list:
             continue
-        pen = penetracion_a_distancia(pen_list, distancia)
+        pen = penetracion_a_distancia(pen_list, distancia, angulo=angulo)
         dano = calcular_dano_proyectil(municion, pen, max(blindaje_referencia, 80))
         score = dano * 100 + (pen if pen >= blindaje_referencia * 0.85 else pen * 0.35)
         mejor_score = mejor.dano_esperado * 100 + (
