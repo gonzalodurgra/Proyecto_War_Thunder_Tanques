@@ -5243,28 +5243,10 @@
                     {
                         "nombre": "Default",
                         "tipo": "AP/T",
-                        "penetracion_mm": [
-                            13,
-                            10,
-                            5,
-                            12,
-                            9,
-                            5,
-                            7,
-                            6,
-                            3,
-                            3,
-                            3,
-                            1,
-                            2,
-                            1,
-                            1,
-                            0,
-                            0,
-                            0
-                        ],
+                        "penetracion_mm": [],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -25012,28 +24994,10 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [
-                            31,
-                            23,
-                            12,
-                            29,
-                            21,
-                            11,
-                            21,
-                            16,
-                            8,
-                            14,
-                            12,
-                            6,
-                            9,
-                            8,
-                            4,
-                            6,
-                            6,
-                            3
-                        ],
+                        "penetracion_mm": [],
+                        "masa_explosivo": null,
                         "masa_total": null,
-                        "masa_explosivo": null
+                        "velocidad_bala": null
                     }
                 ]
             },
@@ -132089,10 +132053,28 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [],
-                        "masa_explosivo": null,
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -133664,32 +133646,717 @@
         }
     },
     {
-        "nombre": null,
-        "rol": null,
-        "nacion": null,
-        "rating_arcade": null,
-        "rating_realista": null
+        "nombre": "Type 16 (FPS)",
+        "imagen_local": "imagenes/Type_16_(FPS).jpg",
+        "rol": "Light tank",
+        "nacion": "Japan",
+        "rating_arcade": 9.7,
+        "rating_realista": 9.7,
+        "tripulacion": 4,
+        "visibilidad": 112,
+        "peso": 26.0,
+        "blindaje_chasis": 35,
+        "blindaje_chasis_lateral": 25,
+        "blindaje_chasis_trasero": 20,
+        "blindaje_torreta": 25,
+        "blindaje_torreta_lateral": 25,
+        "blindaje_torreta_trasero": 15,
+        "velocidad_adelante_arcade": 111,
+        "velocidad_atras_arcade": 40,
+        "relacion_potencia_peso": 41.8,
+        "velocidad_adelante_realista": 100,
+        "velocidad_atras_realista": 36,
+        "relacion_potencia_peso_realista": 21.9,
+        "angulo_depresion": 6,
+        "angulo_elevacion": 15,
+        "recarga": 6.7,
+        "cadencia": 8.955223880597014,
+        "cargador": 1,
+        "municion_total": 40,
+        "rotacion_torreta_horizontal_arcade": 56.5,
+        "rotacion_torreta_vertical_arcade": 28.0,
+        "rotacion_torreta_horizontal_realista": 30.0,
+        "rotacion_torreta_vertical_realista": 8.0,
+        "armamento": {
+            "105 mm JSW cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Type 91",
+                        "tipo": "HEATFS",
+                        "penetracion_mm": [
+                            400,
+                            346,
+                            200,
+                            400,
+                            346,
+                            200,
+                            400,
+                            346,
+                            200,
+                            400,
+                            346,
+                            200,
+                            400,
+                            346,
+                            200,
+                            400,
+                            346,
+                            200
+                        ],
+                        "masa_total": 9400.0,
+                        "velocidad_bala": 1150,
+                        "masa_explosivo": 1200.0
+                    },
+                    {
+                        "nombre": "M416",
+                        "tipo": "Smoke",
+                        "penetracion_mm": [
+                            3,
+                            3,
+                            1,
+                            3,
+                            3,
+                            1,
+                            3,
+                            3,
+                            1,
+                            3,
+                            3,
+                            1,
+                            3,
+                            3,
+                            1,
+                            3,
+                            3,
+                            1
+                        ],
+                        "masa_total": 11600.0,
+                        "velocidad_bala": 732,
+                        "masa_explosivo": 50.0
+                    },
+                    {
+                        "nombre": "M735",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            292,
+                            247,
+                            169,
+                            291,
+                            245,
+                            168,
+                            284,
+                            240,
+                            164,
+                            275,
+                            232,
+                            159,
+                            266,
+                            224,
+                            154,
+                            257,
+                            216,
+                            148
+                        ],
+                        "masa_total": 3700.0,
+                        "velocidad_bala": 1501,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "Type 75",
+                        "tipo": "HESH",
+                        "penetracion_mm": [
+                            8,
+                            7,
+                            4,
+                            8,
+                            7,
+                            4,
+                            8,
+                            7,
+                            4,
+                            8,
+                            7,
+                            4,
+                            8,
+                            7,
+                            4,
+                            7,
+                            6,
+                            4
+                        ],
+                        "masa_total": 10800.0,
+                        "velocidad_bala": 760,
+                        "masa_explosivo": 2700.0
+                    },
+                    {
+                        "nombre": "DM23",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            338,
+                            285,
+                            195,
+                            336,
+                            284,
+                            194,
+                            330,
+                            279,
+                            191,
+                            323,
+                            272,
+                            186,
+                            315,
+                            266,
+                            182,
+                            307,
+                            259,
+                            177
+                        ],
+                        "masa_total": 4200.0,
+                        "velocidad_bala": 1455,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "12.7 mm M2HB machine gun": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/I/AP/API-T",
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm Type 74 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/AP/T",
+                        "penetracion_mm": [
+                            13,
+                            10,
+                            5,
+                            12,
+                            9,
+                            5,
+                            7,
+                            6,
+                            3,
+                            3,
+                            3,
+                            1,
+                            2,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
     },
     {
-        "nombre": null,
-        "rol": null,
-        "nacion": null,
-        "rating_arcade": null,
-        "rating_realista": null
+        "nombre": "Type 24 ICV (P)",
+        "imagen_local": "imagenes/Type_24_ICV_(P).jpg",
+        "rol": "Light tank",
+        "nacion": "Japan",
+        "rating_arcade": 9.7,
+        "rating_realista": 9.7,
+        "tripulacion": 3,
+        "visibilidad": 112,
+        "peso": 26.0,
+        "blindaje_chasis": 65,
+        "blindaje_chasis_lateral": 35,
+        "blindaje_chasis_trasero": 20,
+        "blindaje_torreta": 20,
+        "blindaje_torreta_lateral": 30,
+        "blindaje_torreta_trasero": 15,
+        "velocidad_adelante_arcade": 111,
+        "velocidad_atras_arcade": 40,
+        "relacion_potencia_peso": 41.8,
+        "velocidad_adelante_realista": 100,
+        "velocidad_atras_realista": 36,
+        "relacion_potencia_peso_realista": 21.9,
+        "angulo_depresion": 10,
+        "angulo_elevacion": 45,
+        "recarga": 10.0,
+        "cadencia": 200,
+        "cargador": 90,
+        "municion_total": 360,
+        "rotacion_torreta_horizontal_arcade": 99.8,
+        "rotacion_torreta_vertical_arcade": 98.0,
+        "rotacion_torreta_horizontal_realista": 53.0,
+        "rotacion_torreta_vertical_realista": 28.0,
+        "armamento": {
+            "30 mm Bushmaster 2 Mk.44 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "APDS",
+                        "penetracion_mm": [
+                            87,
+                            80,
+                            33,
+                            86,
+                            79,
+                            33,
+                            81,
+                            74,
+                            31,
+                            75,
+                            69,
+                            29,
+                            70,
+                            64,
+                            27,
+                            65,
+                            59,
+                            25
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "MK258",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            114,
+                            96,
+                            66,
+                            113,
+                            95,
+                            65,
+                            108,
+                            92,
+                            63,
+                            103,
+                            87,
+                            59,
+                            97,
+                            82,
+                            56,
+                            91,
+                            77,
+                            53
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "MK266",
+                        "tipo": "HEI-T",
+                        "penetracion_mm": [
+                            9,
+                            9,
+                            4,
+                            8,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3,
+                            5,
+                            5,
+                            3,
+                            3,
+                            3,
+                            3,
+                            3,
+                            3,
+                            3
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    },
+                    {
+                        "nombre": "MK310",
+                        "tipo": "HE-TF",
+                        "penetracion_mm": [
+                            8,
+                            8,
+                            4,
+                            8,
+                            8,
+                            3,
+                            6,
+                            6,
+                            3,
+                            5,
+                            5,
+                            3,
+                            4,
+                            4,
+                            3,
+                            3,
+                            3,
+                            3
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm Mk.52 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/AP/T",
+                        "penetracion_mm": [
+                            13,
+                            10,
+                            5,
+                            12,
+                            9,
+                            5,
+                            7,
+                            6,
+                            3,
+                            3,
+                            3,
+                            1,
+                            2,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
     },
     {
-        "nombre": null,
-        "rol": null,
-        "nacion": null,
-        "rating_arcade": null,
-        "rating_realista": null
+        "nombre": "Type 90",
+        "imagen_local": "imagenes/Type_90.jpg",
+        "rol": "Medium tank",
+        "nacion": "Japan",
+        "rating_arcade": 12.0,
+        "rating_realista": 12.0,
+        "tripulacion": 3,
+        "visibilidad": 95,
+        "peso": 53.1,
+        "blindaje_chasis": 40,
+        "blindaje_chasis_lateral": 35,
+        "blindaje_chasis_trasero": 25,
+        "blindaje_torreta": 35,
+        "blindaje_torreta_lateral": 80,
+        "blindaje_torreta_trasero": 25,
+        "velocidad_adelante_arcade": 81,
+        "velocidad_atras_arcade": 38,
+        "relacion_potencia_peso": 47.1,
+        "velocidad_adelante_realista": 73,
+        "velocidad_atras_realista": 34,
+        "relacion_potencia_peso_realista": 28.2,
+        "angulo_depresion": 7,
+        "angulo_elevacion": 10,
+        "recarga": 4.0,
+        "cadencia": 15.0,
+        "cargador": 1,
+        "municion_total": 40,
+        "rotacion_torreta_horizontal_arcade": 56.5,
+        "rotacion_torreta_vertical_arcade": 35.0,
+        "rotacion_torreta_horizontal_realista": 30.0,
+        "rotacion_torreta_vertical_realista": 10.0,
+        "armamento": {
+            "120 mm Type 90 L/44 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "JM12A1",
+                        "tipo": "HEATFS",
+                        "penetracion_mm": [
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240
+                        ],
+                        "masa_total": 13500.0,
+                        "velocidad_bala": 1140,
+                        "masa_explosivo": 1600.0
+                    },
+                    {
+                        "nombre": "JM33",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            481,
+                            406,
+                            278,
+                            480,
+                            405,
+                            277,
+                            472,
+                            398,
+                            273,
+                            462,
+                            389,
+                            267,
+                            451,
+                            381,
+                            261,
+                            441,
+                            372,
+                            255
+                        ],
+                        "masa_total": 4300.0,
+                        "velocidad_bala": 1640,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "12.7 mm M2HB machine gun": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/I/AP/API-T",
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm Type 74 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/AP/T",
+                        "penetracion_mm": [
+                            13,
+                            10,
+                            5,
+                            12,
+                            9,
+                            5,
+                            7,
+                            6,
+                            3,
+                            3,
+                            3,
+                            1,
+                            2,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
     },
     {
-        "nombre": null,
-        "rol": null,
-        "nacion": null,
-        "rating_arcade": null,
-        "rating_realista": null
+        "nombre": "Type 90 (B)",
+        "imagen_local": "imagenes/Type_90_(B).jpg",
+        "rol": "Medium tank",
+        "nacion": "Japan",
+        "rating_arcade": 12.0,
+        "rating_realista": 12.0,
+        "tripulacion": 3,
+        "visibilidad": 95,
+        "peso": 50.2,
+        "blindaje_chasis": 40,
+        "blindaje_chasis_lateral": 35,
+        "blindaje_chasis_trasero": 25,
+        "blindaje_torreta": 35,
+        "blindaje_torreta_lateral": 80,
+        "blindaje_torreta_trasero": 25,
+        "velocidad_adelante_arcade": 81,
+        "velocidad_atras_arcade": 38,
+        "relacion_potencia_peso": 49.8,
+        "velocidad_adelante_realista": 73,
+        "velocidad_atras_realista": 34,
+        "relacion_potencia_peso_realista": 29.9,
+        "angulo_depresion": 7,
+        "angulo_elevacion": 10,
+        "recarga": 4.0,
+        "cadencia": 15.0,
+        "cargador": 1,
+        "municion_total": 40,
+        "rotacion_torreta_horizontal_arcade": 56.5,
+        "rotacion_torreta_vertical_arcade": 35.0,
+        "rotacion_torreta_horizontal_realista": 30.0,
+        "rotacion_torreta_vertical_realista": 10.0,
+        "armamento": {
+            "120 mm Type 90 L/44 cannon": {
+                "municiones": [
+                    {
+                        "nombre": "JM12A1",
+                        "tipo": "HEATFS",
+                        "penetracion_mm": [
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240,
+                            480,
+                            416,
+                            240
+                        ],
+                        "masa_total": 13500.0,
+                        "velocidad_bala": 1140,
+                        "masa_explosivo": 1600.0
+                    },
+                    {
+                        "nombre": "JM33",
+                        "tipo": "APFSDS",
+                        "penetracion_mm": [
+                            481,
+                            406,
+                            278,
+                            480,
+                            405,
+                            277,
+                            472,
+                            398,
+                            273,
+                            462,
+                            389,
+                            267,
+                            451,
+                            381,
+                            261,
+                            441,
+                            372,
+                            255
+                        ],
+                        "masa_total": 4300.0,
+                        "velocidad_bala": 1640,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "12.7 mm M2HB machine gun": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "API-T/I/AP/API-T",
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            },
+            "7.62 mm Type 74 machine gun (coaxial)": {
+                "municiones": [
+                    {
+                        "nombre": "Default",
+                        "tipo": "AP/AP/T",
+                        "penetracion_mm": [
+                            13,
+                            10,
+                            5,
+                            12,
+                            9,
+                            5,
+                            7,
+                            6,
+                            3,
+                            3,
+                            3,
+                            1,
+                            2,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0
+                        ],
+                        "masa_total": null,
+                        "masa_explosivo": null
+                    }
+                ]
+            }
+        }
     },
     {
         "nombre": "Type 16",
