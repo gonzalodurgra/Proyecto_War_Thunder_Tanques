@@ -111,7 +111,7 @@ export interface SimulacionEquiposIAResponse {
   detalles_enemigos?: any[];
 }
 
-const URL_IMAGENES = 'https://proyecto-war-thunder-tanques.onrender.com/';
+const URL_IMAGENES = 'https://proyecto-war-thunder-tanques.vercel.app/';
 
 // ====================================================================
 // PASO 2: Crear el servicio
