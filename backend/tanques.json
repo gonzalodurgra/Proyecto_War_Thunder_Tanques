@@ -5243,10 +5243,28 @@
                     {
                         "nombre": "Default",
                         "tipo": "AP/T",
-                        "penetracion_mm": [],
-                        "masa_explosivo": null,
+                        "penetracion_mm": [
+                            13,
+                            10,
+                            5,
+                            12,
+                            9,
+                            5,
+                            7,
+                            6,
+                            3,
+                            3,
+                            3,
+                            1,
+                            2,
+                            1,
+                            1,
+                            0,
+                            0,
+                            0
+                        ],
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
@@ -24994,10 +25012,28 @@
                     {
                         "nombre": "Default",
                         "tipo": "API-T/I/AP/API-T",
-                        "penetracion_mm": [],
-                        "masa_explosivo": null,
+                        "penetracion_mm": [
+                            31,
+                            23,
+                            12,
+                            29,
+                            21,
+                            11,
+                            21,
+                            16,
+                            8,
+                            14,
+                            12,
+                            6,
+                            9,
+                            8,
+                            4,
+                            6,
+                            6,
+                            3
+                        ],
                         "masa_total": null,
-                        "velocidad_bala": null
+                        "masa_explosivo": null
                     }
                 ]
             },
